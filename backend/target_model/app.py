@@ -34,14 +34,30 @@ app = Flask(__name__)
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    # print(request.files)  # 输出调试信息
+    # file = request.files["file"]
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
     file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
     image = Image.open(io.BytesIO(file.read())).convert("L")
     img_tensor = transform(image).unsqueeze(0).to(device)  # 转换为批次张量
     img_flatten = img_tensor.view(img_tensor.size(0), -1)
+    # with torch.no_grad():
+    #     output = model(img_flatten)
+    #     prediction = torch.argmax(output, dim=1).item()
+    # return jsonify({"prediction": prediction})
     with torch.no_grad():
-        output = model(img_flatten)
-        prediction = torch.argmax(output, dim=1).item()
-    return jsonify({"prediction": prediction})
+        output = model(img_flatten)  # 模型输出
+        probabilities = torch.nn.functional.softmax(output, dim=1)  # 计算概率
+        confidence, prediction = torch.max(probabilities, dim=1)  # 获取置信度和预测类别
+    return jsonify({
+        "prediction": prediction.item(),
+        "confidence": confidence.item(),
+        "probabilities": probabilities.squeeze().tolist()  # 返回每一类别的概率
+    
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
