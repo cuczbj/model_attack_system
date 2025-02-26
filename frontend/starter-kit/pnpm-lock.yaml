@@ -12,6 +12,7 @@ specifiers:
   '@iconify/tools': 4.0.4
   '@iconify/types': 2.0.0
   '@iconify/utils': 2.1.25
+  '@mui/icons-material': ^6.4.5
   '@mui/lab': 5.0.0-alpha.172
   '@mui/material': 5.16.4
   '@mui/material-nextjs': 5.16.4
@@ -55,6 +56,7 @@ dependencies:
   '@emotion/react': 11.13.0_ryhct6r6jz2fex4xfo2quarxhi
   '@emotion/styled': 11.13.0_6wuifaxfyzezuwv4ro2ooytp2i
   '@floating-ui/react': 0.26.20_nnrd3gsncyragczmpvfhocinkq
+  '@mui/icons-material': 6.4.5_sl2wlpro2xshgatzdczul4eki4
   '@mui/lab': 5.0.0-alpha.172_2kgr3e545jfp5w2lvsrcajiaem
   '@mui/material': 5.16.4_pof3bdn462k5nuenmijc46jqq4
   '@mui/material-nextjs': 5.16.4_vmx3py634pbk37o757p33ek42q
@@ -774,6 +776,23 @@ packages:
 
   /@mui/core-downloads-tracker/5.16.8:
     resolution: {integrity: sha512-DARxShbBsWz6azwkTmv05rR7rJfcd9cXFsQtbcr24A+5esQBSnK2N3cbg/izlvuMGxonfWaysz/ae+6Ij9RAHQ==}
+    dev: false
+
+  /@mui/icons-material/6.4.5_sl2wlpro2xshgatzdczul4eki4:
+    resolution: {integrity: sha512-4A//t8Nrc+4u4pbVhGarIFU98zpuB5AV9hTNzgXx1ySZJ1tWtx+i/1SbQ8PtGJxWeXlljhwimZJNPQ3x0CiIFw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      '@mui/material': ^6.4.5
+      '@types/react': ^17.0.0 || ^18.0.0 || ^19.0.0
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.26.0
+      '@mui/material': 5.16.4_pof3bdn462k5nuenmijc46jqq4
+      '@types/react': 18.3.12
+      react: 18.3.1
     dev: false
 
   /@mui/lab/5.0.0-alpha.172_2kgr3e545jfp5w2lvsrcajiaem:
