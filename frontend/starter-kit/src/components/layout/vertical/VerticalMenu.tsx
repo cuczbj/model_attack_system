@@ -1,3 +1,6 @@
+// React Imports
+import { useState } from 'react'
+
 // MUI Imports
 import { useTheme } from '@mui/material/styles'
 
@@ -20,8 +23,7 @@ import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNav
 import menuItemStyles from '@core/styles/vertical/menuItemStyles'
 import menuSectionStyles from '@core/styles/vertical/menuSectionStyles'
 
-// React Imports
-import { useState } from 'react'
+
 
 type RenderExpandIconProps = {
   open?: boolean

@@ -5,7 +5,7 @@
 ## How to use:
 
 ```
-npm install(first time using)
+npm install .(first time using) 
 npm run build 
 npm run start
 ```
@@ -90,4 +90,6 @@ and adjust` padding-line-between-statements：`
   { blankLine: 'always', prev: '*', next: ['return'] },
 ],
 ```
+
+"vuexy-mui-nextjs-admin-template": "link" when using "npm install" error
 

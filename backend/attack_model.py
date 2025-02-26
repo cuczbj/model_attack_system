@@ -4,6 +4,8 @@ from tqdm import tqdm
 from torchvision.utils import save_image
 import os
 from models.MLP import MLP
+from io import BytesIO
+import base64
 
 # 图像归一化函数
 def normalize_image(im_flatten):
@@ -13,7 +15,7 @@ def normalize_image(im_flatten):
     return im_flatten
 
 def perform_attack(target_label):
-    model_dir = "./data/target/mynet_50.pkl"
+    model_dir = "./models/mynet_50.pkl"
     attack_dir = "./data/attack/"
     h, w = 112, 92
     alpha = 5000
@@ -48,9 +50,21 @@ def perform_attack(target_label):
         aim_flatten.data = normalize_image(aim_flatten.data)
         aim_flatten.data = torch.clamp(aim_flatten.data, 0, 1)
 
-    # 保存攻击结果
-    os.makedirs(attack_dir, exist_ok=True)
-    result_image_path = os.path.join(attack_dir, f"inverted_{target_label}.png")
-    save_image(aim_flatten.view(1, 1, h, w), result_image_path)
-    print(f"攻击完成，结果已保存至: {result_image_path}")
-    return result_image_path
+    # # 保存攻击结果
+    # os.makedirs(attack_dir, exist_ok=True)
+    # result_image_path = os.path.join(attack_dir, f"inverted_{target_label}.png")
+    # save_image(aim_flatten.view(1, 1, h, w), result_image_path)
+    # print(f"攻击完成，结果已保存至: {result_image_path}")
+    # return result_image_path
+    # 转换图像数据为字节流
+    img_byte_arr = BytesIO()
+    # 将生成的图像保存到字节流
+    save_image(aim_flatten.view(1, 1, h, w), img_byte_arr, format='PNG')
+
+    # 将指针重新设置到流的开头，确保后续读取是从头开始
+    img_byte_arr.seek(0)
+
+    img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
+    print(f"攻击完成，返回图像字节流数据。")
+    print(img_byte_arr)
+    return img_base64

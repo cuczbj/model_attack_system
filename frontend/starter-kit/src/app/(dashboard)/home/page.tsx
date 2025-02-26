@@ -1,15 +1,27 @@
 "use client";
 
+// import React, { useCallback, useState, useEffect } from "react";
+// import { useDropzone } from "react-dropzone";
+// import Box from "@mui/material/Box";
+// import { styled } from "@mui/material/styles";
+// import Button from "@mui/material/Button";
+// import Typography from "@mui/material/Typography";
+// import List from "@mui/material/List";
+// import ListItem from "@mui/material/ListItem";
+// import Divider from "@mui/material/Divider";
+// import { useTheme } from "@mui/material/styles";
+// 1. React 和外部库导入
 import React, { useCallback, useState, useEffect } from "react";
+
+// 2. 第三方库导入
 import { useDropzone } from "react-dropzone";
-import Box from "@mui/material/Box";
-import { styled } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import Divider from "@mui/material/Divider";
-import { useTheme } from "@mui/material/styles";
+
+// 3. MUI 组件导入
+import { Box, Button, Typography, List, ListItem, Divider } from "@mui/material";
+
+// 4. 样式和主题导入
+import { styled, useTheme } from "@mui/material/styles";
+
 // 自定义样式的上传区域
 const AppReactDropzone = styled(Box)(({ theme }) => ({
   border: `2px dashed ${theme.palette.primary.main}`,
@@ -35,6 +47,7 @@ const FileUpload = () => {
   // 初始化时从 localStorage 获取最近上传记录
   useEffect(() => {
     const storedFiles = localStorage.getItem("recentFiles");
+
     if (storedFiles) {
       setRecentFiles(JSON.parse(storedFiles));
     }
@@ -46,6 +59,7 @@ const FileUpload = () => {
 
     // 更新最近上传文件记录
     const updatedRecentFiles = [...recentFiles, ...fileNames].slice(-5); // 只保留最近 5 个
+    
     setRecentFiles(updatedRecentFiles);
 
     // 保存到 localStorage
