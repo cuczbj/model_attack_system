@@ -82,7 +82,7 @@ const HorizontalMenu = () => {
           主页
         </MenuItem>
         <MenuItem href='/about' icon={<i className='tabler-info-circle' />}>
-          设置
+          设
         </MenuItem>
       </Menu>
       {/* <Menu

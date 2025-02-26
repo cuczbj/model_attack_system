@@ -8,7 +8,7 @@ const verticalMenuData = (): VerticalMenuDataType[] => [
     icon: 'tabler-smart-home'
   },
   {
-    label: '设置',
+    label: '设',
     href: '/about',
     icon: 'tabler-info-circle'
   }
