@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attack Result</title>
+    <script>
+        async function performAttack() {
+            const targetLabel = 10; // 示例目标标签，可以动态传入
+            
+            const response = await fetch("http://localhost:5000/attack", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    target_label: targetLabel
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                alert("Error: " + data.error);
+            } else {
+                // 获取 Base64 编码的图像数据
+                const imgBase64 = data.image;
+                const img = document.createElement("img");
+                img.src = "data:image/png;base64," + imgBase64; // 前端展示图片
+                document.getElementById("result-container").appendChild(img); // 在页面中插入图像
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Attack Result</h1>
+    <button onclick="performAttack()">Perform Attack</button>
+    <div id="result-container"></div>
+</body>
+</html>

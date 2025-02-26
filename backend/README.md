@@ -125,6 +125,8 @@ Results saved to ./result/results.json
 
 
 
+
+
 ## 使用方法(实时更新)：
 
 修改目标模型文件`target_model.py`和攻击模型的数据集目录
@@ -224,3 +226,111 @@ zlib                      1.2.13               h8cc25b3_1
 zstd                      1.5.6                h8880b57_0
 ```
 
+
+
+
+
+## 接口文档：
+
+###### 1.文件上传upload
+
+请求体：
+
+```
+POST http://localhost:5000/upload \
+  -F "file=@/path/to/your/file.png" \
+```
+
+返回结果：（状态吗400报错，500成功）
+
+```shell
+D:\model_attack_system\backend\data\target>curl -X POST http://localhost:5000/upload -F "file=@D:/model_attack_system/backend/data/target/1.png" -i
+HTTP/1.1 400 BAD REQUEST
+Server: Werkzeug/3.1.3 Python/3.9.21
+Date: Wed, 26 Feb 2025 07:59:45 GMT
+Content-Type: application/json
+Content-Length: 30
+Access-Control-Allow-Origin: *
+Connection: close
+
+{"error":"Invalid file type"}
+
+D:\model_attack_system\backend\data\target>curl -X POST http://localhost:5000/upload -F "file=@D:/model_attack_system/backend/data/target/mynet_50.pkl" -i
+HTTP/1.1 200 OK
+Server: Werkzeug/3.1.3 Python/3.9.21
+Date: Wed, 26 Feb 2025 07:56:04 GMT
+Content-Type: application/json
+Content-Length: 54
+Access-Control-Allow-Origin: *
+Connection: close
+
+{"message":"File mynet_50.pkl uploaded successfully"}
+```
+
+
+
+###### 2.生成图返回
+
+请求体
+
+```shell
+curl -X POST http://localhost:5000/attack \
+-H "Content-Type: application/json" \
+-d "{\"target_label\": 10}"
+```
+
+后端（Flask）生成图像并返回字节流：后端将生成的图像作为字节流返回，并设置正确的 MIME 类型。
+
+结果：
+
+```
+C:\Users\wrwut>curl -X POST http://localhost:5000/attack -H "Content-Type: application/json" -d "{\"target_label\": 10}"
+{"image":"XXX(BASE64)","message":"Attack successful"}
+```
+
+前端推荐参考，为react版本没试过,记得加base64解码：
+
+```
+const AttackComponent = () => {
+    const [imageSrc, setImageSrc] = useState(null);
+    const [error, setError] = useState(null);
+
+    const handleAttack = async () => {
+        try {
+            // 请求后端获取图像
+            const response = await fetch('http://localhost:5000/attack', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ target_label: 10 })  // 传递需要的 target_label
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch image');
+            }
+
+            const imageBlob = await response.blob();
+            const imageUrl = URL.createObjectURL(imageBlob);
+            setImageSrc(imageUrl);  // 设置图像 URL
+
+        } catch (error) {
+            setError(error.message);
+        }
+    };
+
+    return (
+        <div>
+            <button onClick={handleAttack}>Attack</button>
+            {error && <p>{error}</p>}
+            {imageSrc && <img src={imageSrc} alt="Attack result" />}
+        </div>
+    );
+};
+
+export default AttackComponent;
+```
+
+例外的完整的可见根目录test.html：
+
+![image-20250226180652567](README.assets/image-20250226180652567.png)
