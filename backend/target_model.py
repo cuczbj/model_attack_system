@@ -13,7 +13,7 @@ from models.MLP import MLP
 
 # 预测接口
 def predict_target_model(image):
-    model_dir = "./data/target/mynet_50.pkl"
+    model_dir = "./models/mynet_50.pkl"
     h, w = 112, 92
     class_num = 40
 
