@@ -24,7 +24,8 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Divider from "@mui/material/Divider";
-
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
 // 模拟数据 - 实际应用中应从API获取
 const mockTasks = [
   {
@@ -418,30 +419,36 @@ const TaskDetailDialog = ({ open, task, onClose }) => {
 };
 // 系统资源占用组件
 const SystemResourcesMonitor = () => {
-  // 实际应用中应从API获取实时数据
   const [resources, setResources] = useState({
-    cpu: 68,
-    memory: 72,
-    gpu: 85,
-    gpu_memory: 78,
-    disk: 45,
-    network: 30
+    cpu: 0,
+    memory: 0,
+    gpu: 0,
+    gpu_memory: 0,
+    disk: 0,
+    network: 0,
+    timestamp: null
   });
   
-  // 模拟数据更新
   useEffect(() => {
-    const interval = setInterval(() => {
-      setResources(prev => ({
-        cpu: Math.min(100, Math.max(30, prev.cpu + (Math.random() * 10 - 5))),
-        memory: Math.min(100, Math.max(40, prev.memory + (Math.random() * 6 - 3))),
-        gpu: Math.min(100, Math.max(50, prev.gpu + (Math.random() * 8 - 4))),
-        gpu_memory: Math.min(100, Math.max(45, prev.gpu_memory + (Math.random() * 7 - 3.5))),
-        disk: Math.min(100, Math.max(20, prev.disk + (Math.random() * 4 - 2))),
-        network: Math.min(100, Math.max(10, prev.network + (Math.random() * 15 - 7.5)))
-      }));
-    }, 3000);
+    // Connect to the server-sent events endpoint
+    const eventSource = new EventSource('http://127.0.0.1:5000/system-metrics');
     
-    return () => clearInterval(interval);
+    // Handle incoming events
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setResources(data);
+    };
+    
+    // Handle connection error
+    eventSource.onerror = (error) => {
+      console.error('EventSource error:', error);
+      eventSource.close();
+    };
+    
+    // Clean up on component unmount
+    return () => {
+      eventSource.close();
+    };
   }, []);
   
   return (
@@ -612,7 +619,7 @@ const SystemResourcesMonitor = () => {
       
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
         <Typography variant="caption" color="text.secondary">
-          上次更新: {new Date().toLocaleTimeString()}
+          上次更新: {resources.timestamp ? new Date(resources.timestamp * 1000).toLocaleTimeString() : '等待数据...'}
         </Typography>
       </Box>
     </Paper>
@@ -620,39 +627,156 @@ const SystemResourcesMonitor = () => {
 };
 
 const TaskStatus = () => {
-  const [tasks, setTasks] = useState(mockTasks);
+  const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://127.0.0.1:5000/api/tasks?status=${filter}`);
+      if (!response.ok) {
+        throw new Error("获取任务列表失败");
+      }
+      const data = await response.json();
+      setTasks(data);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // 这里应该是从后端API获取任务数据
-    // 实际应用中应替换为真实API调用
-    // 例如: fetch('/api/tasks').then(res => res.json()).then(data => setTasks(data));
-  }, []);
+    fetchTasks();
+    
+    // 设置定时器每10秒刷新一次数据
+    const interval = setInterval(() => {
+      fetchTasks();
+    }, 10000);
+    
+    return () => clearInterval(interval);
+  }, [filter]);
 
-  const filteredTasks = filter === "all" 
-    ? tasks 
-    : tasks.filter(task => task.status === filter);
-
-  const handleViewDetails = (task) => {
-    setSelectedTask(task);
-    setDialogOpen(true);
+  const handleViewDetails = async (task) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/api/tasks/${task.id}`);
+      if (!response.ok) {
+        throw new Error("获取任务详情失败");
+      }
+      const taskDetail = await response.json();
+      setSelectedTask(taskDetail);
+      setDialogOpen(true);
+    } catch (err) {
+      console.error("Error fetching task details:", err);
+    }
   };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
 
+  const handleTaskAction = async (taskId, action) => {
+    try {
+      // 根据操作类型更新任务状态
+      let newStatus;
+      let errorMessage = '';
+      
+      switch (action) {
+        case 'start':
+          newStatus = 'running';
+          break;
+        case 'pause':
+          newStatus = 'paused';
+          break;
+        case 'resume':
+          newStatus = 'running';
+          break;
+        case 'cancel':
+        case 'terminate':
+          newStatus = 'failed';
+          errorMessage = action === 'cancel' ? '任务已取消' : '任务已终止';
+          break;
+        case 'retry':
+          newStatus = 'queued';
+          break;
+        case 'delete':
+          // 处理删除任务的逻辑
+          const deleteResponse = await fetch(`http://127.0.0.1:5000/api/tasks/${taskId}`, {
+            method: 'DELETE'
+          });
+          if (!deleteResponse.ok) {
+            throw new Error("删除任务失败");
+          }
+          fetchTasks();
+          return;
+        default:
+          return;
+      }
+
+      const response = await fetch(`http://127.0.0.1:5000/api/tasks/${taskId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          status: newStatus,
+          error_message: errorMessage
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("更新任务状态失败");
+      }
+
+      // 更新当前任务列表中的状态
+      setTasks(prevTasks => 
+        prevTasks.map(task => 
+          task.id === taskId 
+            ? { ...task, status: newStatus, error_message: errorMessage || task.error_message } 
+            : task
+        )
+      );
+
+      // 如果当前正在查看该任务的详情，也更新详情
+      if (selectedTask && selectedTask.id === taskId) {
+        setSelectedTask(prev => ({
+          ...prev,
+          status: newStatus,
+          error_message: errorMessage || prev.error_message
+        }));
+      }
+    } catch (err) {
+      console.error("Error updating task:", err);
+    }
+  };
+
+  const handleCreateTask = () => {
+    // 导航到结果页面
+    window.location.href = '/results';
+  };
+
+  const handleRefresh = () => {
+    fetchTasks();
+  };
+
+  const filteredTasks = filter === "all" 
+    ? tasks 
+    : tasks.filter(task => task.status === filter);
+
   const getStatusActions = (task) => {
     switch (task.status) {
       case "queued":
         return (
           <>
-            <Button size="small" color="primary">
+            <Button size="small" color="primary" onClick={() => handleTaskAction(task.id, 'start')}>
               启动
             </Button>
-            <Button size="small" color="error">
+            <Button size="small" color="error" onClick={() => handleTaskAction(task.id, 'cancel')}>
               取消
             </Button>
           </>
@@ -660,10 +784,10 @@ const TaskStatus = () => {
       case "running":
         return (
           <>
-            <Button size="small" color="warning">
+            <Button size="small" color="warning" onClick={() => handleTaskAction(task.id, 'pause')}>
               暂停
             </Button>
-            <Button size="small" color="error">
+            <Button size="small" color="error" onClick={() => handleTaskAction(task.id, 'terminate')}>
               终止
             </Button>
           </>
@@ -671,27 +795,27 @@ const TaskStatus = () => {
       case "paused":
         return (
           <>
-            <Button size="small" color="primary">
+            <Button size="small" color="primary" onClick={() => handleTaskAction(task.id, 'resume')}>
               恢复
             </Button>
-            <Button size="small" color="error">
+            <Button size="small" color="error" onClick={() => handleTaskAction(task.id, 'terminate')}>
               终止
             </Button>
           </>
         );
       case "completed":
         return (
-          <Button size="small" color="primary">
+          <Button size="small" color="primary" onClick={() => window.location.href = `/results?task=${task.id}`}>
             查看结果
           </Button>
         );
       case "failed":
         return (
           <>
-            <Button size="small" color="primary">
+            <Button size="small" color="primary" onClick={() => handleTaskAction(task.id, 'retry')}>
               重试
             </Button>
-            <Button size="small" color="error">
+            <Button size="small" color="error" onClick={() => handleTaskAction(task.id, 'delete')}>
               删除
             </Button>
           </>
@@ -712,6 +836,11 @@ const TaskStatus = () => {
 
       <SystemResourcesMonitor />
       
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
       <Box sx={{ mb: 3 }}>
         <Tabs
@@ -742,53 +871,61 @@ const TaskStatus = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredTasks.map((task) => (
-              <TableRow key={task.id} hover>
-                <TableCell>{task.name}</TableCell>
-                <TableCell>{task.model}</TableCell>
-                <TableCell>{task.attack_type}</TableCell>
-                <TableCell>
-                  <Chip 
-                    label={statusMap[task.status].label} 
-                    color={statusMap[task.status].color} 
-                    size="small" 
-                  />
-                </TableCell>
-                <TableCell>
-                  {task.status === "queued" ? (
-                    <Typography variant="body2">等待中</Typography>
-                  ) : (
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Box sx={{ width: "100%", mr: 1 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={task.progress}
-                        />
-                      </Box>
-                      <Box sx={{ minWidth: 35 }}>
-                        <Typography variant="body2">
-                          {task.progress}%
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
-                </TableCell>
-                <TableCell>{task.create_time}</TableCell>
-                <TableCell align="right">
-                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Button
-                      size="small"
-                      onClick={() => handleViewDetails(task)}
-                      sx={{ mr: 1 }}
-                    >
-                      详情
-                    </Button>
-                    {getStatusActions(task)}
-                  </Box>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  <CircularProgress size={24} sx={{ my: 2 }} />
+                  <Typography variant="body2">加载中...</Typography>
                 </TableCell>
               </TableRow>
-            ))}
-            {filteredTasks.length === 0 && (
+            ) : filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => (
+                <TableRow key={task.id} hover>
+                  <TableCell>{task.name}</TableCell>
+                  <TableCell>{task.model}</TableCell>
+                  <TableCell>{task.attack_type}</TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={statusMap[task.status]?.label || task.status} 
+                      color={statusMap[task.status]?.color || "default"} 
+                      size="small" 
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {task.status === "queued" ? (
+                      <Typography variant="body2">等待中</Typography>
+                    ) : (
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Box sx={{ width: "100%", mr: 1 }}>
+                          <LinearProgress
+                            variant="determinate"
+                            value={task.progress || 0}
+                          />
+                        </Box>
+                        <Box sx={{ minWidth: 35 }}>
+                          <Typography variant="body2">
+                            {task.progress || 0}%
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
+                  </TableCell>
+                  <TableCell>{task.create_time}</TableCell>
+                  <TableCell align="right">
+                    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                      <Button
+                        size="small"
+                        onClick={() => handleViewDetails(task)}
+                        sx={{ mr: 1 }}
+                      >
+                        详情
+                      </Button>
+                      {getStatusActions(task)}
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={7} align="center">
                   <Typography sx={{ py: 2 }}>
@@ -802,11 +939,11 @@ const TaskStatus = () => {
       </TableContainer>
 
       <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={handleCreateTask}>
           创建新任务
         </Button>
-        <Button variant="outlined">
-          刷新
+        <Button variant="outlined" onClick={handleRefresh} startIcon={loading ? <CircularProgress size={16} /> : null}>
+          {loading ? "加载中..." : "刷新"}
         </Button>
       </Box>
 
@@ -814,6 +951,7 @@ const TaskStatus = () => {
         open={dialogOpen}
         task={selectedTask}
         onClose={handleCloseDialog}
+        onTaskAction={handleTaskAction}
       />
     </Box>
   );

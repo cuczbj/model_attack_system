@@ -32,8 +32,8 @@
     "react-dropzone": "^14.3.5",
     "react-perfect-scrollbar": "1.5.8",
     "react-use": "17.5.1",
-    "server-only": "0.0.1"
-    
+    "server-only": "0.0.1",
+    "vuexy-mui-nextjs-admin-template": "link:"
   },
   "devDependencies": {
     "@iconify/json": "2.2.230",
