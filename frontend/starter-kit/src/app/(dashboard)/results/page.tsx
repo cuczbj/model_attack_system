@@ -25,7 +25,7 @@ const API_URL = "http://127.0.0.1:5000";
 
 // 攻击方法选项
 const ATTACK_METHODS = [
-  { id: "basic", name: "基础逆向攻击" },
+  { id: "standard_attack", name: "基础逆向攻击" },
   { id: "improved", name: "改进逆向攻击" },
   { id: "advanced", name: "高级逆向攻击" },
 ];
@@ -63,7 +63,7 @@ function TabPanel(props: TabPanelProps) {
 
 const AdvancedAttackResultsDisplay = () => {
   const [targetLabel, setTargetLabel] = useState<number>(0);
-  const [attackMethod, setAttackMethod] = useState<string>("basic");
+  const [attackMethod, setAttackMethod] = useState<string>("standard_attack");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attackResult, setAttackResult] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

@@ -3,7 +3,7 @@ import os
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS  # 导入 CORS
 from target_model import train_target_model,predict_target_model
-from attack_model import perform_attack
+from reconstruct import reconstruct
 from PIL import Image
 import psutil
 import json
@@ -258,7 +258,8 @@ def attack():
         return jsonify({"error": "Invalid request. 'target_label' is required."}), 400
     
     target_label = data["target_label"]
-    
+    attact_method_name =data["attack_method"]
+
     # 验证 target_label
     if not isinstance(target_label, int) or target_label < 0 or target_label > 39:
         return jsonify({"error": "Invalid target_label. Must be an integer between 0 and 39."}), 400
@@ -294,7 +295,7 @@ def attack():
     
     try:
         # 执行攻击
-        result_image = perform_attack(target_label)
+        result_image = reconstruct(attact_method_name,target_label)
         
         # 更新任务状态为完成
         conn = get_db_connection()
