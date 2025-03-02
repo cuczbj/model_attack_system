@@ -142,6 +142,7 @@ PS D:\workshop\model_attack_system\backend\test> conda list
 # packages in environment at D:\soft\Anaconda\Anaconda\envs\MAS:
 #
 # Name                    Version                   Build  Channel
+async-timeout             5.0.1                    pypi_0    pypi
 blas                      1.0                         mkl
 blinker                   1.9.0                    pypi_0    pypi
 brotli-python             1.0.9            py39h5da7b33_9
@@ -155,6 +156,7 @@ cudatoolkit               11.3.1               h59b6b97_2
 cycler                    0.12.1                   pypi_0    pypi
 filelock                  3.13.1           py39haa95532_0
 flask                     3.1.0                    pypi_0    pypi
+flask-cors                5.0.1                    pypi_0    pypi
 fonttools                 4.55.3                   pypi_0    pypi
 freetype                  2.12.1               ha860e81_0
 giflib                    5.2.2                h7edc060_0
@@ -195,6 +197,8 @@ openssl                   3.0.15               h827c3e9_0
 packaging                 24.2                     pypi_0    pypi
 pillow                    11.0.0           py39h096bfcc_1
 pip                       24.2             py39haa95532_0
+psutil                    7.0.0                    pypi_0    pypi
+py3nvml                   0.2.7                    pypi_0    pypi
 pyparsing                 3.2.1                    pypi_0    pypi
 pysocks                   1.7.1            py39haa95532_0
 python                    3.9.21               h8205438_1
@@ -202,6 +206,7 @@ python-dateutil           2.9.0.post0              pypi_0    pypi
 pytorch                   2.5.1               py3.9_cpu_0    pytorch
 pytorch-mutex             1.0                         cpu    pytorch
 pyyaml                    6.0.2            py39h827c3e9_0
+redis                     5.2.1                    pypi_0    pypi
 requests                  2.32.3           py39haa95532_1
 setuptools                75.1.0           py39haa95532_0
 six                       1.17.0                   pypi_0    pypi
@@ -210,7 +215,6 @@ sympy                     1.13.3           py39haa95532_0
 tbb                       2021.8.0             h59b6b97_0
 torchaudio                2.5.1                  py39_cpu    pytorch
 torchvision               0.20.1                 py39_cpu    pytorch
-tqdm                      4.66.5           py39h9909e9c_0
 typing_extensions         4.12.2           py39haa95532_0
 tzdata                    2024b                h04d1e81_0
 urllib3                   2.2.3            py39haa95532_0
@@ -219,6 +223,7 @@ vs2015_runtime            14.42.34433          h9531ae6_2
 werkzeug                  3.1.3                    pypi_0    pypi
 wheel                     0.44.0           py39haa95532_0
 win_inet_pton             1.1.0            py39haa95532_0
+xmltodict                 0.14.2                   pypi_0    pypi
 xz                        5.4.6                h8cc25b3_1
 yaml                      0.2.5                he774522_0
 zipp                      3.21.0                   pypi_0    pypi

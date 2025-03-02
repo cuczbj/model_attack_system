@@ -211,6 +211,8 @@ def predict():
         return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# 获取任务状态    
 @app.route("/api/tasks/<task_id>/status", methods=["PUT"])
 def update_task_status(task_id):
     data = request.json
@@ -246,6 +248,7 @@ def update_task_status(task_id):
     conn.close()
     
     return jsonify({"message": "任务状态已更新"})
+
 # 攻击模型反转攻击接口
 @app.route("/attack", methods=["POST"])
 def attack():
