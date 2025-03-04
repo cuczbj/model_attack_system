@@ -34,6 +34,7 @@ def reconstruct(attack_method_name, target_label):
     return attack_method(target_label)
 
 # if __name__ == "__main__":
-#     print(reconstruct("standard_attack",12,))
+#     # print(reconstruct("standard_attack",12,))
+#     print(reconstruct("PIG_attack",12,))
 
 

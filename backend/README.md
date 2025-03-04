@@ -339,3 +339,145 @@ export default AttackComponent;
 例外的完整的可见根目录test.html：
 
 ![image-20250226180652567](README.assets/image-20250226180652567.png)
+
+
+
+
+
+加入新的攻击方法PIG-MI：
+
+![image-20250304223646042](README.assets/image-20250304223646042.png)
+
+好像有点不一样，是不是太小了，看看前端能不能进行放大吧
+
+
+
+项目结构：
+
+```
+|   attack_model.py
+|   attack_system.db
+|   README.md
+|   reconstruct.py
+|   server.py
+|   target_model.py
+|   utils.py
+|   开发文档.pdf
+|
++---attack
+|   |   PIG_attack.py
+|   |   standard_attack.py
+|   |   __init__.py
+|   |
+|   \---__pycache__
+|           new_attack.cpython-39.pyc
+|           PIG_attack.cpython-39.pyc
+|           standard_attack.cpython-39.pyc
+|           __init__.cpython-39.pyc
+|
++---models
+|   |   evaluation.py
+|   |   inception.py
+|   |   losses.py
+|   |   MLP.py
+|   |   mynet_50.pkl
+|   |   resnet64.py
+|   |
+|   +---classifiers
+|   |   |   classifier.py
+|   |   |   evolve.py
+|   |   |   __init__.py
+|   |   |
+|   |   \---__pycache__
+|   |           classifier.cpython-39.pyc
+|   |           evolve.cpython-39.pyc
+|   |           __init__.cpython-39.pyc
+|   |
+|   +---metrics
+|   |   |   fid.py
+|   |   |   __init__.py
+|   |   |
+|   |   \---__pycache__
+|   |           fid.cpython-39.pyc
+|   |           __init__.cpython-39.pyc
+|   |
+|   \---__pycache__
+|           evaluation.cpython-39.pyc
+|           inception.cpython-39.pyc
+|           losses.cpython-39.pyc
+|           MLP.cpython-311.pyc
+|           MLP.cpython-39.pyc
+|           resnet64.cpython-39.pyc
+|
++---README.assets
+|       image-20250110222329528.png
+|       image-20250226180652567.png
+|       image-20250304223646042.png
+|       inverted_1.png
+|
++---result
+|   +---attack
+|   |       inverted_0.png
+|			...
+|   |
+|   \---PLG_MI_Inversion
+|       +---all_imgs
+|       |   +---12
+|       |   |       attack_iden_12_0.png
+|       |   |       attack_iden_12_1.png
+|       |   |       attack_iden_12_2.png
+|       |   |       attack_iden_12_3.png
+|       |   |       attack_iden_12_4.png
+|       |   |
+|       |   \---5
+|       |           attack_iden_5_0.png
+|       |           attack_iden_5_1.png
+|       |           attack_iden_5_2.png
+|       |           attack_iden_5_3.png
+|       |           attack_iden_5_4.png
+|       |
+|       \---success_imgs
+|           +---12
+|           |       0_attack_iden_12_0.png
+|           |       0_attack_iden_12_1.png
+|           |       0_attack_iden_12_2.png
+|           |       0_attack_iden_12_3.png
+|           |       0_attack_iden_12_4.png
+|           |
+|           \---5
+|                   0_attack_iden_5_0.png
+|                   0_attack_iden_5_1.png
+|                   0_attack_iden_5_2.png
+|                   0_attack_iden_5_3.png
+|                   0_attack_iden_5_4.png
+|
++---test
+|   |   test1.py
+|   |
+|   +---result
+|   |       inverted_0.png_visualization.png
+|			...
+|   |
+|   \---target_train
+|           model1_MLP.py
+|
++---upload
+|   +---evaluate_model
+|   |       FaceNet_95.88.tar
+|   |
+|   +---PIG
+|   |       gen_VGG16_celeba.pth.tar
+|   \---target_model
+|           IR152_91.16.tar
+|           VGG16_88.26.tar
+|
+\---__pycache__
+        attack_model.cpython-311.pyc
+        attack_model.cpython-39.pyc
+        reconstruct.cpython-39.pyc
+        server.cpython-311.pyc
+        target_model.cpython-311.pyc
+        target_model.cpython-39.pyc
+        utils.cpython-39.pyc
+```
+

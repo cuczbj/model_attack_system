@@ -2,3 +2,7 @@
  
  b a c k e n d / t a r g e t _ m o d e l / * . p k l 
 *.pkl
+backend/upload/*.tar
+*/pth
+backend/upload/target_model/VGG16_88.26.tar
+*.tar

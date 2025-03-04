@@ -1,12 +1,12 @@
 # attack/__init__.py
 
 from .standard_attack import standard_attack
-from .new_attack import new_attack
+from .PIG_attack import PIG_attack
 
 # 可选：将攻击方法映射到一个字典中，方便调用
 ATTACK_METHODS = {
     "standard_attack": standard_attack,
-    "new_attack": new_attack,
+    "PIG_attack": PIG_attack,
 }
 
 def get_attack_method(method_name):
