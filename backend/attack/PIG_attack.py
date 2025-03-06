@@ -44,16 +44,23 @@ def get_logger():
     return logger
 
 #逆向攻击出对应标签的图像
-def inversion(G, T, E, iden, itr, lr=2e-2, iter_times=1500, num_seeds=5,save_dir="",gen_dim_z=64,gen_distribution='',inv_loss_type=''):
+def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_seeds=5, save_dir="", gen_dim_z=64, gen_distribution='', inv_loss_type=''):
     """输入：
     G：GAN 生成器（ResNetGenerator）
     T：目标分类器（VGG16/IR152/FaceNet64）
     E：评估模型（FaceNet）
-    iden：目标身份编号"""
+    iden：目标身份编号
+    task_id: 任务ID，用于生成唯一的文件名
+    """
     save_img_dir = os.path.join(save_dir, 'all_imgs')
     success_dir = os.path.join(save_dir, 'success_imgs')
     os.makedirs(save_img_dir, exist_ok=True)
     os.makedirs(success_dir, exist_ok=True)
+
+    # 使用任务ID创建特定目录
+    if task_id:
+        task_save_dir = os.path.join(save_dir, f'task_{task_id}')
+        os.makedirs(task_save_dir, exist_ok=True)
 
     bs = iden.shape[0]
     iden = iden.view(-1).long().cuda()
@@ -68,6 +75,9 @@ def inversion(G, T, E, iden, itr, lr=2e-2, iter_times=1500, num_seeds=5,save_dir
     res = []
     res5 = []
     seed_acc = torch.zeros((bs, 5))
+    
+    # 存储最后生成的图像
+    final_image = None
 
     aug_list = augmentation.container.ImageSequential(
         augmentation.RandomResizedCrop((64, 64), scale=(0.8, 1.0), ratio=(1.0, 1.0)),
@@ -135,14 +145,33 @@ def inversion(G, T, E, iden, itr, lr=2e-2, iter_times=1500, num_seeds=5,save_dir
             for i in range(bs):
                 gt = iden[i].item()
                 sample = G(z, iden)[i]
+                
+                # 保存最后一个样本作为最终结果
+                if i == bs - 1:
+                    final_image = sample.detach()
+                
                 all_img_class_path = os.path.join(save_img_dir, str(gt))
                 if not os.path.exists(all_img_class_path):
                     os.makedirs(all_img_class_path)
-                save_tensor_images(sample.detach(),
-                                   os.path.join(all_img_class_path, "attack_iden_{}_{}.png".format(gt, r_idx)))
                 
-                if(i==bs-1):
-                    base64_img = tensor_to_base64(sample.detach())
+                # 保存标准路径的图像
+                save_tensor_images(sample.detach(),
+                                  os.path.join(all_img_class_path, "attack_iden_{}_{}.png".format(gt, r_idx)))
+                
+                # 如果提供了任务ID，也保存到任务特定目录
+                if task_id:
+                    task_img_path = os.path.join(task_save_dir, "attack_iden_{}_{}.png".format(gt, r_idx))
+                    save_tensor_images(sample.detach(), task_img_path)
+                    
+                    # 同时保存到标准的攻击结果目录
+                    attack_dir = "./result/attack/"
+                    os.makedirs(attack_dir, exist_ok=True)
+                    task_result_path = os.path.join(attack_dir, f"{task_id}_{gt}.png")
+                    save_tensor_images(sample.detach(), task_result_path)
+                    
+                    # 为兼容旧代码，也保存一个标准命名的副本
+                    std_result_path = os.path.join(attack_dir, f"inverted_{gt}.png")
+                    save_tensor_images(sample.detach(), std_result_path)
 
                 if eval_iden[i].item() == gt:
                     seed_acc[i, r_idx] = 1
@@ -152,10 +181,20 @@ def inversion(G, T, E, iden, itr, lr=2e-2, iter_times=1500, num_seeds=5,save_dir
                     success_img_class_path = os.path.join(success_dir, str(gt))
                     if not os.path.exists(success_img_class_path):
                         os.makedirs(success_img_class_path)
-                    save_tensor_images(best_img.detach(), os.path.join(success_img_class_path,
-                                                                       "{}_attack_iden_{}_{}.png".format(itr, gt,
-                                                                                                         int(no[i]))))
+                    
+                    # 保存成功的攻击结果
+                    success_img_path = os.path.join(success_img_class_path,
+                                                  "{}_attack_iden_{}_{}.png".format(itr, gt, int(no[i])))
+                    save_tensor_images(best_img.detach(), success_img_path)
+                    
+                    # 如果有任务ID，也保存到任务特定目录
+                    if task_id:
+                        task_success_path = os.path.join(task_save_dir,
+                                                       "{}_attack_iden_{}_{}.png".format(itr, gt, int(no[i])))
+                        save_tensor_images(best_img.detach(), task_success_path)
+                    
                     no[i] += 1
+                
                 _, top5_idx = torch.topk(eval_prob[i], 5)
                 if gt in top5_idx:
                     cnt5 += 1
@@ -171,12 +210,25 @@ def inversion(G, T, E, iden, itr, lr=2e-2, iter_times=1500, num_seeds=5,save_dir
     acc_var5 = statistics.variance(res5)
     print("Acc:{:.2f}\tAcc_5:{:.2f}\tAcc_var:{:.4f}\tAcc_var5:{:.4f}".format(acc, acc_5, acc_var, acc_var5))
 
-    return base64_img,acc, acc_5, acc_var, acc_var5
+    # 将最终生成的图像转换为base64
+    base64_img = tensor_to_base64(final_image)
+    return base64_img, acc, acc_5, acc_var, acc_var5
 
 #发起PIG逆向攻击
-def PIG_attack(target_labels=None,model='VGG16', inv_loss_type='margin', lr=0.1, iter_times=600,
+def PIG_attack(target_labels, task_id=None, model='VGG16', inv_loss_type='margin', lr=0.1, iter_times=600,
                           gen_num_features=64, gen_dim_z=128, gen_bottom_width=4,
                           gen_distribution='normal', save_dir='./result/PLG_MI_Inversion', path_G='./upload/PIG/gen_VGG16_celeba.pth.tar'):
+    """执行PIG逆向攻击
+    
+    Args:
+        target_labels: 目标标签
+        task_id: 任务ID，用于生成唯一的结果文件名
+        model: 目标模型类型
+        其他参数: PIG攻击的配置参数
+        
+    Returns:
+        base64编码的图像数据
+    """
     # Load Generator
     G = ResNetGenerator(gen_num_features, gen_dim_z, gen_bottom_width, num_classes=1000, distribution=gen_distribution)
     gen_ckpt = torch.load(path_G)['model']
@@ -204,16 +256,15 @@ def PIG_attack(target_labels=None,model='VGG16', inv_loss_type='margin', lr=0.1,
     ckp_E = torch.load(path_E)
     E.load_state_dict(ckp_E['state_dict'], strict=False)
 
-
     aver_acc, aver_acc5, aver_var, aver_var5 = 0, 0, 0, 0
     for i in range(1):
-        iden = torch.tensor([target_labels])  # 这里只攻击类别 5
-        # for idx in range(5):记得这里改了之后下面的/5的要改为/3，算了，我还是改为一个变量存储吧
-        batch_num =3
+        iden = torch.tensor([target_labels])  # 这里只攻击指定类别
+        # 批量攻击次数
+        batch_num = 3
         for idx in range(batch_num):
             print(f"--------------------- Attack batch [{idx}]------------------------------")
-            base64_img,acc, acc5, var, var5 = inversion(G, T, E, iden, itr=i, lr=lr, iter_times=iter_times,
-                                             num_seeds=5,save_dir=save_dir,gen_dim_z=gen_dim_z,gen_distribution=gen_distribution,inv_loss_type=inv_loss_type)
+            base64_img, acc, acc5, var, var5 = inversion(G, T, E, iden, itr=i, task_id=task_id, lr=lr, iter_times=iter_times,
+                                             num_seeds=5, save_dir=save_dir, gen_dim_z=gen_dim_z, gen_distribution=gen_distribution, inv_loss_type=inv_loss_type)
             # iden += 60
             aver_acc += acc / batch_num
             aver_acc5 += acc5 / batch_num
@@ -222,7 +273,3 @@ def PIG_attack(target_labels=None,model='VGG16', inv_loss_type='margin', lr=0.1,
     
     print(f"Average Acc:{aver_acc:.2f}\tAverage Acc5:{aver_acc5:.2f}\tAverage Acc_var:{aver_var:.4f}\tAverage Acc_var5:{aver_var5:.4f}")
     return base64_img
-
-#test
-# if __name__ == "__main__":
-#     PIG_attack(5,"VGG16","margin")

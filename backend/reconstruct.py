@@ -28,10 +28,18 @@ from models.MLP import MLP
 4.迭代数
 5.学习率
 """
-def reconstruct(attack_method_name, target_label):
-    """执行指定的攻击方法"""
+def reconstruct(attack_method_name, target_label, task_id=None):
+    """执行指定的攻击方法，并使用任务ID标识结果"""
     attack_method = get_attack_method(attack_method_name)
-    return attack_method(target_label)
+    try:
+        # 打印调试信息
+        print(f"执行攻击方法: {attack_method_name}, 目标标签: {target_label}, 任务ID: {task_id}")
+        # 传递任务ID给攻击方法
+        result = attack_method(target_label, task_id)
+        return result
+    except Exception as e:
+        print(f"攻击执行出错: {e}")
+        raise e
 
 # if __name__ == "__main__":
 #     # print(reconstruct("standard_attack",12,))

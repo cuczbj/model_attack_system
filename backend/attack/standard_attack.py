@@ -18,7 +18,16 @@ def normalize_image(im_flatten):
     im_flatten = (im_flatten - min_val) / (max_val - min_val + 1e-8)
     return im_flatten
 
-def standard_attack(target_label):
+def standard_attack(target_label, task_id=None):
+    """执行标准反演攻击
+    
+    Args:
+        target_label: 目标标签
+        task_id: 任务ID，用于生成唯一的结果文件名
+        
+    Returns:
+        base64编码的图像数据或图像文件路径
+    """
     model_dir = "./models/mynet_50.pkl"
     attack_dir = "./result/attack/"
     h, w = 112, 92
@@ -50,28 +59,35 @@ def standard_attack(target_label):
         # 反向传播与优化
         loss.backward()
         optimizer.step()
-         # 归一化与裁剪
+        # 归一化与裁剪
         aim_flatten.data = normalize_image(aim_flatten.data)
         aim_flatten.data = torch.clamp(aim_flatten.data, 0, 1)
 
-    # # 保存攻击结果
-    # os.makedirs(attack_dir, exist_ok=True)
-    # result_image_path = os.path.join(attack_dir, f"inverted_{target_label}.png")
-    # save_image(aim_flatten.view(1, 1, h, w), result_image_path)
-    # print(f"攻击完成，结果已保存至: {result_image_path}")
-    # return result_image_path
-    # 转换图像数据为字节流
-    img_byte_arr = BytesIO()
-    # 将生成的图像保存到字节流
-    save_image(aim_flatten.view(1, 1, h, w), img_byte_arr, format='PNG')
-
-    # 将指针重新设置到流的开头，确保后续读取是从头开始
-    img_byte_arr.seek(0)
-
-    img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
-    print(f"攻击完成，返回图像字节流数据。")
-    print(img_byte_arr)
-    return img_base64
-
-# if __name__ == "__main__":
-#     print(perform_attack(12))
+    # 如果提供了任务ID，使用任务ID保存结果
+    if task_id:
+        # 保存攻击结果
+        os.makedirs(attack_dir, exist_ok=True)
+        result_image_path = os.path.join(attack_dir, f"{task_id}_{target_label}.png")
+        save_image(aim_flatten.view(1, 1, h, w), result_image_path)
+        print(f"攻击完成，结果已保存至: {result_image_path}")
+        
+        # 同时也保存一个标准名称的副本，供兼容旧代码
+        std_image_path = os.path.join(attack_dir, f"inverted_{target_label}.png")
+        save_image(aim_flatten.view(1, 1, h, w), std_image_path)
+        
+        # 转换图像数据为base64
+        img_byte_arr = BytesIO()
+        save_image(aim_flatten.view(1, 1, h, w), img_byte_arr, format='PNG')
+        img_byte_arr.seek(0)
+        img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
+        
+        print(f"攻击完成，已保存图像文件和返回base64数据。")
+        return img_base64
+    else:
+        # 如果没有提供任务ID，只返回base64编码的图像数据
+        img_byte_arr = BytesIO()
+        save_image(aim_flatten.view(1, 1, h, w), img_byte_arr, format='PNG')
+        img_byte_arr.seek(0)
+        img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
+        print(f"攻击完成，返回图像字节流数据。")
+        return img_base64

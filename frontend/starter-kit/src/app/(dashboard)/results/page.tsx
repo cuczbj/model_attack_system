@@ -112,7 +112,40 @@ const AdvancedAttackResultsDisplay = () => {
       [setting]: value
     }));
   };
+ // 图像加载错误处理函数
+const handleImageError = (e, taskId, targetLabel) => {
+  console.error(`图像加载失败`);
+  // 尝试其他可能的URL格式
+  const img = e.target;
+  const currentSrc = img.src;
+  
+  // 尝试不同的路径格式
+  if (currentSrc.includes('/api/tasks/')) {
+    // 尝试直接访问静态文件
+    if (attackMethod === "PIG_attack") {
+      img.src = `${API_URL}/static/result/PLG_MI_Inversion/success_imgs/${targetLabel}/0_attack_iden_${targetLabel}_0.png?t=${Date.now()}`;
+    } else {
+      img.src = `${API_URL}/static/result/attack/inverted_${targetLabel}.png?t=${Date.now()}`;
+    }
+  } else {
+    // 如果静态路径也失败，显示占位符
+    img.src = "https://via.placeholder.com/150x150?text=无图像";
+  }
+};
 
+// 更新显示图像的代码
+{attackResult && (
+  <img
+    src={attackResult}
+    alt={`重建的标签 ${targetLabel} 图像`}
+    style={{
+      maxWidth: "100%",
+      maxHeight: "250px",
+      objectFit: "contain",
+    }}
+    onError={(e) => handleImageError(e, currentTaskId, targetLabel)}
+  />
+)}
   // 处理标签页切换
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -156,7 +189,7 @@ const AdvancedAttackResultsDisplay = () => {
       }
 
       const data = await response.json();
-      
+      console.log("攻击响应数据:", data);
       // 保存任务ID
       if (data.task_id) {
         setCurrentTaskId(data.task_id);
@@ -164,19 +197,35 @@ const AdvancedAttackResultsDisplay = () => {
       
       let imageUrl = "";
       // 如果后端返回base64图像
+      // 修改handleAttack函数中处理响应的部分
       if (data.image) {
+        // base64图像
         imageUrl = `data:image/png;base64,${data.image}`;
         setAttackResult(imageUrl);
       } 
-      // 如果后端返回图像URL路径
+      else if (data.image_path) {
+        // 路径格式的图像
+        imageUrl = `${API_URL}${data.image_path}`;
+        setAttackResult(imageUrl);
+      }
+      else if (data.task_id) {
+        // 使用任务ID构建图像URL
+        imageUrl = `${API_URL}/api/tasks/${data.task_id}/image?t=${new Date().getTime()}`;
+        setAttackResult(imageUrl);
+      }
       else if (data.result_image) {
-        // 将相对路径转换为完整URL
+        // 兼容旧格式
         imageUrl = `${API_URL}${data.result_image.replace("./data", "/static")}`;
         setAttackResult(imageUrl);
       }
 
       // 获取模型预测结果
-      const predictionData = await fetchPrediction();
+      // 获取模型预测结果
+      try {
+        const predictionData = await fetchPrediction();
+      } catch (predError) {
+        console.error("预测过程中出错:", predError);
+      }
 
     } catch (error) {
       console.error("Attack error:", error);
@@ -187,95 +236,126 @@ const AdvancedAttackResultsDisplay = () => {
   };
 
   // 获取预测结果
-  const fetchPrediction = async () => {
-    try {
-      // 预测文件名是固定格式： inverted_{label}.png
-      const imagePath = `/static/attack/inverted_${targetLabel}.png`;
-      
-      // 创建FormData对象
-      const formData = new FormData();
-      
-      // 从URL获取图像并添加到FormData
-      const imageResponse = await fetch(`${API_URL}${imagePath}`);
-      const blob = await imageResponse.blob();
-      formData.append("image_file", blob, `inverted_${targetLabel}.png`);
-      
-      // 发送预测请求
-      const response = await fetch(`${API_URL}/predict`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("预测失败");
+  // 获取预测结果
+// 获取预测结果
+// 获取预测结果
+const fetchPrediction = async () => {
+  try {
+    // 创建FormData对象
+    const formData = new FormData();
+    
+    let imageUrl;
+    let blob;
+    
+    // 根据是否有任务ID决定获取图像的方式
+    if (currentTaskId) {
+      // 使用任务ID API获取图像
+      imageUrl = `${API_URL}/api/tasks/${currentTaskId}/image?t=${Date.now()}`;
+    } else {
+      // 使用传统路径
+      if (attackMethod === "PIG_attack") {
+        imageUrl = `${API_URL}/static/result/PLG_MI_Inversion/success_imgs/${targetLabel}/0_attack_iden_${targetLabel}_0.png?t=${Date.now()}`;
+      } else {
+        imageUrl = `${API_URL}/static/result/attack/inverted_${targetLabel}.png?t=${Date.now()}`;
       }
+    }
+    
+    console.log("尝试获取图像:", imageUrl);
+    
+    // 获取图像
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      throw new Error(`获取图像失败: ${imageResponse.status} - ${imageUrl}`);
+    }
+    
+    blob = await imageResponse.blob();
+    formData.append("image_file", blob, `image_for_prediction.png`);
+    
+    // 发送预测请求
+    console.log("发送预测请求...");
+    const response = await fetch(`${API_URL}/predict`, {
+      method: "POST",
+      body: formData,
+    });
 
-      const predictionData = await response.json();
-      
-      let confidence = null;
-      // 根据backend返回格式不同处理confidence
-      if (predictionData.confidence) {
-        confidence = predictionData.confidence;
-      } else if (predictionData.confidences && Array.isArray(predictionData.confidences)) {
-        // 获取最高置信度
+    if (!response.ok) {
+      throw new Error(`预测请求失败: ${response.status}`);
+    }
+
+    const predictionData = await response.json();
+    console.log("预测结果:", predictionData);
+    
+    let confidence = null;
+    // 根据backend返回格式不同处理confidence
+    if (predictionData.confidence) {
+      confidence = predictionData.confidence;
+    } else if (predictionData.confidences && Array.isArray(predictionData.confidences)) {
+      // 获取对应标签的置信度
+      if (predictionData.prediction !== null && predictionData.prediction !== undefined) {
+        confidence = predictionData.confidences[predictionData.prediction];
+      } else {
+        // 如果没有明确的预测，获取最高置信度
         confidence = Math.max(...predictionData.confidences);
       }
-      
-      setPrediction(predictionData.prediction);
-      setConfidence(confidence);
-      
-      // 如果存在任务ID，更新任务状态
-      if (currentTaskId) {
-        try {
-          await fetch(`${API_URL}/api/tasks/${currentTaskId}/status`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              status: "completed",
-              progress: 100,
-              result: {
-                prediction: predictionData.prediction,
-                confidence: confidence,
-                success: predictionData.prediction === targetLabel
-              }
-            }),
-          });
-        } catch (err) {
-          console.error("Error updating task status:", err);
-        }
-      }
-      
-      return {
-        prediction: predictionData.prediction,
-        confidence: confidence
-      };
-    } catch (error) {
-      console.error("Prediction error:", error);
-      
-      // 如果预测失败，更新任务状态为失败
-      if (currentTaskId) {
-        try {
-          await fetch(`${API_URL}/api/tasks/${currentTaskId}/status`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              status: "failed",
-              error_message: "预测失败: " + (error as Error).message
-            }),
-          });
-        } catch (err) {
-          console.error("Error updating task status:", err);
-        }
-      }
-      
-      return null;
     }
-  };
+    
+    setPrediction(predictionData.prediction);
+    setConfidence(confidence);
+    
+    // 如果存在任务ID，更新任务状态
+    if (currentTaskId) {
+      try {
+        await fetch(`${API_URL}/api/tasks/${currentTaskId}/status`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: "completed",
+            progress: 100,
+            result: {
+              prediction: predictionData.prediction,
+              confidence: confidence,
+              success: predictionData.prediction === targetLabel
+            }
+          }),
+        });
+      } catch (err) {
+        console.error("Error updating task status:", err);
+      }
+    }
+    
+    return {
+      prediction: predictionData.prediction,
+      confidence: confidence
+    };
+  } catch (error) {
+    console.error("预测错误详情:", error);
+    setErrorMessage(`加载预测结果失败: ${error.message}`);
+    
+    // 如果预测失败，更新任务状态为失败
+    if (currentTaskId) {
+      try {
+        await fetch(`${API_URL}/api/tasks/${currentTaskId}/status`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: "completed", // 依然标记为完成，因为图像已生成
+            error_message: "预测失败: " + (error.message || "未知错误")
+          }),
+        });
+      } catch (err) {
+        console.error("Error updating task status:", err);
+      }
+    }
+    
+    return null;
+  }
+};
 
+  // 查看历史任务详情
   // 查看历史任务详情
   const viewTaskResult = async (taskId) => {
     try {
@@ -285,6 +365,10 @@ const AdvancedAttackResultsDisplay = () => {
       }
       
       const task = await response.json();
+      console.log("加载的任务详情:", task);
+      
+      // 设置当前任务ID
+      setCurrentTaskId(taskId);
       
       // 设置当前目标标签
       if (task.target_label !== undefined) {
@@ -293,25 +377,34 @@ const AdvancedAttackResultsDisplay = () => {
       
       // 设置攻击方法
       if (task.attack_type) {
-        const method = ATTACK_METHODS.find(m => m.name === task.attack_type);
+        const method = ATTACK_METHODS.find(m => m.id === task.attack_type || m.name === task.attack_type);
         if (method) {
           setAttackMethod(method.id);
+        } else {
+          setAttackMethod(task.attack_type);
         }
       }
       
-      // 加载图像和预测结果
-      const imagePath = `/static/attack/inverted_${task.target_label}.png`;
-      setAttackResult(`${API_URL}${imagePath}`);
+      // 设置图像结果，使用任务ID API
+      const timestamp = Date.now();
+      setAttackResult(`${API_URL}/api/tasks/${taskId}/image?t=${timestamp}`);
       
       // 切换到攻击结果标签页
       setTabValue(0);
       
       // 尝试获取预测结果
-      await fetchPrediction();
+      try {
+        await fetchPrediction();
+      } catch (predErr) {
+        console.error("获取预测结果失败:", predErr);
+        setPrediction(null);
+        setConfidence(null);
+        setErrorMessage("加载预测结果失败，但图像已成功加载");
+      }
       
     } catch (error) {
-      console.error("Error viewing task result:", error);
-      setErrorMessage("加载任务结果失败");
+      console.error("查看任务详情失败:", error);
+      setErrorMessage("加载任务结果失败: " + error.message);
     }
   };
 
@@ -512,17 +605,26 @@ const AdvancedAttackResultsDisplay = () => {
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       攻击方法: {task.attack_type}
                     </Typography>
+                    
                     <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                      {/* 在历史记录的卡片中显示图像 */}
                       <img
-                        src={`${API_URL}/static/attack/inverted_${task.target_label}.png`}
-                        alt={`历史攻击结果`}
+                        src={`${API_URL}/api/tasks/${task.id}/image?t=${Date.now()}`}
+                        alt={`攻击结果`}
                         style={{
                           maxWidth: "100%",
                           height: "120px",
                           objectFit: "contain",
                         }}
                         onError={(e) => {
+                          console.error(`图像加载失败: ${e.currentTarget.src}`);
                           e.currentTarget.src = "https://via.placeholder.com/150x150?text=无图像";
+                          
+                          // 尝试加载PIG攻击的图像
+                          if (task.attack_type === "PIG_attack" || task.attack_type.includes("PIG")) {
+                            const pigPath = `/static/result/PLG_MI_Inversion/success_imgs/${task.target_label}/0_attack_iden_${task.target_label}_0.png?t=${Date.now()}`;
+                            e.currentTarget.src = `${API_URL}${pigPath}`;
+                          }
                         }}
                       />
                     </Box>
