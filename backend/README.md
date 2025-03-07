@@ -142,23 +142,40 @@ PS D:\workshop\model_attack_system\backend\test> conda list
 # packages in environment at D:\soft\Anaconda\Anaconda\envs\MAS:
 #
 # Name                    Version                   Build  Channel
+# packages in environment at D:\soft\Anaconda\Anaconda\envs\MAS:
+#
+# Name                    Version                   Build  Channel
 async-timeout             5.0.1                    pypi_0    pypi
 blas                      1.0                         mkl
 blinker                   1.9.0                    pypi_0    pypi
 brotli-python             1.0.9            py39h5da7b33_9
-ca-certificates           2024.12.31           haa95532_0
-certifi                   2024.12.14       py39haa95532_0
+ca-certificates           2025.2.25            haa95532_0
+certifi                   2025.1.31        py39haa95532_0
 charset-normalizer        3.3.2              pyhd3eb1b0_0
 click                     8.1.8                    pypi_0    pypi
 colorama                  0.4.6            py39haa95532_0
 contourpy                 1.3.0                    pypi_0    pypi
-cudatoolkit               11.3.1               h59b6b97_2
+cuda-cccl                 12.4.127                      0    nvidia
+cuda-cudart               12.1.105                      0    nvidia
+cuda-cudart-dev           12.1.105                      0    nvidia
+cuda-cupti                12.1.105                      0    nvidia
+cuda-libraries            12.1.0                        0    nvidia
+cuda-libraries-dev        12.1.0                        0    nvidia
+cuda-nvrtc                12.1.105                      0    nvidia
+cuda-nvrtc-dev            12.1.105                      0    nvidia
+cuda-nvtx                 12.1.105                      0    nvidia
+cuda-opencl               12.4.127                      0    nvidia
+cuda-opencl-dev           12.4.127                      0    nvidia
+cuda-profiler-api         12.4.127                      0    nvidia
+cuda-runtime              12.1.0                        0    nvidia
+cudatoolkit               11.3.1              hf2f0253_13    conda-forge
 cycler                    0.12.1                   pypi_0    pypi
 filelock                  3.13.1           py39haa95532_0
 flask                     3.1.0                    pypi_0    pypi
 flask-cors                5.0.1                    pypi_0    pypi
 fonttools                 4.55.3                   pypi_0    pypi
 freetype                  2.12.1               ha860e81_0
+fsspec                    2025.2.0                 pypi_0    pypi
 giflib                    5.2.2                h7edc060_0
 gmpy2                     2.1.2            py39h7f96b67_0
 idna                      3.7              py39haa95532_0
@@ -169,10 +186,27 @@ itsdangerous              2.2.0                    pypi_0    pypi
 jinja2                    3.1.4            py39haa95532_1
 jpeg                      9e                   h827c3e9_3
 kiwisolver                1.4.7                    pypi_0    pypi
+kornia                    0.6.6                    pypi_0    pypi
 lcms2                     2.16                 hb4a4139_0
 lerc                      4.0.0                h5da7b33_0
+libcublas                 12.1.0.26                     0    nvidia
+libcublas-dev             12.1.0.26                     0    nvidia
+libcufft                  11.0.2.4                      0    nvidia
+libcufft-dev              11.0.2.4                      0    nvidia
+libcurand                 10.3.5.147                    0    nvidia
+libcurand-dev             10.3.5.147                    0    nvidia
+libcusolver               11.4.4.55                     0    nvidia
+libcusolver-dev           11.4.4.55                     0    nvidia
+libcusparse               12.0.2.55                     0    nvidia
+libcusparse-dev           12.0.2.55                     0    nvidia
 libdeflate                1.22                 h5bf469e_0
 libjpeg-turbo             2.0.0                h196d8e1_0
+libnpp                    12.0.2.50                     0    nvidia
+libnpp-dev                12.0.2.50                     0    nvidia
+libnvjitlink              12.1.105                      0    nvidia
+libnvjitlink-dev          12.1.105                      0    nvidia
+libnvjpeg                 12.1.1.14                     0    nvidia
+libnvjpeg-dev             12.1.1.14                     0    nvidia
 libpng                    1.6.39               h8cc25b3_0
 libtiff                   4.5.1                h44ae7cf_1
 libuv                     1.48.0               h827c3e9_0
@@ -190,36 +224,42 @@ mpfr                      4.0.2                h62dcd97_1
 mpir                      3.0.0                hec2e145_1
 mpmath                    1.3.0            py39haa95532_0
 networkx                  3.2.1            py39haa95532_0
-numpy                     2.0.1            py39h055cbcc_1
-numpy-base                2.0.1            py39h65a83cf_1
+numpy                     1.23.2                   pypi_0    pypi
 openjpeg                  2.5.2                hae555c5_0
-openssl                   3.0.15               h827c3e9_0
+openssl                   3.4.1                ha4e3fda_0    conda-forge
 packaging                 24.2                     pypi_0    pypi
-pillow                    11.0.0           py39h096bfcc_1
+pillow                    9.2.0                    pypi_0    pypi
 pip                       24.2             py39haa95532_0
+protobuf                  3.20.1                   pypi_0    pypi
 psutil                    7.0.0                    pypi_0    pypi
 py3nvml                   0.2.7                    pypi_0    pypi
 pyparsing                 3.2.1                    pypi_0    pypi
 pysocks                   1.7.1            py39haa95532_0
 python                    3.9.21               h8205438_1
 python-dateutil           2.9.0.post0              pypi_0    pypi
-pytorch                   2.5.1               py3.9_cpu_0    pytorch
-pytorch-mutex             1.0                         cpu    pytorch
+pytorch                   2.5.1           py3.9_cuda12.1_cudnn9_0    pytorch
+pytorch-cuda              12.1                 hde6ce7c_6    pytorch
+pytorch-mutex             1.0                        cuda    pytorch
 pyyaml                    6.0.2            py39h827c3e9_0
 redis                     5.2.1                    pypi_0    pypi
 requests                  2.32.3           py39haa95532_1
+scipy                     1.9.0                    pypi_0    pypi
 setuptools                75.1.0           py39haa95532_0
 six                       1.17.0                   pypi_0    pypi
 sqlite                    3.45.3               h2bbff1b_0
-sympy                     1.13.3           py39haa95532_0
+sympy                     1.13.1                   pypi_0    pypi
 tbb                       2021.8.0             h59b6b97_0
-torchaudio                2.5.1                  py39_cpu    pytorch
-torchvision               0.20.1                 py39_cpu    pytorch
+tensorboardx              2.5.1                    pypi_0    pypi
+torchaudio                2.5.1                    pypi_0    pypi
+torchvision               0.20.1                   pypi_0    pypi
+tqdm                      4.66.5           py39h9909e9c_0
 typing_extensions         4.12.2           py39haa95532_0
 tzdata                    2024b                h04d1e81_0
+ucrt                      10.0.22621.0         h57928b3_1    conda-forge
 urllib3                   2.2.3            py39haa95532_0
 vc                        14.40                haa95532_2
-vs2015_runtime            14.42.34433          h9531ae6_2
+vc14_runtime              14.42.34433         h6356254_24    conda-forge
+vs2015_runtime            14.42.34433         hfef2bbc_24    conda-forge
 werkzeug                  3.1.3                    pypi_0    pypi
 wheel                     0.44.0           py39haa95532_0
 win_inet_pton             1.1.0            py39haa95532_0
@@ -479,5 +519,17 @@ export default AttackComponent;
         target_model.cpython-311.pyc
         target_model.cpython-39.pyc
         utils.cpython-39.pyc
+```
+
+
+
+## Version3:
+
+要求：
+
+```
+目标描述
+原图对比
+消耗资源显示
 ```
 
