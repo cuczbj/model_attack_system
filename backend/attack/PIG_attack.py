@@ -16,7 +16,7 @@ from utils import save_tensor_images,tensor_to_base64
 from models.evaluation import get_knn_dist, calc_fid
 from models.classifiers import VGG16, IR152, FaceNet, FaceNet64
 from models.resnet64 import ResNetGenerator
-
+from PIL import Image
 #设定随机种子，保证可复现性。
 def set_random_seed(seed=0):
     random.seed(seed)

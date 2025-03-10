@@ -3,7 +3,7 @@ import os
 from attack import get_attack_method
 import torch
 from models.MLP import MLP
-
+from PIL import Image
 # def reload_model(model_path, h, w, class_num=40):
 #     """重载模型"""
 #     if not os.path.exists(model_path):

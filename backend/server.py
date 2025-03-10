@@ -19,7 +19,7 @@ import numpy as np
 from threading import Thread
 import sys
 import torch
-from PIL import Image
+
 # 将attack目录添加到系统路径
 attack_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'attack')
 sys.path.append(attack_dir)
@@ -950,7 +950,6 @@ def run_evaluation(evaluation_id, config):
                             # 确保图像大小匹配
                             if attack_image.shape != (112, 92):
                                 # 如果形状不匹配，尝试调整大小
-                                from PIL import Image
                                 temp_img = Image.fromarray(attack_image)
                                 temp_img = temp_img.resize((92, 112))
                                 attack_image = np.array(temp_img)
@@ -1065,7 +1064,10 @@ def run_evaluation(evaluation_id, config):
         conn.close()
         
     except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
         logging.error(f"评估任务执行出错: {e}")
+        logging.error(f"错误详细堆栈: \n{error_trace}")
         # 更新任务状态为失败
         try:
             conn = get_db_connection()
