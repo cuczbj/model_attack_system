@@ -25,12 +25,9 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Tooltip from "@mui/material/Tooltip";
 import IconButton from "@mui/material/IconButton";
 import Alert from "@mui/material/Alert";
 import Chip from "@mui/material/Chip";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
 import Stack from "@mui/material/Stack";
 import LinearProgress from "@mui/material/LinearProgress";
 import Accordion from "@mui/material/Accordion";
@@ -38,7 +35,6 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
 import StopIcon from "@mui/icons-material/Stop";
 import InfoIcon from "@mui/icons-material/Info";
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -49,73 +45,25 @@ import DownloadIcon from "@mui/icons-material/Download";
 import ReplayIcon from "@mui/icons-material/Replay";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
-// 模拟数据 - 实际应用中从API获取
-const mockAttackMethods = [
-  { id: "basic", name: "基础反演攻击" },
-  { id: "improved", name: "改进反演攻击" },
-  { id: "gan", name: "GAN辅助反演" },
-  { id: "gradient", name: "梯度泄露攻击" }
+// API基础URL
+const API_URL = "http://127.0.0.1:5000";
+
+// 攻击方法选项 - 与后端实际支持的方法对应
+const ATTACK_METHODS = [
+  { id: "standard_attack", name: "基础逆向攻击" },
+  { id: "PIG_attack", name: "PIG逆向攻击" },
+  { id: "advanced", name: "高级逆向攻击" }
 ];
 
-const mockTargetModels = [
-  { id: "cnn", name: "简单CNN分类器" },
-  { id: "resnet", name: "ResNet-18模型" },
-  { id: "densenet", name: "DenseNet-121模型" }
+// 目标模型选项
+const TARGET_MODELS = [
+  { id: "mynet_50", name: "基础MLP分类器" }
 ];
 
-const mockDatasets = [
-  { id: "mnist", name: "MNIST", classes: 10 },
-  { id: "cifar10", name: "CIFAR-10", classes: 10 },
+// 数据集选项
+const DATASETS = [
   { id: "att_faces", name: "AT&T人脸数据库", classes: 40 }
 ];
-
-// 模拟评估结果
-const generateMockResults = () => {
-  const methods = mockAttackMethods.map(m => m.id);
-  const models = mockTargetModels.map(m => m.id);
-  const results = [];
-
-  for (const method of methods) {
-    for (const model of models) {
-      // 随机生成一些结果数据
-      const accuracy = Math.random() * 0.6 + 0.2; // 20%-80%
-      const successRate = Math.random() * 0.7 + 0.15; // 15%-85%
-      const psnr = Math.random() * 15 + 10; // 10-25
-      const ssim = Math.random() * 0.5 + 0.3; // 0.3-0.8
-      const avgConfidence = Math.random() * 0.4 + 0.5; // 50%-90%
-      const executionTime = Math.floor(Math.random() * 300 + 100); // 100-400秒
-      
-      // 类别敏感性 - 每个类别的成功率
-      const classSuccessRates = Array.from({length: 10}, () => Math.random() * 0.8 + 0.1);
-      
-      // 置信度分布
-      const confidenceDistribution = Array.from({length: 10}, (_, i) => ({
-        confidenceRange: `${(0.1 * i).toFixed(1)}-${(0.1 * (i + 1)).toFixed(1)}`,
-        count: Math.floor(Math.random() * 30)
-      }));
-      
-      results.push({
-        id: `eval-${method}-${model}-${Date.now()}`,
-        method,
-        model,
-        dataset: "mnist", // 假设都是MNIST
-        accuracy,
-        successRate,
-        psnr,
-        ssim,
-        avgConfidence,
-        executionTime,
-        timestamp: new Date().toISOString(),
-        classSuccessRates,
-        confidenceDistribution,
-        sampleCount: 100,
-        completedSamples: 100
-      });
-    }
-  }
-  
-  return results;
-};
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -160,11 +108,11 @@ function ResultsTable({ results, onViewDetails }) {
         <TableBody>
           {results.map((result) => {
             // 获取方法和模型的名称
-            const methodName = mockAttackMethods.find(m => m.id === result.method)?.name || result.method;
-            const modelName = mockTargetModels.find(m => m.id === result.model)?.name || result.model;
+            const methodName = ATTACK_METHODS.find(m => m.id === result.method)?.name || result.method;
+            const modelName = TARGET_MODELS.find(m => m.id === result.model)?.name || result.model;
             
             return (
-              <TableRow key={result.id} hover>
+              <TableRow key={result.id || `result-${Math.random()}`} hover>
                 <TableCell>{methodName}</TableCell>
                 <TableCell>{modelName}</TableCell>
                 <TableCell>{(result.accuracy * 100).toFixed(2)}%</TableCell>
@@ -172,7 +120,7 @@ function ResultsTable({ results, onViewDetails }) {
                 <TableCell>{result.psnr.toFixed(2)}</TableCell>
                 <TableCell>{result.ssim.toFixed(2)}</TableCell>
                 <TableCell>{(result.avgConfidence * 100).toFixed(2)}%</TableCell>
-                <TableCell>{result.executionTime}秒</TableCell>
+                <TableCell>{Math.round(result.executionTime)}秒</TableCell>
                 <TableCell align="center">
                   <IconButton onClick={() => onViewDetails(result)} size="small" color="primary">
                     <VisibilityIcon />
@@ -204,8 +152,6 @@ function ComparisonCharts({ selectedResults }) {
     );
   }
 
-  // 以下是示例图表，实际应用中应使用Chart.js或Recharts等库
-  // 这里使用简化的显示方式
   return (
     <Box sx={{ mt: 2 }}>
       <Typography variant="h6" gutterBottom>
@@ -220,13 +166,13 @@ function ComparisonCharts({ selectedResults }) {
               <Typography variant="subtitle1">准确率比较</Typography>
               <Box sx={{ mt: 2, height: 200, position: 'relative' }}>
                 {selectedResults.map((result, index) => {
-                  const methodName = mockAttackMethods.find(m => m.id === result.method)?.name || result.method;
-                  const modelName = mockTargetModels.find(m => m.id === result.model)?.name || result.model;
+                  const methodName = ATTACK_METHODS.find(m => m.id === result.method)?.name || result.method;
+                  const modelName = TARGET_MODELS.find(m => m.id === result.model)?.name || result.model;
                   const barHeight = 25;
                   const topOffset = index * (barHeight + 15) + 10;
                   
                   return (
-                    <Box key={result.id} sx={{ position: 'absolute', top: topOffset, width: '100%' }}>
+                    <Box key={`acc-${result.id || index}`} sx={{ position: 'absolute', top: topOffset, width: '100%' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                         <Typography variant="body2" sx={{ width: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {methodName} + {modelName}
@@ -264,13 +210,13 @@ function ComparisonCharts({ selectedResults }) {
               <Typography variant="subtitle1">攻击成功率比较</Typography>
               <Box sx={{ mt: 2, height: 200, position: 'relative' }}>
                 {selectedResults.map((result, index) => {
-                  const methodName = mockAttackMethods.find(m => m.id === result.method)?.name || result.method;
-                  const modelName = mockTargetModels.find(m => m.id === result.model)?.name || result.model;
+                  const methodName = ATTACK_METHODS.find(m => m.id === result.method)?.name || result.method;
+                  const modelName = TARGET_MODELS.find(m => m.id === result.model)?.name || result.model;
                   const barHeight = 25;
                   const topOffset = index * (barHeight + 15) + 10;
                   
                   return (
-                    <Box key={result.id} sx={{ position: 'absolute', top: topOffset, width: '100%' }}>
+                    <Box key={`sr-${result.id || index}`} sx={{ position: 'absolute', top: topOffset, width: '100%' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                         <Typography variant="body2" sx={{ width: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {methodName} + {modelName}
@@ -308,15 +254,14 @@ function ComparisonCharts({ selectedResults }) {
               <Typography variant="subtitle1">图像质量比较 (PSNR)</Typography>
               <Box sx={{ mt: 2, height: 200, position: 'relative' }}>
                 {selectedResults.map((result, index) => {
-                  const methodName = mockAttackMethods.find(m => m.id === result.method)?.name || result.method;
-                  const modelName = mockTargetModels.find(m => m.id === result.model)?.name || result.model;
+                  const methodName = ATTACK_METHODS.find(m => m.id === result.method)?.name || result.method;
+                  const modelName = TARGET_MODELS.find(m => m.id === result.model)?.name || result.model;
                   const barHeight = 25;
                   const topOffset = index * (barHeight + 15) + 10;
-                  // PSNR 的范围通常是 0-50，但我们使用 0-30 作为最大范围
                   const normalizedValue = Math.min(100, (result.psnr / 30) * 100);
                   
                   return (
-                    <Box key={result.id} sx={{ position: 'absolute', top: topOffset, width: '100%' }}>
+                    <Box key={`psnr-${result.id || index}`} sx={{ position: 'absolute', top: topOffset, width: '100%' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                         <Typography variant="body2" sx={{ width: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {methodName} + {modelName}
@@ -354,15 +299,14 @@ function ComparisonCharts({ selectedResults }) {
               <Typography variant="subtitle1">执行时间比较 (秒)</Typography>
               <Box sx={{ mt: 2, height: 200, position: 'relative' }}>
                 {selectedResults.map((result, index) => {
-                  const methodName = mockAttackMethods.find(m => m.id === result.method)?.name || result.method;
-                  const modelName = mockTargetModels.find(m => m.id === result.model)?.name || result.model;
+                  const methodName = ATTACK_METHODS.find(m => m.id === result.method)?.name || result.method;
+                  const modelName = TARGET_MODELS.find(m => m.id === result.model)?.name || result.model;
                   const barHeight = 25;
                   const topOffset = index * (barHeight + 15) + 10;
-                  // 假设最大执行时间为600秒
                   const normalizedValue = Math.min(100, (result.executionTime / 600) * 100);
                   
                   return (
-                    <Box key={result.id} sx={{ position: 'absolute', top: topOffset, width: '100%' }}>
+                    <Box key={`time-${result.id || index}`} sx={{ position: 'absolute', top: topOffset, width: '100%' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
                         <Typography variant="body2" sx={{ width: 180, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {methodName} + {modelName}
@@ -382,7 +326,7 @@ function ComparisonCharts({ selectedResults }) {
                           />
                         </Box>
                         <Typography variant="body2" sx={{ ml: 1, minWidth: 60 }}>
-                          {result.executionTime}
+                          {Math.round(result.executionTime)}
                         </Typography>
                       </Box>
                     </Box>
@@ -400,19 +344,19 @@ function ComparisonCharts({ selectedResults }) {
       
       <Grid container spacing={3}>
         {selectedResults.map((result, index) => {
-          const methodName = mockAttackMethods.find(m => m.id === result.method)?.name || result.method;
-          const modelName = mockTargetModels.find(m => m.id === result.model)?.name || result.model;
+          const methodName = ATTACK_METHODS.find(m => m.id === result.method)?.name || result.method;
+          const modelName = TARGET_MODELS.find(m => m.id === result.model)?.name || result.model;
           
           return (
-            <Grid item xs={12} md={6} key={`class-${result.id}`}>
+            <Grid item xs={12} md={6} key={`class-${result.id || index}`}>
               <Card>
                 <CardContent>
                   <Typography variant="subtitle1" gutterBottom>
                     {methodName} + {modelName} - 类别成功率
                   </Typography>
                   <Box sx={{ mt: 2, maxHeight: 300, overflowY: 'auto' }}>
-                    {result.classSuccessRates.map((rate, classIndex) => (
-                      <Box key={`class-${result.id}-${classIndex}`} sx={{ mb: 1.5 }}>
+                    {result.classSuccessRates && result.classSuccessRates.map((rate, classIndex) => (
+                      <Box key={`class-${result.id || index}-${classIndex}`} sx={{ mb: 1.5 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                           <Typography variant="body2">
                             类别 {classIndex}
@@ -456,8 +400,8 @@ function ComparisonCharts({ selectedResults }) {
 function ResultDetails({ result, onClose }) {
   if (!result) return null;
   
-  const methodName = mockAttackMethods.find(m => m.id === result.method)?.name || result.method;
-  const modelName = mockTargetModels.find(m => m.id === result.model)?.name || result.model;
+  const methodName = ATTACK_METHODS.find(m => m.id === result.method)?.name || result.method;
+  const modelName = TARGET_MODELS.find(m => m.id === result.model)?.name || result.model;
   
   return (
     <Box>
@@ -484,22 +428,22 @@ function ResultDetails({ result, onClose }) {
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">数据集</Typography>
                   <Typography variant="body1">
-                    {mockDatasets.find(d => d.id === result.dataset)?.name || result.dataset}
+                    {DATASETS.find(d => d.id === result.dataset)?.name || result.dataset}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">样本数量</Typography>
-                  <Typography variant="body1">{result.sampleCount}</Typography>
+                  <Typography variant="body1">{result.sampleCount || 0}</Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">评估时间</Typography>
                   <Typography variant="body1">
-                    {new Date(result.timestamp).toLocaleString()}
+                    {result.timestamp ? new Date(result.timestamp).toLocaleString() : "-"}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" color="text.secondary">总执行时间</Typography>
-                  <Typography variant="body1">{result.executionTime}秒</Typography>
+                  <Typography variant="body1">{Math.round(result.executionTime)}秒</Typography>
                 </Grid>
               </Grid>
             </CardContent>
@@ -589,10 +533,9 @@ function ResultDetails({ result, onClose }) {
                 置信度分布
               </Typography>
               <Box sx={{ mt: 2, height: 200, position: 'relative' }}>
-                {result.confidenceDistribution.map((item, index) => {
+                {result.confidenceDistribution && result.confidenceDistribution.map((item, index) => {
                   const barHeight = 15;
                   const topOffset = index * (barHeight + 10) + 5;
-                  // 找出最大值用于归一化
                   const maxCount = Math.max(...result.confidenceDistribution.map(item => item.count));
                   const normalizedValue = Math.min(100, (item.count / maxCount) * 100);
                   
@@ -635,7 +578,7 @@ function ResultDetails({ result, onClose }) {
                 类别敏感性
               </Typography>
               <Box sx={{ mt: 2, maxHeight: 265, overflowY: 'auto' }}>
-                {result.classSuccessRates.map((rate, classIndex) => (
+                {result.classSuccessRates && result.classSuccessRates.map((rate, classIndex) => (
                   <Box key={`detail-class-${classIndex}`} sx={{ mb: 1.5 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                       <Typography variant="body2">
@@ -679,11 +622,11 @@ function ResultDetails({ result, onClose }) {
 
 // 批量攻击配置表单
 function BatchAttackForm({ onStart, isRunning }) {
-  const [dataset, setDataset] = useState("mnist");
-  const [targetModel, setTargetModel] = useState("cnn");
-  const [attackMethods, setAttackMethods] = useState(["basic"]);
-  const [labelRange, setLabelRange] = useState({ start: 0, end: 9 });
-  const [samplesPerLabel, setSamplesPerLabel] = useState(10);
+  const [dataset, setDataset] = useState("att_faces");
+  const [targetModel, setTargetModel] = useState("mynet_50");
+  const [attackMethods, setAttackMethods] = useState(["standard_attack"]);
+  const [labelRange, setLabelRange] = useState({ start: 0, end: 5 }); // 减少默认范围，避免评估时间过长
+  const [samplesPerLabel, setSamplesPerLabel] = useState(2); // 每类样本数减少，缩短评估时间
   const [advancedSettings, setAdvancedSettings] = useState({
     iterations: 1000,
     learningRate: 0.01,
@@ -730,7 +673,7 @@ function BatchAttackForm({ onStart, isRunning }) {
               onChange={(e) => setDataset(e.target.value)}
               disabled={isRunning}
             >
-              {mockDatasets.map((dataset) => (
+              {DATASETS.map((dataset) => (
                 <MenuItem key={dataset.id} value={dataset.id}>
                   {dataset.name} ({dataset.classes}类)
                 </MenuItem>
@@ -746,7 +689,7 @@ function BatchAttackForm({ onStart, isRunning }) {
               onChange={(e) => setTargetModel(e.target.value)}
               disabled={isRunning}
             >
-              {mockTargetModels.map((model) => (
+              {TARGET_MODELS.map((model) => (
                 <MenuItem key={model.id} value={model.id}>
                   {model.name}
                 </MenuItem>
@@ -759,7 +702,7 @@ function BatchAttackForm({ onStart, isRunning }) {
               攻击方法（可多选）
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {mockAttackMethods.map((method) => (
+              {ATTACK_METHODS.map((method) => (
                 <Chip
                   key={method.id}
                   label={method.name}
@@ -783,7 +726,7 @@ function BatchAttackForm({ onStart, isRunning }) {
               type="number"
               value={labelRange.start}
               onChange={(e) => setLabelRange({...labelRange, start: parseInt(e.target.value) || 0})}
-              InputProps={{ inputProps: { min: 0 } }}
+              InputProps={{ inputProps: { min: 0, max: 39 } }}
               disabled={isRunning}
               size="small"
               fullWidth
@@ -793,7 +736,7 @@ function BatchAttackForm({ onStart, isRunning }) {
               type="number"
               value={labelRange.end}
               onChange={(e) => setLabelRange({...labelRange, end: parseInt(e.target.value) || 0})}
-              InputProps={{ inputProps: { min: labelRange.start } }}
+              InputProps={{ inputProps: { min: labelRange.start, max: 39 } }}
               disabled={isRunning}
               size="small"
               fullWidth
@@ -806,7 +749,7 @@ function BatchAttackForm({ onStart, isRunning }) {
             type="number"
             value={samplesPerLabel}
             onChange={(e) => setSamplesPerLabel(parseInt(e.target.value) || 1)}
-            InputProps={{ inputProps: { min: 1 } }}
+            InputProps={{ inputProps: { min: 1, max: 10 } }}
             disabled={isRunning}
             sx={{ mb: 2 }}
           />
@@ -952,22 +895,22 @@ function EvaluationProgress({ task, onStop }) {
             <Grid item xs={6}>
               <Typography variant="subtitle2">当前数据集</Typography>
               <Typography variant="body2">
-                {mockDatasets.find(d => d.id === task.dataset)?.name || task.dataset}
+                {DATASETS.find(d => d.id === task.dataset)?.name || task.dataset}
               </Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="subtitle2">目标模型</Typography>
               <Typography variant="body2">
-                {mockTargetModels.find(m => m.id === task.targetModel)?.name || task.targetModel}
+                {TARGET_MODELS.find(m => m.id === task.targetModel)?.name || task.targetModel}
               </Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography variant="subtitle2">攻击方法</Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
-                {task.attackMethods.map(methodId => (
+                {task.attackMethods && task.attackMethods.map(methodId => (
                   <Chip 
                     key={methodId}
-                    label={mockAttackMethods.find(m => m.id === methodId)?.name || methodId}
+                    label={ATTACK_METHODS.find(m => m.id === methodId)?.name || methodId}
                     size="small"
                   />
                 ))}
@@ -978,7 +921,7 @@ function EvaluationProgress({ task, onStop }) {
           {task.currentLabel !== undefined && task.currentMethod && (
             <Alert severity="info" sx={{ mt: 2 }}>
               当前正在处理：
-              <strong> {mockAttackMethods.find(m => m.id === task.currentMethod)?.name || task.currentMethod} </strong>
+              <strong> {ATTACK_METHODS.find(m => m.id === task.currentMethod)?.name || task.currentMethod} </strong>
               攻击，目标标签：
               <strong> {task.currentLabel} </strong>
             </Alert>
@@ -1008,128 +951,183 @@ export default function AttackEvaluationPage() {
   const [currentTask, setCurrentTask] = useState(null);
   const [selectedResultIds, setSelectedResultIds] = useState([]);
   const [viewingResult, setViewingResult] = useState(null);
+  const [evaluationId, setEvaluationId] = useState(null);
+  const [progressCheckInterval, setProgressCheckInterval] = useState(null);
   
   // 加载评估结果
   useEffect(() => {
-    // 模拟从API加载
-    // 实际应用中应调用后端API
-    setEvaluationResults(generateMockResults());
+    // 获取所有已完成的评估结果
+    fetchEvaluationResults();
   }, []);
   
-  // 开始评估
-  const handleStartEvaluation = (config) => {
-    setIsEvaluating(true);
-    
-    // 创建评估任务
-    const newTask = {
-      id: `task-${Date.now()}`,
-      dataset: config.dataset,
-      targetModel: config.targetModel,
-      attackMethods: config.attackMethods,
-      labelRange: config.labelRange,
-      samplesPerLabel: config.samplesPerLabel,
-      advancedSettings: config.advancedSettings,
-      totalSamples: config.attackMethods.length * (config.labelRange.end - config.labelRange.start + 1) * config.samplesPerLabel,
-      completedSamples: 0,
-      elapsedTime: 0,
-      currentLabel: config.labelRange.start,
-      currentMethod: config.attackMethods[0],
-      startTime: Date.now()
+  // 当组件卸载时清除定时器
+  useEffect(() => {
+    return () => {
+      if (progressCheckInterval) {
+        clearInterval(progressCheckInterval);
+      }
     };
-    
-    setCurrentTask(newTask);
-    
-    // 模拟评估进度
-    // 实际应用中应调用后端API并接收进度更新
-    const progressInterval = setInterval(() => {
-      setCurrentTask(prev => {
-        // 计算新的已完成样本数
-        let newCompleted = prev.completedSamples + Math.floor(Math.random() * 3) + 1;
-        newCompleted = Math.min(newCompleted, prev.totalSamples);
-        
-        // 计算经过的时间
-        const elapsedTime = Math.floor((Date.now() - prev.startTime) / 1000);
-        
-        // 更新当前处理的标签和方法
-        let currentLabel = prev.currentLabel;
-        let currentMethod = prev.currentMethod;
-        
-        // 根据进度更新当前标签和方法
-        const methodIndex = prev.attackMethods.indexOf(prev.currentMethod);
-        const labelsPerMethod = (prev.labelRange.end - prev.labelRange.start + 1);
-        const samplesPerMethod = labelsPerMethod * prev.samplesPerLabel;
-        const completedMethods = Math.floor(newCompleted / samplesPerMethod);
-        const remainingSamples = newCompleted % samplesPerMethod;
-        const completedLabelsInMethod = Math.floor(remainingSamples / prev.samplesPerLabel);
-        
-        if (completedMethods < prev.attackMethods.length) {
-          currentMethod = prev.attackMethods[completedMethods];
-          currentLabel = prev.labelRange.start + completedLabelsInMethod;
-        }
-        
-        // 检查是否完成
-        if (newCompleted >= prev.totalSamples) {
-          clearInterval(progressInterval);
-          
-          // 模拟生成最终结果
-          setTimeout(() => {
-            const newResults = [];
-            // 为每种攻击方法生成一个结果
-            for (const method of prev.attackMethods) {
-              newResults.push({
-                id: `eval-${method}-${prev.targetModel}-${Date.now()}`,
-                method,
-                model: prev.targetModel,
-                dataset: prev.dataset,
-                accuracy: Math.random() * 0.6 + 0.2,
-                successRate: Math.random() * 0.7 + 0.15,
-                psnr: Math.random() * 15 + 10,
-                ssim: Math.random() * 0.5 + 0.3,
-                avgConfidence: Math.random() * 0.4 + 0.5,
-                executionTime: elapsedTime / prev.attackMethods.length,
-                timestamp: new Date().toISOString(),
-                classSuccessRates: Array.from(
-                  {length: mockDatasets.find(d => d.id === prev.dataset)?.classes || 10},
-                  () => Math.random() * 0.8 + 0.1
-                ),
-                confidenceDistribution: Array.from({length: 10}, (_, i) => ({
-                  confidenceRange: `${(0.1 * i).toFixed(1)}-${(0.1 * (i + 1)).toFixed(1)}`,
-                  count: Math.floor(Math.random() * 30)
-                })),
-                sampleCount: prev.totalSamples / prev.attackMethods.length,
-                completedSamples: prev.totalSamples / prev.attackMethods.length
+  }, [progressCheckInterval]);
+  
+  // 获取所有评估结果
+  const fetchEvaluationResults = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/evaluations`);
+      if (!response.ok) {
+        throw new Error("获取评估结果失败");
+      }
+      
+      const evaluations = await response.json();
+      
+      // 提取完成的评估结果
+      const results = [];
+      
+      evaluations.forEach(evaluation => {
+        if (evaluation.status === 'completed' && evaluation.results) {
+          try {
+            const parsedResults = typeof evaluation.results === 'string' 
+              ? JSON.parse(evaluation.results) 
+              : evaluation.results;
+            
+            parsedResults.forEach(result => {
+              results.push({
+                ...result,
+                id: `${evaluation.id}-${result.method}`,
+                evaluationId: evaluation.id,
+                timestamp: evaluation.end_time
               });
-            }
-            
-            // 添加到结果集
-            setEvaluationResults(prevResults => [...newResults, ...prevResults]);
-            setIsEvaluating(false);
-            setCurrentTask(null);
-            
-            // 切换到结果标签
-            setActiveTab(1);
-          }, 1000);
+            });
+          } catch (e) {
+            console.error("解析评估结果失败:", e);
+          }
         }
-        
-        return {
-          ...prev,
-          completedSamples: newCompleted,
-          elapsedTime,
-          currentLabel,
-          currentMethod
-        };
       });
-    }, 500);
+      
+      setEvaluationResults(results);
+      
+    } catch (error) {
+      console.error("获取评估结果时出错:", error);
+    }
+  };
+  
+  // 检查评估进度
+  const checkEvaluationProgress = async () => {
+    if (!evaluationId) return;
     
-    // 切换到进度标签
-    setActiveTab(2);
+    try {
+      const response = await fetch(`${API_URL}/api/evaluations/${evaluationId}`);
+      if (!response.ok) {
+        throw new Error("获取评估进度失败");
+      }
+      
+      const evaluation = await response.json();
+      
+      // 更新任务进度信息
+      const elapsedTime = evaluation.end_time 
+        ? Math.floor((new Date(evaluation.end_time) - new Date(evaluation.start_time)) / 1000)
+        : Math.floor((new Date() - new Date(evaluation.start_time)) / 1000);
+      
+      const params = evaluation.parameters ? 
+        (typeof evaluation.parameters === 'string' ? JSON.parse(evaluation.parameters) : evaluation.parameters) 
+        : {};
+      
+      setCurrentTask({
+        id: evaluation.id,
+        dataset: evaluation.dataset,
+        targetModel: evaluation.target_model,
+        attackMethods: typeof evaluation.attack_methods === 'string' 
+          ? JSON.parse(evaluation.attack_methods) 
+          : evaluation.attack_methods,
+        totalSamples: evaluation.total_samples,
+        completedSamples: evaluation.completed_samples,
+        elapsedTime,
+        currentLabel: params.currentLabel,
+        currentMethod: params.currentMethod
+      });
+      
+      // 如果评估已完成或停止
+      if (evaluation.status === 'completed' || evaluation.status === 'stopped' || evaluation.status === 'failed') {
+        clearInterval(progressCheckInterval);
+        setProgressCheckInterval(null);
+        
+        // 如果评估完成，加载结果并跳转到结果页面
+        if (evaluation.status === 'completed') {
+          fetchEvaluationResults();
+          setTimeout(() => {
+            setActiveTab(1);
+            setIsEvaluating(false);
+            setEvaluationId(null);
+          }, 1000);
+        } else {
+          setIsEvaluating(false);
+          setEvaluationId(null);
+        }
+      }
+      
+    } catch (error) {
+      console.error("检查评估进度时出错:", error);
+    }
+  };
+  
+  // 开始评估
+  const handleStartEvaluation = async (config) => {
+    try {
+      const response = await fetch(`${API_URL}/api/evaluations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(config)
+      });
+      
+      if (!response.ok) {
+        throw new Error("创建评估任务失败");
+      }
+      
+      const result = await response.json();
+      
+      // 保存评估ID并设置状态为评估中
+      setEvaluationId(result.id);
+      setIsEvaluating(true);
+      
+      // 初始化进度检查
+      const interval = setInterval(checkEvaluationProgress, 1000);
+      setProgressCheckInterval(interval);
+      
+      // 跳转到进度标签页
+      setActiveTab(2);
+      
+    } catch (error) {
+      console.error("开始评估时出错:", error);
+      alert("开始评估失败: " + error.message);
+    }
   };
   
   // 停止评估
-  const handleStopEvaluation = () => {
-    // 实际应用中应调用后端API停止任务
-    setIsEvaluating(false);
-    setCurrentTask(null);
+  const handleStopEvaluation = async () => {
+    if (!evaluationId) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/evaluations/${evaluationId}/stop`, {
+        method: 'POST'
+      });
+      
+      if (!response.ok) {
+        throw new Error("停止评估任务失败");
+      }
+      
+      // 停止进度检查
+      clearInterval(progressCheckInterval);
+      setProgressCheckInterval(null);
+      
+      // 更新状态
+      setIsEvaluating(false);
+      setEvaluationId(null);
+      
+    } catch (error) {
+      console.error("停止评估时出错:", error);
+      alert("停止评估失败: " + error.message);
+    }
   };
   
   // 查看详细结果
@@ -1228,7 +1226,7 @@ export default function AttackEvaluationPage() {
                 <Button 
                   variant="outlined" 
                   startIcon={<ReplayIcon />}
-                  onClick={() => setEvaluationResults(generateMockResults())}
+                  onClick={fetchEvaluationResults}
                 >
                   刷新
                 </Button>
@@ -1241,8 +1239,8 @@ export default function AttackEvaluationPage() {
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {evaluationResults.map((result) => {
-                  const methodName = mockAttackMethods.find(m => m.id === result.method)?.name || result.method;
-                  const modelName = mockTargetModels.find(m => m.id === result.model)?.name || result.model;
+                  const methodName = ATTACK_METHODS.find(m => m.id === result.method)?.name || result.method;
+                  const modelName = TARGET_MODELS.find(m => m.id === result.model)?.name || result.model;
                   const isSelected = selectedResultIds.includes(result.id);
                   
                   return (
@@ -1284,4 +1282,4 @@ export default function AttackEvaluationPage() {
       </Box>
     </div>
   );
-}// 评估任务进度组件
+}

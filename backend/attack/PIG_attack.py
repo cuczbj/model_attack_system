@@ -205,9 +205,20 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
             res5.append(cnt5 * 1.0 / bs)
             torch.cuda.empty_cache()
 
-    acc, acc_5 = statistics.mean(res), statistics.mean(res5)
-    acc_var = statistics.variance(res)
-    acc_var5 = statistics.variance(res5)
+    # 添加检查以防止方差计算错误
+    if len(res) >= 2:
+        acc = statistics.mean(res)
+        acc_var = statistics.variance(res)
+    else:
+        acc = res[0] if res else 0
+        acc_var = 0
+
+    if len(res5) >= 2:
+        acc_5 = statistics.mean(res5)
+        acc_var5 = statistics.variance(res5)
+    else:
+        acc_5 = res5[0] if res5 else 0
+        acc_var5 = 0
     print("Acc:{:.2f}\tAcc_5:{:.2f}\tAcc_var:{:.4f}\tAcc_var5:{:.4f}".format(acc, acc_5, acc_var, acc_var5))
 
     # 将最终生成的图像转换为base64
@@ -215,7 +226,7 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
     return base64_img, acc, acc_5, acc_var, acc_var5
 
 #发起PIG逆向攻击
-def PIG_attack(target_labels, task_id=None, model='VGG16', inv_loss_type='margin', lr=0.1, iter_times=600,
+def PIG_attack(target_labels, task_id=None, batch_num=None,num_seeds=None,model='VGG16', inv_loss_type='margin', lr=0.1, iter_times=600,
                           gen_num_features=64, gen_dim_z=128, gen_bottom_width=4,
                           gen_distribution='normal', save_dir='./result/PLG_MI_Inversion', path_G='./upload/PIG/gen_VGG16_celeba.pth.tar'):
     """执行PIG逆向攻击
@@ -260,11 +271,14 @@ def PIG_attack(target_labels, task_id=None, model='VGG16', inv_loss_type='margin
     for i in range(1):
         iden = torch.tensor([target_labels])  # 这里只攻击指定类别
         # 批量攻击次数
-        batch_num = 3
+        batch_num = 1
         for idx in range(batch_num):
             print(f"--------------------- Attack batch [{idx}]------------------------------")
             base64_img, acc, acc5, var, var5 = inversion(G, T, E, iden, itr=i, task_id=task_id, lr=lr, iter_times=iter_times,
-                                             num_seeds=5, save_dir=save_dir, gen_dim_z=gen_dim_z, gen_distribution=gen_distribution, inv_loss_type=inv_loss_type)
+                                            num_seeds=1, save_dir=save_dir, gen_dim_z=gen_dim_z, gen_distribution=gen_distribution, inv_loss_type=inv_loss_type)
+            
+          
+          
             # iden += 60
             aver_acc += acc / batch_num
             aver_acc5 += acc5 / batch_num
