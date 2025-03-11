@@ -7,44 +7,46 @@ from torch.utils.data import DataLoader, random_split
 import torch.optim as optim
 from tqdm import tqdm
 from models.MLP import MLP
+from models.classifiers import VGG16, IR152, FaceNet, FaceNet64
 
 
 
 
-# 预测接口
-def predict_target_model(image):
-    model_dir = "./models/mynet_50.pkl"
-    h, w = 112, 92
-    class_num = 40
-
-    # 加载模型
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = MLP(h * w, class_num).to(device)
-    model.load_state_dict(torch.load(model_dir))
+def load_model(model_name, device, h=112, w=92, class_num=40):
+    model_dir = f"./upload/target/{model_name}.pkl"
+    
+    model_mapping = {
+        "MLP": MLP(h * w, class_num),
+        "VGG16": VGG16(class_num),
+        "IR152": IR152(class_num),
+        "FaceNet": FaceNet(class_num),
+        "FaceNet64": FaceNet64(class_num)
+    }
+    
+    if model_name not in model_mapping:
+        raise ValueError(f"Unsupported model: {model_name}")
+    
+    model = model_mapping[model_name].to(device)
+    model.load_state_dict(torch.load(model_dir, map_location=device))
     model.eval()
+    
+    return model
 
+def predict_target_model(image, model_name="MLP"):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = load_model(model_name, device)
+    
     # 预处理图像
-    transform = Compose([Resize((h, w)), ToTensor()])
-    image_tensor = transform(image).view(1, -1).to(device)
-
-    # 模型预测
+    transform = Compose([Resize((112, 92)), ToTensor()])
+    image_tensor = transform(image).unsqueeze(0).to(device)
+    
+    # 进行预测
     with torch.no_grad():
         output = model(image_tensor)
         confidences = torch.softmax(output, dim=-1).squeeze(0)
         prediction = torch.argmax(confidences).item()
-
-    return prediction, confidences
-
-    # with torch.no_grad():
-    #     output = model(img_flatten)  # 模型输出
-    #     probabilities = torch.nn.functional.softmax(output, dim=1)  # 计算概率
-    #     confidence, prediction = torch.max(probabilities, dim=1)  # 获取置信度和预测类别
-    # return jsonify({
-    #     "prediction": prediction.item(),
-    #     "confidence": confidence.item(),
-    #     "probabilities": probabilities.squeeze().tolist()  # 返回每一类别的概率
     
-    # })
+    return prediction, confidences
 
 # 训练目标模型,无调用，备用
 def train_target_model():

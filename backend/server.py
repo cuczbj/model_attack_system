@@ -87,7 +87,7 @@ app = Flask(__name__, static_url_path="/static", static_folder="./")
 CORS(app)  # 启用CORS，允许所有源访问
 
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), './models')
-app.config['ALLOWED_EXTENSIONS'] = {'pth', 'pkl'}
+app.config['ALLOWED_EXTENSIONS'] = {'pth', 'pkl','tar'}
 
 # 在启动应用时初始化数据库
 init_db()
