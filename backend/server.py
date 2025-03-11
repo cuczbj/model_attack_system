@@ -3,7 +3,7 @@ import logging
 import os
 from flask import Flask, request, jsonify, send_file, Response, stream_with_context
 from flask_cors import CORS
-from target_model import train_target_model, predict_target_model
+from backend.predict import train_target_model, predict_target_model
 from reconstruct import reconstruct
 from PIL import Image
 import psutil
@@ -908,8 +908,16 @@ def run_evaluation(evaluation_id, config):
                             image = image_data
                         
 
+                        #添加根据数据集来确定h和w和class_num,即模型的输入输出维度，不过实际上应该还要由模型架构决定，这里模型后三者写死了
+                        if dataset =="att_faces":
+                            h =112, w =92, class_num =40
+                        elif dataset == "celeba":
+                            h = 64, w =64, class_num =1000
+                        """还有ffhq和facescrub两种数据集，这里后面有需要再补"""
+
+
                         # 执行预测
-                        prediction, confidences = predict_target_model(image)
+                        prediction, confidences = predict_target_model(image,target_model, h, w, class_num)
                         if hasattr(prediction, 'item'):
                             prediction = prediction.item()
 
