@@ -625,7 +625,7 @@ def create_evaluation():
         evaluation_id,
         f"评估任务-{evaluation_id}",
         data.get('dataset', 'att_faces'),
-        data.get('targetModel', 'mynet_50'),
+        data.get('targetModel', 'MLP'),
         json.dumps(attack_methods),
         'running',
         0,
@@ -788,7 +788,7 @@ def run_evaluation(evaluation_id, config):
     try:
         # 解析配置
         dataset = config.get('dataset', 'att_faces')
-        target_model = config.get('targetModel', 'mynet_50')
+        target_model = config.get('targetModel', 'MLP')
         attack_methods = config.get('attackMethods', [])
         label_start = config.get('labelRange', {}).get('start', 0)
         label_end = config.get('labelRange', {}).get('end', 9)
