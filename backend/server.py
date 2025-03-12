@@ -3,7 +3,7 @@ import logging
 import os
 from flask import Flask, request, jsonify, send_file, Response, stream_with_context
 from flask_cors import CORS
-from backend.predict import train_target_model, predict_target_model
+from predict import train_target_model, predict_target_model
 from reconstruct import reconstruct
 from PIL import Image
 import psutil
@@ -300,7 +300,7 @@ def get_task(task_id):
     
     return jsonify(dict(task))
 
-# 目标模型预测接口
+# 目标模型预测接口，看看要不要加个参数（数据集为哪个），或者时攻击图像展示只包含固定数据集就行
 @app.route("/predict", methods=["POST"])
 def predict():
     # 接收图像文件
@@ -910,9 +910,9 @@ def run_evaluation(evaluation_id, config):
 
                         #添加根据数据集来确定h和w和class_num,即模型的输入输出维度，不过实际上应该还要由模型架构决定，这里模型后三者写死了
                         if dataset =="att_faces":
-                            h =112, w =92, class_num =40
+                            h, w, class_num=112, 92, 40
                         elif dataset == "celeba":
-                            h = 64, w =64, class_num =1000
+                            h, w, class_num=64, 64, 1000
                         """还有ffhq和facescrub两种数据集，这里后面有需要再补"""
 
 
