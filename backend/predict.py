@@ -50,29 +50,30 @@ def predict_target_model(image, model_name, h, w, class_num):
     model = load_model(model_name, h, w, class_num, device)
     
     
-    # 预处理图像
-    if model_name == "MLP":
-        transform = Compose([Resize((h, w)), ToTensor()])
+    transform = Compose([Resize((h, w)), ToTensor()])
+
+    if model_name in ["VGG16", "FaceNet64", "IR152"]:
+        image_tensor = transform(image).unsqueeze(0).to(device)  # 增加 batch 维度
+
+        with torch.no_grad():
+            feature, output = model(image_tensor)  # 兼容返回 feature 和 logits
+            confidences = torch.softmax(output, dim=-1).squeeze(0)
+            prediction = torch.argmax(confidences).item()
+
+        return prediction, confidences
+
+    elif model_name == "MLP":
         image_tensor = transform(image).view(1, -1).to(device)
+
+        with torch.no_grad():
+            output = model(image_tensor)
+            confidences = torch.softmax(output, dim=-1).squeeze(0)
+            prediction = torch.argmax(confidences).item()
+
+        return prediction, confidences
+
     else:
-        transform = Compose([
-            Resize((h, w)),
-            ToTensor(),
-            Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # VGG16 需要标准化
-        ])
-        image_tensor = transform(image).unsqueeze(0).to(device)
-
-    # 进行预测
-    with torch.no_grad():
-        output = model(image_tensor)
-
-        if isinstance(output, list):  # VGG16 返回 [feature, res]
-            output = output[1]  # 取分类结果
-
-        confidences = torch.nn.functional.softmax(output, dim=-1).squeeze(0)
-        prediction = torch.argmax(confidences).item()
-
-    return prediction, confidences
+        raise ValueError(f"Unsupported model: {model_name}")
 
 
 
@@ -130,7 +131,7 @@ if __name__ == "__main__":
     image_path = './test_VGG16_celeba.png'  # 替换为实际图像路径
     h, w = 64, 64  # 输入图像的大小
     class_num = 1000 #  输出类别数量
-    model_name = "VGG16"  # 模型名称
+    model_name = "FaceNet64"  # 模型名称
 
 #     # 读取并预处理图像
 #    image = Image.open(image_path).convert('L')  # 打开图像并转换为灰度图（MLP和其他不一样）
