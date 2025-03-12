@@ -28,7 +28,7 @@ def standard_attack(target_label, task_id=None):
     Returns:
         base64编码的图像数据或图像文件路径
     """
-    model_dir = "./models/mynet_50.pkl"
+    model_dir = "./upload/target_model/MLP.pkl"
     attack_dir = "./result/attack/"
     h, w = 112, 92
     alpha = 5000
