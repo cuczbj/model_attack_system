@@ -720,3 +720,26 @@ Predicted Class: 5
 ```
 
 温馨提示，使用灰色数据集时要PIL载入图像要转换未L 灰度图，彩色图像数据集要转换为RGB格式
+
+这样后端攻击结果展示的模块的应该就不行啊，那个需要其他参数的载入，如评估的模块的：
+
+```
+ #添加根据数据集来确定h和w和class_num,即模型的输入输出维度，不过实际上应该还要由模型架构决定，这里模型后三者写死了
+                        if dataset =="att_faces":
+                            h, w, class_num=112, 92, 40
+                        elif dataset == "celeba":
+                            h, w, class_num=64, 64, 1000
+                        """还有ffhq和facescrub两种数据集，这里后面有需要再补"""
+
+
+                        # 执行预测
+                        prediction, confidences = predict_target_model(image,target_model, h, w, class_num)
+```
+
+或者时把输入输出维度改为：
+
+1.模型文件里面，model.save()应该可以，但是我这里没有现成的VGG16，IR152,FaceNet64的目标模型pth或者tar文件
+
+2.改为使用“数据集名称”参数，把if语句放到predict里面
+
+3.在server里的结果模块也加上上面的部分，或者单独一个函数获取
