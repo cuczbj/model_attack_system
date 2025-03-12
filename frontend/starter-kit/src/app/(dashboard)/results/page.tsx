@@ -30,6 +30,20 @@ const ATTACK_METHODS = [
   { id: "advanced", name: "高级逆向攻击" },
 ];
 
+
+
+/*3.12*/ 
+//预测模型选项
+const TARGET_MODEL =[
+  {id:"MLP",name:"多层感知机-ATT40"},
+  {id:"VGG16",name:"VGG16-celeba1000"},
+  {id:"IR152",name:"IR152-celeba1000"},
+  {id:"FaceNet64",name:"FaceNet64-celeba1000"},
+];
+
+
+
+
 // 状态映射
 const STATUS_MAP = {
   queued: { label: "排队中", color: "default" },
@@ -64,6 +78,7 @@ function TabPanel(props: TabPanelProps) {
 const AdvancedAttackResultsDisplay = () => {
   const [targetLabel, setTargetLabel] = useState<number>(0);
   const [attackMethod, setAttackMethod] = useState<string>("standard_attack");
+  const [targetModel, setTargetModel] = useState<string>("MLP"); // 新增状态来存储目标模型
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attackResult, setAttackResult] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -80,6 +95,11 @@ const AdvancedAttackResultsDisplay = () => {
     learningRate: 0.1,
     useRegularization: true,
   });
+
+  // 新增选择目标模型的组件
+  const handleModelChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setTargetModel(event.target.value as string);
+  };
 
   // 加载历史攻击记录
   useEffect(() => {
@@ -166,7 +186,7 @@ const handleImageError = (e, taskId, targetLabel) => {
         target_label: targetLabel,
         attack_method: attackMethod,
         name: `${ATTACK_METHODS.find(m => m.id === attackMethod)?.name || "模型反演"} - 标签 ${targetLabel}`,
-        model: "目标分类器",
+        target_model: targetModel,  // 使用当前的选择的模型名称
         description: `针对标签 ${targetLabel} 的${ATTACK_METHODS.find(m => m.id === attackMethod)?.name || "模型反演"}攻击`,
         parameters: {
           iterations: advancedSettings.iterations,
@@ -219,10 +239,10 @@ const handleImageError = (e, taskId, targetLabel) => {
         setAttackResult(imageUrl);
       }
 
-      // 获取模型预测结果
+      
       // 获取模型预测结果
       try {
-        const predictionData = await fetchPrediction();
+        const predictionData = await fetchPrediction(targetModel);
       } catch (predError) {
         console.error("预测过程中出错:", predError);
       }
@@ -235,9 +255,7 @@ const handleImageError = (e, taskId, targetLabel) => {
     }
   };
 
-  // 获取预测结果
-  // 获取预测结果
-// 获取预测结果
+ 
 // 获取预测结果
 const fetchPrediction = async () => {
   try {
@@ -270,6 +288,10 @@ const fetchPrediction = async () => {
     
     blob = await imageResponse.blob();
     formData.append("image_file", blob, `image_for_prediction.png`);
+    
+    // **3.12-eaglesfikr-修改第一部分：添加目标模型名称**
+    
+    formData.append("model_name", targetModel); // 传递目标模型名称
     
     // 发送预测请求
     console.log("发送预测请求...");
@@ -355,7 +377,8 @@ const fetchPrediction = async () => {
   }
 };
 
-  // 查看历史任务详情
+
+  
   // 查看历史任务详情
   const viewTaskResult = async (taskId) => {
     try {
@@ -384,6 +407,8 @@ const fetchPrediction = async () => {
           setAttackMethod(task.attack_type);
         }
       }
+
+    
       
       // 设置图像结果，使用任务ID API
       const timestamp = Date.now();
@@ -466,6 +491,26 @@ const fetchPrediction = async () => {
                 {ATTACK_METHODS.map((method) => (
                   <MenuItem key={method.id} value={method.id}>
                     {method.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          {/* {预测模型选择} */}
+          <Grid item xs={12} md={6}>
+            <Typography gutterBottom>预测模型：</Typography>
+            <FormControl fullWidth>
+              <InputLabel id="target-model-label">选择预测模型</InputLabel>
+              <Select
+                labelId="target-model-label"
+                value={targetModel}  // 绑定状态
+                label="选择预测模型"
+                onChange={(e) => setTargetModel(e.target.value)}  // 监听变化
+              >
+                {TARGET_MODEL.map((model) => (
+                  <MenuItem key={model.id} value={model.id}>
+                    {model.name}
                   </MenuItem>
                 ))}
               </Select>

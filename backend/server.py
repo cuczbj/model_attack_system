@@ -306,15 +306,39 @@ def predict():
     # 接收图像文件
     if "image_file" not in request.files:
         return jsonify({"error": "No image file provided"}), 400
+    
+    # 获取目标模型名称参数
+    model_name = request.form.get("model_name", type=str, default="MLP")  # 默认是 MLP
 
-    image_file = request.files["image_file"]
-    try:
-        # 读取并预测
-        image = Image.open(image_file).convert("L")  # 转为灰度图
-        prediction, confidences = predict_target_model(image)
-        return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    #根据目标模型名称确定输入输出维度
+    if model_name=="MLP":
+        try:
+            # 读取图像文件并转换为灰度图
+            image_file = request.files["image_file"]
+            image = Image.open(image_file).convert("L")
+            
+            #单独的输入输出维度
+            h, w, class_num = 112, 92, 40
+            # 调用模型预测
+            prediction, confidences = predict_target_model(image, model_name, h, w, class_num)
+            
+            return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
+        except Exception as e:
+            return jsonify({"error,MLP 's problem:": str(e)}), 500
+    elif model_name in ["VGG16", "FaceNet64", "IR152"]:
+        try:
+            # 读取图像文件并转换为灰度图
+            image_file = request.files["image_file"]
+            image = Image.open(image_file).convert("RGB")
+            
+            #单独的输入输出维度
+            h, w, class_num = 64, 64, 1000
+            # 调用模型预测
+            prediction, confidences = predict_target_model(image, model_name, h, w, class_num)
+            
+            return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
+        except Exception as e:
+            return jsonify({"error,MLP 's problem:": str(e)}), 500
 
 # 更新任务状态    
 @app.route("/api/tasks/<task_id>/status", methods=["PUT"])

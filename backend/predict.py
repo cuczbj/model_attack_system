@@ -131,7 +131,7 @@ if __name__ == "__main__":
     image_path = './test_VGG16_celeba.png'  # 替换为实际图像路径
     h, w = 64, 64  # 输入图像的大小
     class_num = 1000 #  输出类别数量
-    model_name = "FaceNet64"  # 模型名称
+    model_name = "MLP"  # 模型名称
 
 #     # 读取并预处理图像
 #    image = Image.open(image_path).convert('L')  # 打开图像并转换为灰度图（MLP和其他不一样）
