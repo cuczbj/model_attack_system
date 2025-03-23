@@ -228,7 +228,7 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
 #发起PIG逆向攻击
 def PIG_attack(target_labels, task_id=None, batch_num=None,num_seeds=None,model='VGG16', inv_loss_type='margin', lr=0.1, iter_times=600,
                           gen_num_features=64, gen_dim_z=128, gen_bottom_width=4,
-                          gen_distribution='normal', save_dir='./result/PLG_MI_Inversion', path_G='./upload/PIG/gen_VGG16_celeba.pth.tar'):
+                          gen_distribution='normal', save_dir='./result/PLG_MI_Inversion', path_G='./checkpoint/PIG/gen_VGG16_celeba.pth.tar'):
     """执行PIG逆向攻击
     
     Args:
@@ -249,13 +249,13 @@ def PIG_attack(target_labels, task_id=None, batch_num=None,num_seeds=None,model=
     # Load Target Model
     if model.startswith("VGG16"):
         T = VGG16(1000)
-        path_T = './upload/target_model/VGG16_88.26.tar'
+        path_T = './checkpoint/target_model/VGG16_88.26.tar'
     elif model.startswith('IR152'):
         T = IR152(1000)
-        path_T = './upload/target_model/IR152_91.16.tar'
+        path_T = './checkpoint/target_model/IR152_91.16.tar'
     elif model == "FaceNet64":
         T = FaceNet64(1000)
-        path_T = './upload/target_model/FaceNet64_88.50.tar'
+        path_T = './checkpoint/target_model/FaceNet64_88.50.tar'
     T = torch.nn.DataParallel(T).cuda()
     ckp_T = torch.load(path_T)
     T.load_state_dict(ckp_T['state_dict'], strict=False)
@@ -263,7 +263,7 @@ def PIG_attack(target_labels, task_id=None, batch_num=None,num_seeds=None,model=
     # Load Evaluation Model
     E = FaceNet(1000)
     E = torch.nn.DataParallel(E).cuda()
-    path_E = './upload/evaluate_model/FaceNet_95.88.tar'
+    path_E = './checkpoint/evaluate_model/FaceNet_95.88.tar'
     ckp_E = torch.load(path_E)
     E.load_state_dict(ckp_E['state_dict'], strict=False)
 

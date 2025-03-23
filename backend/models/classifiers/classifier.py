@@ -101,7 +101,7 @@ class VGG16_vib(nn.Module):
 
         return out
 
-
+# 我好像调用的时框架里的
 class CrossEntropyLoss(_Loss):
     def forward(self, out, gt, mode="reg"):
         bs = out.size(0)
@@ -112,7 +112,7 @@ class CrossEntropyLoss(_Loss):
             loss = torch.sum(loss) / bs
         return loss
 
-
+# 我好像调用的时框架里的
 class BinaryLoss(_Loss):
     def forward(self, out, gt):
         bs = out.size(0)

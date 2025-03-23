@@ -19,6 +19,8 @@ import numpy as np
 from threading import Thread
 import sys
 import torch
+from upload_importlib import get_available_models, get_available_params, load_model, run_inference
+
 
 # 将attack目录添加到系统路径
 attack_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'attack')
@@ -300,9 +302,47 @@ def get_task(task_id):
     
     return jsonify(dict(task))
 
+
+# 预设模型的输入输出维度
+MODEL_CONFIGS = {
+    "MLP": {"mode": "L", "h": 112, "w": 92, "class_num": 40},
+    "VGG16": {"mode": "RGB", "h": 64, "w": 64, "class_num": 1000},
+    "FaceNet64": {"mode": "RGB", "h": 64, "w": 64, "class_num": 1000},
+    "IR152": {"mode": "RGB", "h": 64, "w": 64, "class_num": 1000},
+}
+
 # 目标模型预测接口，看看要不要加个参数（数据集为哪个），或者时攻击图像展示只包含固定数据集就行
 @app.route("/predict", methods=["POST"])
 def predict():
+    # if "image_file" not in request.files:
+    #     return jsonify({"error": "No image file provided"}), 400
+    # # 获取模型名称和模型参数文件
+    # model_name = request.form.get("model_name", type=str, default="target_mlp")
+    # param_file = request.form.get("param_file", type=str)
+    # # 加载模型
+    # try:
+    #     model = load_model(model_name, param_file)
+    # except Exception as e:
+    #     return jsonify({"error": str(e)}), 500
+    # # 获取上传的图像文件
+    # image_file = request.files["image_file"]
+    # try:
+    #     # 打印图像文件的路径
+    #     print(f"Received image file: {image_file.filename}")
+    #     # 尝试加载图像
+    #     image = Image.open(image_file).convert("RGB")
+    #     # 根据模型名称确定输入输出维度
+    #     if model_name == "target_mlp":
+    #         h, w, class_num = 112, 92, 40
+    #     else:
+    #         h, w, class_num = 64, 64, 1000  # 默认处理 VGG, FaceNet 等
+    #     # 进行预测
+    #     prediction, confidences = predict_target_model(image, model, h, w, class_num)
+    #     return jsonify({"prediction": prediction, "confidences": confidences})
+    # except Exception as e:
+    #     return jsonify({"error": f"Error processing image: {str(e)}"}), 500
+
+
     # 接收图像文件
     if "image_file" not in request.files:
         return jsonify({"error": "No image file provided"}), 400
@@ -311,21 +351,29 @@ def predict():
     model_name = request.form.get("model_name", type=str, default="MLP")  # 默认是 MLP
 
     #根据目标模型名称确定输入输出维度
-    if model_name=="MLP":
+    if model_name=="target_mlp":
         try:
             # 读取图像文件并转换为灰度图
             image_file = request.files["image_file"]
             image = Image.open(image_file).convert("L")
             
-            #单独的输入输出维度
+            # # 获取模型名称和模型参数文件
+            model_name = request.form.get("model_name", type=str, default="target_mlp")
+            param_file = request.form.get("param_file", type=str)
+
+            # 加载模型
+            # 先硬编码输入输出维度
             h, w, class_num = 112, 92, 40
+            model = load_model(model_name, param_file, h, w, class_num)
+            
             # 调用模型预测
-            prediction, confidences = predict_target_model(image, model_name, h, w, class_num)
+
+            prediction, confidences = predict_target_model(image, model, h, w, class_num)
             
             return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
         except Exception as e:
             return jsonify({"error,MLP 's problem:": str(e)}), 500
-    elif model_name in ["VGG16", "FaceNet64", "IR152"]:
+    elif model_name in ["target_vgg16", "target_facenet64", "target_ir152"]:
         try:
             # 读取图像文件并转换为灰度图
             image_file = request.files["image_file"]
@@ -334,6 +382,8 @@ def predict():
             #单独的输入输出维度
             h, w, class_num = 64, 64, 1000
             # 调用模型预测
+            logging.debug(f"predict_target_model type: {type(predict_target_model)}")
+            print(f"predict_target_model type: {type(predict_target_model)}")
             prediction, confidences = predict_target_model(image, model_name, h, w, class_num)
             
             return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
@@ -571,7 +621,7 @@ def attack():
         return jsonify({"error": "内部服务器错误", "message": error_message, "task_id": task_id}), 500
 
 # 文件上传接口
-@app.route('/upload', methods=['POST'])
+@app.route('/checkpoint', methods=['POST'])
 def upload_file():
     # 检查请求中是否包含文件
     if 'file' not in request.files:
@@ -1138,6 +1188,18 @@ def run_evaluation(evaluation_id, config):
             conn.close()
         except Exception as db_error:
             logging.error(f"更新评估失败状态时出错: {db_error}")
+
+# 返回所有可用的模型函数
+@app.route('/models', methods=['GET'])
+def get_models():
+    """ 获取所有可用的模型 """
+    return jsonify(get_available_models())
+
+# 获取所有可用模型的参数文件
+@app.route('/checkpoints', methods=['GET'])
+def get_checkpoints():
+    """ 获取所有已上传的模型参数 """
+    return jsonify(get_available_params())
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

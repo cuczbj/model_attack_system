@@ -2,7 +2,7 @@
 import os
 from attack import get_attack_method
 import torch
-from models.MLP import MLP
+# from models.classifiers.target_mlp import MLP
 from PIL import Image
 # def reload_model(model_path, h, w, class_num=40):
 #     """重载模型"""

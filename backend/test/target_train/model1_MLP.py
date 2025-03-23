@@ -7,18 +7,9 @@ from torch.utils.data import DataLoader, random_split
 import torch.optim as optim
 from tqdm import tqdm
 from PIL import Image
-# from models.MLP import MLP  # 直接绝对导入  # 仅在训练时需要
 
-# class MLP(nn.Module):
-#     def __init__(self, input_features, output_features):
-#         super(MLP, self).__init__()
-#         self.fc = nn.Linear(input_features, 3000)
-#         self.regression = nn.Linear(3000, output_features)
 
-#     def forward(self, x):
-#         x = self.fc(x)
-#         x = self.regression(x)
-#         return x
+
 
 # model_dir = "../../models/model_MLP.pt"  # 改成 .pt，且存的是整个模型
 # 预测接口

@@ -7,7 +7,7 @@ import sys
 # 将项目根目录添加到 sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from models.MLP import MLP
+# from models.classifiers.target_mlp import MLP
 from io import BytesIO
 import base64
 
@@ -28,7 +28,7 @@ def standard_attack(target_label, task_id=None):
     Returns:
         base64编码的图像数据或图像文件路径
     """
-    model_dir = "./upload/target_model/MLP.pkl"
+    model_dir = "./checkpoint/target_model/MLP.pkl"
     attack_dir = "./result/attack/"
     h, w = 112, 92
     alpha = 5000

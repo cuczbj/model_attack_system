@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
-
+MODEL_CLASS_NAME = "MLP"
 # 模型定义
 class MLP(nn.Module):
     def __init__(self, input_features, output_features):
