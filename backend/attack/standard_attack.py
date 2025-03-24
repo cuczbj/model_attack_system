@@ -91,3 +91,4 @@ def standard_attack(target_label, task_id=None):
         img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
         print(f"攻击完成，返回图像字节流数据。")
         return img_base64
+    

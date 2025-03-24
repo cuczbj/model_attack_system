@@ -19,8 +19,8 @@ import numpy as np
 from threading import Thread
 import sys
 import torch
-from upload_importlib import get_available_models, get_available_params, load_model, run_inference
-
+from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor
+from typing import Any, Tuple
 
 # 将attack目录添加到系统路径
 attack_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'attack')
@@ -351,44 +351,55 @@ def predict():
     model_name = request.form.get("model_name", type=str, default="MLP")  # 默认是 MLP
 
     #根据目标模型名称确定输入输出维度
-    if model_name=="target_mlp":
-        try:
-            # 读取图像文件并转换为灰度图
-            image_file = request.files["image_file"]
-            image = Image.open(image_file).convert("L")
+    # if model_name=="target_mlp":
+    try:
+        # 读取图像文件并转换为灰度图
+        image_file = request.files["image_file"]
+        
+        # # 获取模型名称和模型参数文件
+        model_name = request.form.get("model_name", type=str, default="target_mlp")
+        param_file = request.form.get("param_file", type=str)
+        class_num = request.form.get("class_num", type=int, default=40)
+        # 加载模型
+        # 先硬编码输入输出维度
+        # h, w, class_num = 112, 92, 40
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
+        model = load_model(model_name, param_file ,device , class_num)
+        
+        # 2. 载入并处理图像
+        
+        image_tensor = image_to_tensor(image_file).to(device)
+    
+        
+        # 3. 调用模型预测
+        with torch.no_grad():
+            output = model.predict(image_tensor)
+            confidences = torch.softmax(output, dim=-1).squeeze(0)
+            prediction = torch.argmax(confidences).item()
+        
+        # 4. 输出预测结果
+        print(f"预测类别: {prediction}")                        
+        #     prediction, confidences = predict_target_model(image_tensor, model, class_num)
             
-            # # 获取模型名称和模型参数文件
-            model_name = request.form.get("model_name", type=str, default="target_mlp")
-            param_file = request.form.get("param_file", type=str)
-
-            # 加载模型
-            # 先硬编码输入输出维度
-            h, w, class_num = 112, 92, 40
-            model = load_model(model_name, param_file, h, w, class_num)
+        return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
+    except Exception as e:
+        return jsonify({"error,MLP 's problem:": str(e)}), 500
+    # elif model_name in ["target_vgg16", "target_facenet64", "target_ir152"]:
+    #     try:
+    #         # 读取图像文件并转换为灰度图
+    #         image_file = request.files["image_file"]
+    #         image = Image.open(image_file).convert("RGB")
             
-            # 调用模型预测
-
-            prediction, confidences = predict_target_model(image, model, h, w, class_num)
+    #         #单独的输入输出维度
+    #         h, w, class_num = 64, 64, 1000
+    #         # 调用模型预测
+    #         logging.debug(f"predict_target_model type: {type(predict_target_model)}")
+    #         print(f"predict_target_model type: {type(predict_target_model)}")
+    #         prediction, confidences = predict_target_model(image, model_name, class_num)
             
-            return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
-        except Exception as e:
-            return jsonify({"error,MLP 's problem:": str(e)}), 500
-    elif model_name in ["target_vgg16", "target_facenet64", "target_ir152"]:
-        try:
-            # 读取图像文件并转换为灰度图
-            image_file = request.files["image_file"]
-            image = Image.open(image_file).convert("RGB")
-            
-            #单独的输入输出维度
-            h, w, class_num = 64, 64, 1000
-            # 调用模型预测
-            logging.debug(f"predict_target_model type: {type(predict_target_model)}")
-            print(f"predict_target_model type: {type(predict_target_model)}")
-            prediction, confidences = predict_target_model(image, model_name, h, w, class_num)
-            
-            return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
-        except Exception as e:
-            return jsonify({"error,MLP 's problem:": str(e)}), 500
+    #         return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
+    #     except Exception as e:
+    #         return jsonify({"error,MLP 's problem:": str(e)}), 500
 
 # 更新任务状态    
 @app.route("/api/tasks/<task_id>/status", methods=["PUT"])

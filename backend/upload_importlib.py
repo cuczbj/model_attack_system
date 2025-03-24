@@ -1,6 +1,8 @@
 import importlib
 import os
 import torch
+from PIL import Image
+import torchvision.transforms as transforms
 
 MODEL_DIR = "./models/classifiers"
 CHECKPOINT_DIR = "./checkpoint/target_model"
@@ -33,35 +35,7 @@ def get_available_params():
     return [f for f in os.listdir(CHECKPOINT_DIR) if f.endswith((".pth", ".h5",".tar",".pkl"))]
 
 
-#目前先只支持需要输入输出维度的模型，后续可以增加模型参数的自动获取
-# def load_model(model_name, param_filename, h , w ,class_num) :
-#     try:
-#         # 动态导入模型文件
-#         model_module = importlib.import_module(f"models.classifiers.{model_name}")
-#         # 检查 MODEL_CLASS_NAME 是否存在
-#         if not hasattr(model_module, "MODEL_CLASS_NAME"):
-#             raise RuntimeError(f"MODEL_CLASS_NAME not found in {model_name}.py")
-
-#         model_class_name = getattr(model_module, "MODEL_CLASS_NAME")  # 变量是字符串
-#         model_class = getattr(model_module, model_class_name, None)  # 获取类
-
-#         # 计算输入和输出维度
-#         input_features = h * w
-#         output_features = class_num
-
-#         # 实例化模型
-#         model = model_class(input_features, output_features)
-
-#         # 加载模型参数
-#         param_file = os.path.join(CHECKPOINT_DIR, param_filename)
-#         model = model_class()
-#         model.load_state_dict(torch.load(param_file))  # 加载权重
-#         model.eval()  # 切换到评估模式
-#         return model
-#     except Exception as e:
-#         raise RuntimeError(f"Error loading model {model_name}: {str(e)}")
-
-def load_model(model_name, param_filename, h , w ,class_num) :
+def load_model(model_name, param_filename , device ,class_num) :
     try:
         # 动态导入模型文件
         model_module = importlib.import_module(f"models.classifiers.{model_name}")
@@ -73,18 +47,19 @@ def load_model(model_name, param_filename, h , w ,class_num) :
         model_class_name = getattr(model_module, "MODEL_CLASS_NAME")  # 变量是字符串
         model_class = getattr(model_module, model_class_name, None)  # 获取类
 
-        # 计算输入和输出维度
-        input_features = h * w
-        output_features = class_num
-
         # 实例化模型（传入计算得到的维度）
-        model = model_class(input_features, output_features)
+        model = model_class(class_num).to(device) 
 
         # 加载模型参数
         # param_file = os.path.join(CHECKPOINT_DIR, param_filename)
         # 直接拼接路径
         param_file = CHECKPOINT_DIR + "/" + param_filename
-        model.load_state_dict(torch.load(param_file))  # 加载权重
+
+        if param_file[-3:] == "tar":                #要加个文件类型判断
+            checkpoint = torch.load(param_file, map_location=device)
+            model.load_state_dict(checkpoint['state_dict'], strict=False)
+        else:
+            model.load_state_dict(torch.load(param_file, map_location=device)) 
         model.eval()  # 切换到评估模式
         return model
     except Exception as e:
@@ -93,15 +68,33 @@ def load_model(model_name, param_filename, h , w ,class_num) :
 
 
 
+
+# 图像加载和预处理
+def image_to_tensor(image_path): #得想办法图像大小，CNN是每次除以5次
+    image = Image.open(image_path)
+
+    # 获取图像的宽度和高度
+    width, height = image.size
+
+    print(f"图像尺寸: 宽度 {width} 像素, 高度 {height} 像素")
+
+    # 图像预处理
+    if image.mode == "L":
+        print("图像是灰度图（Grayscale）")
+        image = image.convert("L")  # 确保转换为灰度
+    elif image.mode in ["RGB", "RGBA"]:
+        print("图像是彩色图（Color）")
+        image = image.convert("RGB")  # 转换为标准RGB格式
+    else:
+        print(f"未知的图像模式: {image.mode}")
+
+    transform = transforms.Compose([
+        transforms.Resize(image.size),  # 调整图像大小
+        transforms.ToTensor(),  # 转为 Tensor
+        transforms.Normalize(mean=[0.5], std=[0.5])  # 归一化
+    ])
+    return transform(image).unsqueeze(0)  # 扩展维度为 (1, (原来的))
+
 # 示例：获取所有可用模型
 # available_models = get_available_models()
 # print("Available models:", available_models)
-def run_inference(model_instance, input_data):
-    """ 运行推理 """
-    if model_instance and hasattr(model_instance, "predict"):
-        result = model_instance.predict(input_data)
-        print("Inference result:", result)
-        return result
-    else:
-        print("Model instance is invalid or lacks 'predict' method.")
-        return None

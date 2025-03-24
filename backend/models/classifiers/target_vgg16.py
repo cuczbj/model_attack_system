@@ -18,18 +18,18 @@ class VGG16(nn.Module):
         self.fc_layer = nn.Linear(self.feat_dim, self.n_classes)
 
     def forward(self, x):
+        # x = x.unsqueeze(0)  # 增加 batch 维度
         feature = self.feature(x)
         feature = feature.view(feature.size(0), -1)
         feature = self.bn(feature)
-        res = self.fc_layer(feature)
-        return [feature, res]
+        logits = self.fc_layer(feature)
+        return feature, logits  # 统一返回 (特征, 逻辑回归值)
 
     def predict(self, x):
-        feature = self.feature(x)
-        feature = feature.view(feature.size(0), -1)
-        feature = self.bn(feature)
-        res = self.fc_layer(feature)
-        out = F.softmax(res, dim=1)
-        return out
+        """ 直接返回 softmax 结果 """
+        self.eval()
+        with torch.no_grad():
+            _, logits = self.forward(x)
+            return F.softmax(logits, dim=1)  # 归一化概
     
 

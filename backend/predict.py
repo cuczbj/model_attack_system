@@ -12,7 +12,7 @@ import torchvision
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 from upload_importlib import load_model
-
+from typing import Any, Tuple
 
 
 
@@ -81,26 +81,15 @@ from upload_importlib import load_model
 
 
 # 预测函数
-def predict_target_model(image, model, h, w, class_num):
+def predict_target_model(image_tensor, model, class_num):
     try:
-        # 图像预处理
-        transform = transforms.Compose([
-            transforms.Resize((h, w)),  # 调整大小
-            transforms.ToTensor()       # 转换为 PyTorch 张量
-        ])
-        image_tensor = transform(image).unsqueeze(0)  # 增加 batch 维度 (1, C, H, W)
-
-        # 如果是灰度图，则展平为 (1, h*w)，以匹配 MLP 的输入
-        if image_tensor.shape[1] == 1:  
-            image_tensor = image_tensor.view(1, -1)
-
-        # 进行前向传播
-        with torch.no_grad():
-            logits = model(image_tensor)  # 获取未归一化的输出
-            confidences = F.softmax(logits, dim=-1)  # 归一化成概率
-            prediction = torch.argmax(confidences, dim=-1).item()  # 取最高概率类别
         
-        return prediction, confidences.squeeze(0).numpy()
+
+        output = model.predict(image_tensor)
+        predicted_class = torch.argmax(output, dim=1).item()
+        print(f"预测类别: {predicted_class}")
+        
+        return prediction, output.squeeze(0).numpy()
     except Exception as e:
         raise RuntimeError(f"Error in prediction: {str(e)}")
 
