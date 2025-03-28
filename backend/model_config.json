@@ -1,0 +1,13 @@
+[
+  {
+    "model_name": "target_vgg16",
+    "param_file": "VGG16_88.26.tar",
+    "class_num": 40,
+    "input_shape": [
+      112,
+      92
+    ],
+    "model_type": "target_vgg16",
+    "created_time": 1743133637.3897102
+  }
+]
