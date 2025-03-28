@@ -21,6 +21,11 @@ import sys
 import torch
 from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor
 from typing import Any, Tuple
+import model_scanner
+from model_scanner import get_model_scanner, ModelConfig
+import torch
+import json
+from flask import jsonify, request
 
 # 将attack目录添加到系统路径
 attack_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'attack')
@@ -311,95 +316,6 @@ MODEL_CONFIGS = {
     "IR152": {"mode": "RGB", "h": 64, "w": 64, "class_num": 1000},
 }
 
-# 目标模型预测接口，看看要不要加个参数（数据集为哪个），或者时攻击图像展示只包含固定数据集就行
-@app.route("/predict", methods=["POST"])
-def predict():
-    # if "image_file" not in request.files:
-    #     return jsonify({"error": "No image file provided"}), 400
-    # # 获取模型名称和模型参数文件
-    # model_name = request.form.get("model_name", type=str, default="target_mlp")
-    # param_file = request.form.get("param_file", type=str)
-    # # 加载模型
-    # try:
-    #     model = load_model(model_name, param_file)
-    # except Exception as e:
-    #     return jsonify({"error": str(e)}), 500
-    # # 获取上传的图像文件
-    # image_file = request.files["image_file"]
-    # try:
-    #     # 打印图像文件的路径
-    #     print(f"Received image file: {image_file.filename}")
-    #     # 尝试加载图像
-    #     image = Image.open(image_file).convert("RGB")
-    #     # 根据模型名称确定输入输出维度
-    #     if model_name == "target_mlp":
-    #         h, w, class_num = 112, 92, 40
-    #     else:
-    #         h, w, class_num = 64, 64, 1000  # 默认处理 VGG, FaceNet 等
-    #     # 进行预测
-    #     prediction, confidences = predict_target_model(image, model, h, w, class_num)
-    #     return jsonify({"prediction": prediction, "confidences": confidences})
-    # except Exception as e:
-    #     return jsonify({"error": f"Error processing image: {str(e)}"}), 500
-
-
-    # 接收图像文件
-    if "image_file" not in request.files:
-        return jsonify({"error": "No image file provided"}), 400
-    
-    # 获取目标模型名称参数
-    model_name = request.form.get("model_name", type=str, default="MLP")  # 默认是 MLP
-
-    #根据目标模型名称确定输入输出维度
-    # if model_name=="target_mlp":
-    try:
-        # 读取图像文件并转换为灰度图
-        image_file = request.files["image_file"]
-        
-        # # 获取模型名称和模型参数文件
-        model_name = request.form.get("model_name", type=str, default="target_mlp")
-        param_file = request.form.get("param_file", type=str)
-        class_num = request.form.get("class_num", type=int, default=40)
-        # 加载模型
-        # 先硬编码输入输出维度
-        # h, w, class_num = 112, 92, 40
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
-        model = load_model(model_name, param_file ,device , class_num)
-        
-        # 2. 载入并处理图像
-        
-        image_tensor = image_to_tensor(image_file).to(device)
-    
-        
-        # 3. 调用模型预测
-        with torch.no_grad():
-            output = model.predict(image_tensor)
-            confidences = torch.softmax(output, dim=-1).squeeze(0)
-            prediction = torch.argmax(confidences).item()
-        
-        # 4. 输出预测结果
-        print(f"预测类别: {prediction}")                        
-        #     prediction, confidences = predict_target_model(image_tensor, model, class_num)
-            
-        return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
-    except Exception as e:
-        return jsonify({"error,MLP 's problem:": str(e)}), 500
-    # elif model_name in ["target_vgg16", "target_facenet64", "target_ir152"]:
-    #     try:
-    #         # 读取图像文件并转换为灰度图
-    #         image_file = request.files["image_file"]
-    #         image = Image.open(image_file).convert("RGB")
-            
-    #         #单独的输入输出维度
-    #         h, w, class_num = 64, 64, 1000
-    #         # 调用模型预测
-    #         logging.debug(f"predict_target_model type: {type(predict_target_model)}")
-    #         print(f"predict_target_model type: {type(predict_target_model)}")
-    #         prediction, confidences = predict_target_model(image, model_name, class_num)
-            
-    #         return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
-    #     except Exception as e:
-    #         return jsonify({"error,MLP 's problem:": str(e)}), 500
 
 # 更新任务状态    
 @app.route("/api/tasks/<task_id>/status", methods=["PUT"])
@@ -631,30 +547,7 @@ def attack():
         
         return jsonify({"error": "内部服务器错误", "message": error_message, "task_id": task_id}), 500
 
-# 文件上传接口
-@app.route('/checkpoint', methods=['POST'])
-def upload_file():
-    # 检查请求中是否包含文件
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
-    file = request.files['file']
-    # 如果用户没有选择文件
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
-    # 检查文件是否合法
-    if file and allowed_file(file.filename):
-        filename = file.filename
-        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
-        # 如果文件夹不存在，创建文件夹
-        if not os.path.exists(app.config['UPLOAD_FOLDER']):
-            os.makedirs(app.config['UPLOAD_FOLDER'])
-        
-        # 保存文件
-        file.save(upload_path)
-        return jsonify({"message": f"File {filename} uploaded successfully"}), 200
-    else:
-        return jsonify({"error": "Invalid file type"}), 400
+
 
 #################################################
 # 新增的评估API端点
@@ -769,6 +662,297 @@ def stop_evaluation(evaluation_id):
     conn.close()
     
     return jsonify({"message": "评估任务已停止"})
+
+
+@app.route('/api/models/available', methods=['GET'])
+def get_available_model_types():
+    """获取所有可用的模型类型"""
+    scanner = get_model_scanner()
+    model_defs, _, _ = scanner.scan()
+    return jsonify(model_defs)
+
+@app.route('/api/models/parameters', methods=['GET'])
+def get_available_parameters():
+    """获取所有可用的模型参数文件"""
+    scanner = get_model_scanner()
+    _, param_files, _ = scanner.scan()
+    return jsonify(param_files)
+
+@app.route('/api/models/configurations', methods=['GET'])
+def get_model_configurations():
+    """获取所有的模型配置"""
+    scanner = get_model_scanner()
+    _, _, configs = scanner.scan()
+    return jsonify([config.to_dict() for config in configs])
+
+@app.route('/api/models/configurations', methods=['POST'])
+def create_model_configuration():
+    """创建新的模型配置"""
+    data = request.json
+    
+    # 验证必要的字段
+    required_fields = ['model_name', 'param_file']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'缺少必要字段: {field}'}), 400
+    
+    # 创建配置对象
+    config = ModelConfig(
+        model_name=data['model_name'],
+        param_file=data['param_file'],
+        class_num=data.get('class_num', 0),
+        input_shape=tuple(data.get('input_shape', (0, 0))),
+        model_type=data.get('model_type', data['model_name'])
+    )
+    
+    # 添加配置
+    scanner = get_model_scanner()
+    result = scanner.add_config(config)
+    
+    if result:
+        return jsonify({'message': '模型配置创建成功', 'config': config.to_dict()}), 201
+    else:
+        return jsonify({'error': '模型配置创建失败，请检查模型和参数文件是否兼容'}), 400
+
+@app.route('/api/models/configurations/<model_name>/<param_file>', methods=['DELETE'])
+def delete_model_configuration(model_name, param_file):
+    """删除模型配置"""
+    scanner = get_model_scanner()
+    result = scanner.remove_config(model_name, param_file)
+    
+    if result:
+        return jsonify({'message': '模型配置删除成功'}), 200
+    else:
+        return jsonify({'error': '未找到指定的模型配置'}), 404
+
+@app.route('/api/models/scan', methods=['POST'])
+def trigger_model_scan():
+    """触发模型扫描，这对于需要手动刷新的情况很有用"""
+    scanner = get_model_scanner()
+    model_defs, param_files, configs = scanner.scan()
+    
+    return jsonify({
+        'model_definitions': model_defs,
+        'parameter_files': param_files,
+        'configurations': [config.to_dict() for config in configs],
+        'message': f'扫描完成，发现 {len(model_defs)} 个模型定义，{len(param_files)} 个参数文件，{len(configs)} 个配置'
+    }), 200
+
+@app.route('/api/models/validate-config', methods=['POST'])
+def validate_model_config():
+    """验证模型配置是否有效"""
+    data = request.json
+    
+    # 验证必要的字段
+    required_fields = ['model_name', 'param_file']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'缺少必要字段: {field}'}), 400
+    
+    # 创建配置对象
+    config = ModelConfig(
+        model_name=data['model_name'],
+        param_file=data['param_file'],
+        class_num=data.get('class_num', 0),
+        input_shape=tuple(data.get('input_shape', (0, 0))),
+        model_type=data.get('model_type', data['model_name'])
+    )
+    
+    # 验证配置
+    scanner = get_model_scanner()
+    valid = scanner.validate_config(config)
+    
+    if not valid:
+        return jsonify({'valid': False, 'message': '模型或参数文件不存在'}), 400
+    
+    # 尝试加载模型
+    load_success = scanner.try_load_model(config)
+    
+    if load_success:
+        return jsonify({'valid': True, 'message': '配置有效，模型加载成功'}), 200
+    else:
+        return jsonify({'valid': False, 'message': '模型加载失败，配置可能无效'}), 400
+
+@app.route('/api/models/auto-detect-config', methods=['POST'])
+def auto_detect_model_config():
+    """自动检测参数文件的配置信息"""
+    data = request.json
+    
+    if 'param_file' not in data:
+        return jsonify({'error': '缺少必要字段: param_file'}), 400
+    
+    param_file = data['param_file']
+    
+    # 获取扫描器
+    scanner = get_model_scanner()
+    
+    # 确保刷新参数文件列表
+    _, param_files, _ = scanner.scan()
+    
+    if param_file not in param_files:
+        return jsonify({'error': f'参数文件不存在: {param_file}'}), 404
+    
+    # 尝试猜测模型
+    model_name = scanner.guess_model_type(param_file)
+    
+    if not model_name:
+        return jsonify({'error': '无法自动识别适合此参数文件的模型类型'}), 400
+    
+    # 构建建议的配置
+    suggested_config = None
+    
+    if model_name == "MLP":
+        suggested_config = {
+            "model_name": model_name,
+            "param_file": param_file,
+            "class_num": 40,  # AT&T Faces默认40类
+            "input_shape": [112, 92],  # MLP默认输入形状
+            "model_type": "MLP"
+        }
+    elif model_name in ["VGG16", "FaceNet64", "IR152"]:
+        suggested_config = {
+            "model_name": model_name,
+            "param_file": param_file,
+            "class_num": 1000,  # CelebA默认1000类
+            "input_shape": [64, 64],  # 默认输入形状
+            "model_type": model_name
+        }
+    else:
+        suggested_config = {
+            "model_name": model_name,
+            "param_file": param_file,
+            "class_num": 10,  # 默认10类
+            "input_shape": [64, 64],  # 默认输入形状
+            "model_type": model_name
+        }
+    
+    return jsonify({
+        'message': f'自动检测到适合的模型类型: {model_name}',
+        'suggested_config': suggested_config
+    }), 200
+
+# 修改模型预测端点，使用配置的模型
+@app.route("/predict", methods=["POST"])
+def predict():
+    """使用已配置的模型进行预测"""
+    # 接收图像文件
+    if "image_file" not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+    
+    # 获取参数
+    model_name = request.form.get("model_name", type=str)
+    param_file = request.form.get("param_file", type=str)
+    class_num = request.form.get("class_num", type=int, default=40)
+    
+    # 如果没有提供模型名称和参数文件，使用默认模型
+    if not model_name or not param_file:
+        scanner = get_model_scanner()
+        _, _, configs = scanner.scan()
+        
+        if not configs:
+            return jsonify({"error": "没有可用的模型配置，请先配置模型"}), 400
+        
+        # 使用第一个可用的配置
+        config = configs[0]
+        model_name = config.model_name
+        param_file = config.param_file
+        class_num = config.class_num
+    
+    try:
+        # 确定设备
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        # 加载模型
+        scanner = get_model_scanner()
+        config = ModelConfig(
+            model_name=model_name,
+            param_file=param_file,
+            class_num=class_num
+        )
+        
+        if not scanner.validate_config(config):
+            return jsonify({"error": "模型配置无效"}), 400
+        
+        # 以下部分保持不变，使用现有的load_model和image_to_tensor函数
+        from upload_importlib import load_model, image_to_tensor
+        model = load_model(model_name, param_file, device, class_num)
+        
+        # 处理图像
+        image_file = request.files["image_file"]
+        image_tensor = image_to_tensor(image_file).to(device)
+        
+        # 执行预测
+        with torch.no_grad():
+            output = model.predict(image_tensor)
+            confidences = torch.softmax(output, dim=-1).squeeze(0)
+            prediction = torch.argmax(confidences).item()
+        
+        # 返回结果
+        return jsonify({
+            "prediction": prediction, 
+            "confidences": confidences.tolist(),
+            "model_info": {
+                "model_name": model_name,
+                "param_file": param_file,
+                "class_num": class_num
+            }
+        })
+    except Exception as e:
+        return jsonify({"error": f"预测出错: {str(e)}"}), 500
+
+# 更新文件上传端点
+@app.route('/checkpoint', methods=['POST'])
+def upload_file():
+    # 检查请求中是否包含文件
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+    file = request.files['file']
+    # 如果用户没有选择文件
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+    # 检查文件是否合法
+    if file and allowed_file(file.filename):
+        filename = file.filename
+        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        
+        # 如果文件夹不存在，创建文件夹
+        if not os.path.exists(app.config['UPLOAD_FOLDER']):
+            os.makedirs(app.config['UPLOAD_FOLDER'])
+        
+        # 保存文件
+        file.save(upload_path)
+        
+        # 触发模型扫描以检测新上传的文件
+        scanner = get_model_scanner()
+        scanner.scan()
+        
+        # 尝试自动检测配置
+        model_name = scanner.guess_model_type(filename)
+        auto_config_info = {}
+        
+        if model_name:
+            auto_config_info["detected_model"] = model_name
+            auto_config_info["message"] = f"检测到可能匹配的模型: {model_name}"
+        
+        return jsonify({
+            "message": f"File {filename} uploaded successfully",
+            "auto_detection": auto_config_info
+        }), 200
+    else:
+        return jsonify({"error": "Invalid file type"}), 400
+
+# 在应用启动时初始化模型扫描器
+# 替换 @app.before_first_request 装饰器
+def initialize_model_scanner():
+    # 获取模型扫描器并执行初始扫描
+    scanner = get_model_scanner()
+    scanner.scan()
+
+# 在应用启动时执行初始化
+with app.app_context():
+    initialize_model_scanner()
+
+
 
 # 下载评估报告API
 @app.route("/api/evaluations/<evaluation_id>/report", methods=["GET"])
