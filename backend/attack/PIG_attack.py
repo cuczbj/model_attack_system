@@ -62,8 +62,9 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
         task_save_dir = os.path.join(save_dir, f'task_{task_id}')
         os.makedirs(task_save_dir, exist_ok=True)
 
-    bs = iden.shape[0]
-    iden = iden.view(-1).long().cuda()
+    # 获取 目标身份编号的 batch size，并移动到 GPU 上。
+    bs = iden.shape[0] #bs=1,tensor([target_id])
+    iden = iden.view(-1).long().cuda() #好像没变
 
     G.eval()
     T.eval()
@@ -78,7 +79,14 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
     
     # 存储最后生成的图像
     final_image = None
+    
+    #使用图像增强 (augmentation)：
+    """
+    随机裁剪 64x64 贴近目标分类器输入。
 
+    颜色抖动 调整亮度 & 对比度。
+
+    水平翻转 & 旋转 增强样本多样性"""
     aug_list = augmentation.container.ImageSequential(
         augmentation.RandomResizedCrop((64, 64), scale=(0.8, 1.0), ratio=(1.0, 1.0)),
         augmentation.ColorJitter(brightness=0.2, contrast=0.2),
@@ -87,7 +95,7 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
     )
 
     """执行攻击：
-    每轮攻击 60 (bs)个类别，共 5 轮
+    每轮攻击  bs个类别，共 5 轮
     计算Top-1 和 Top-5 攻击成功率
     计算 KNN 评估距离
     计算 FID 评估生成图像的质量"""
@@ -104,10 +112,10 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
 
         optimizer = torch.optim.Adam([z], lr=lr)
 
-        for i in range(iter_times):
-
+        for i in range(iter_times): #1500次迭代
+            #生成伪造图像。
             fake = G(z, iden)
-
+            #将其输入到目标分类器 ,获取其最后一层的特征表示。
             out1 = T(aug_list(fake))[-1]
             out2 = T(aug_list(fake))[-1]
 
@@ -121,12 +129,14 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
             elif inv_loss_type == 'poincare':
                 inv_loss = L.poincare_loss(out1, iden) + L.poincare_loss(out2, iden)
 
+            #优化 z 使得生成的伪造图像更接近目标身份。
             optimizer.zero_grad()
             inv_loss.backward()
             optimizer.step()
 
             inv_loss_val = inv_loss.item()
 
+            #每 100 次迭代 计算一次 攻击成功率：并生成新的伪造图像
             if (i + 1) % 100 == 0:
                 with torch.no_grad():
                     fake_img = G(z, iden)
@@ -134,7 +144,8 @@ def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_se
                     eval_iden = torch.argmax(eval_prob, dim=1).view(-1)
                     acc = iden.eq(eval_iden.long()).sum().item() * 1.0 / bs
                     print("Iteration:{}\tInv Loss:{:.2f}\tAttack Acc:{:.2f}".format(i + 1, inv_loss_val, acc))
-
+        
+        # 额外的评估分类器评估
         with torch.no_grad():
             fake = G(z, iden)
             score = T(fake)[-1]
@@ -241,7 +252,9 @@ def PIG_attack(target_labels, task_id=None, batch_num=None,num_seeds=None,model=
         base64编码的图像数据
     """
     # Load Generator
-    G = ResNetGenerator(gen_num_features, gen_dim_z, gen_bottom_width, num_classes=1000, distribution=gen_distribution)
+    # G = ResNetGenerator(gen_num_features, gen_dim_z, gen_bottom_width, num_classes=1000, distribution=gen_distribution)
+    G = ResNetGenerator(num_classes=1000)
+    
     gen_ckpt = torch.load(path_G)['model']
     G.load_state_dict(gen_ckpt)
     G = G.cuda()
@@ -269,7 +282,7 @@ def PIG_attack(target_labels, task_id=None, batch_num=None,num_seeds=None,model=
 
     aver_acc, aver_acc5, aver_var, aver_var5 = 0, 0, 0, 0
     for i in range(1):
-        iden = torch.tensor([target_labels])  # 这里只攻击指定类别
+        iden = torch.tensor([target_labels])  # 这里只攻击指定类别，包含单个元素的 1D 张量
         # 批量攻击次数
         batch_num = 1
         for idx in range(batch_num):

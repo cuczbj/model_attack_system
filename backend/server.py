@@ -19,7 +19,7 @@ import numpy as np
 from threading import Thread
 import sys
 import torch
-from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor
+from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor, MODEL_DIR, CHECKPOINT_DIR
 from typing import Any, Tuple
 
 # 将attack目录添加到系统路径
@@ -88,8 +88,13 @@ def init_db():
 app = Flask(__name__, static_url_path="/static", static_folder="./")
 CORS(app)  # 启用CORS，允许所有源访问
 
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), './models')
-app.config['ALLOWED_EXTENSIONS'] = {'pth', 'pkl','tar'}
+# app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), './models')
+# app.config['ALLOWED_EXTENSIONS'] = {'pth', 'pkl','tar'}
+os.makedirs(MODEL_DIR, exist_ok=True)
+os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+# 允许上传的文件扩展名
+ALLOWED_EXTENSIONS = {'.tar', '.pkl', '.pth', '.py'}
 
 # 在启动应用时初始化数据库
 init_db()
@@ -383,7 +388,7 @@ def predict():
             
         return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
     except Exception as e:
-        return jsonify({"error,MLP 's problem:": str(e)}), 500
+        return jsonify({"error,predict 's problem:": str(e)}), 500
     # elif model_name in ["target_vgg16", "target_facenet64", "target_ir152"]:
     #     try:
     #         # 读取图像文件并转换为灰度图
@@ -451,10 +456,28 @@ def attack():
     
     target_label = data["target_label"]
     attack_method_name = data.get("attack_method", "standard_attack")  # 默认使用标准攻击
-
+    target_model = data.get("target_model", "MLP")  # 默认针对MLP目标模型
+    class_num = data.get("class_num", 40)  # 默认分类数为40
+    image_size = data.get("image_size", "64*64")  # 默认图像大小为224
+    # 解析图像大小
+    h,w = image_size.split("*")
+    h,w = int(h), int(w)
+    print("Value of w:", w)
+    # 找到相应的可用目标模型
+    param_file = ""
+    for key, value in matched_models.items():
+        print("key is",key)
+        print("value is",value)
+        if key == target_model:
+            param_file = value
+            break
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
+    print("param_file is",param_file)
+    model = load_model(target_model, param_file , device , class_num)
+    
     # 验证目标标签
-    if not isinstance(target_label, int) or target_label < 0 or target_label > 39:
-        return jsonify({"error": "无效的目标标签，必须是0到39之间的整数"}), 400
+    # if not isinstance(target_label, int) or target_label < 0 or target_label > 39:
+    #     return jsonify({"error": "无效的目标标签，必须是0到39之间的整数"}), 400
     
     # 创建任务记录
     task_id = f"task-{uuid.uuid4().hex[:8]}"
@@ -491,7 +514,7 @@ def attack():
         os.makedirs(result_dir, exist_ok=True)
         
         # 执行攻击，传入任务ID
-        result_image = reconstruct(attack_method_name, target_label, task_id)
+        result_image = reconstruct(attack_method_name, model, target_label,  h, w, device, task_id)
         logging.debug(f"攻击完成，结果类型: {type(result_image)}")
         
         # 更新任务进度
@@ -631,30 +654,42 @@ def attack():
         
         return jsonify({"error": "内部服务器错误", "message": error_message, "task_id": task_id}), 500
 
-# 文件上传接口
-@app.route('/checkpoint', methods=['POST'])
-def upload_file():
-    # 检查请求中是否包含文件
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
-    file = request.files['file']
-    # 如果用户没有选择文件
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
-    # 检查文件是否合法
-    if file and allowed_file(file.filename):
-        filename = file.filename
-        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
-        # 如果文件夹不存在，创建文件夹
-        if not os.path.exists(app.config['UPLOAD_FOLDER']):
-            os.makedirs(app.config['UPLOAD_FOLDER'])
-        
-        # 保存文件
-        file.save(upload_path)
-        return jsonify({"message": f"File {filename} uploaded successfully"}), 200
+
+def get_upload_path(filename):
+    """根据文件类型返回存储路径"""
+    ext = os.path.splitext(filename)[1].lower()
+    if ext in {'.tar', '.pkl', '.pth'}:
+        return os.path.join(CHECKPOINT_DIR, filename)
+    elif ext == '.py':
+        return os.path.join(MODEL_DIR, filename)
     else:
-        return jsonify({"error": "Invalid file type"}), 400
+        return None  # 不支持的文件类型
+# 文件上传接口
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if "file" not in request.files:
+        return jsonify({"error": "缺少文件"}), 400
+    
+    file = request.files["file"]
+    filename = file.filename
+
+    if not filename:
+        return jsonify({"error": "文件名为空"}), 400
+
+    ext = os.path.splitext(filename)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        return jsonify({"error": f"不支持的文件类型: {ext}"}), 400
+
+    # 获取文件存储路径
+    save_path = get_upload_path(filename)
+    if save_path is None:
+        return jsonify({"error": "无法确定存储路径"}), 400
+
+    try:
+        file.save(save_path)
+        return jsonify({"message": "文件上传成功", "path": save_path}), 200
+    except Exception as e:
+        return jsonify({"error": f"文件上传失败: {str(e)}"}), 500
 
 #################################################
 # 新增的评估API端点
@@ -1200,17 +1235,29 @@ def run_evaluation(evaluation_id, config):
         except Exception as db_error:
             logging.error(f"更新评估失败状态时出错: {db_error}")
 
+# 全局变量存储匹配的模型和参数即可用的模型
+matched_models = {}
 # 返回所有可用的模型函数
 @app.route('/models', methods=['GET'])
-def get_models():
-    """ 获取所有可用的模型 """
-    return jsonify(get_available_models())
+def get_models_and_checkpoints():
+    """ 获取所有可用的模型和已上传的模型参数，并匹配对应关系 """
+    models = get_available_models()
+    checkpoints = get_available_params()
 
-# 获取所有可用模型的参数文件
-@app.route('/checkpoints', methods=['GET'])
-def get_checkpoints():
-    """ 获取所有已上传的模型参数 """
-    return jsonify(get_available_params())
+    global matched_models
+    matched_models = {}
+
+    for checkpoint in checkpoints:
+        checkpoint_prefix = checkpoint.split("_")[0]  # 取 _ 之前的部分
+        for key, value in models.items():
+            if value == checkpoint_prefix:
+                matched_models[key] = checkpoint  # 存入匹配的模型
+
+    return jsonify({
+        "models": models,
+        "checkpoints": checkpoints,
+        "matched_models": matched_models  # 返回匹配结果
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

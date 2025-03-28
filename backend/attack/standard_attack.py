@@ -18,43 +18,45 @@ def normalize_image(im_flatten):
     im_flatten = (im_flatten - min_val) / (max_val - min_val + 1e-8)
     return im_flatten
 
-def standard_attack(target_label, task_id=None):
+def standard_attack(target_label,  model,  h, w, device, task_id=None):
     """执行标准反演攻击
     
     Args:
         target_label: 目标标签
+        model: 目标模型
+        attack_dir: 攻击结果保存路径
         task_id: 任务ID，用于生成唯一的结果文件名
         
     Returns:
         base64编码的图像数据或图像文件路径
     """
-    model_dir = "./checkpoint/target_model/MLP.pkl"
+    # model_dir = "./checkpoint/target_model/MLP.pkl"
     attack_dir = "./result/attack/"
-    h, w = 112, 92
+    # h, w = 112, 92
     alpha = 5000
     learning_rate = 0.1
-    class_num = 40
+    # class_num = 40
 
     # 检查设备
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # 加载目标模型
-    assert os.path.exists(model_dir), "模型文件不存在！"
-    model = MLP(h * w, class_num).to(device)
-    model.load_state_dict(torch.load(model_dir))
-    model.eval()
+    # assert os.path.exists(model_dir), "模型参数文件不存在！"
+    # model = MLP(class_num).to(device)
+    # model.load_state_dict(torch.load(model_dir))
+    # model.eval()
 
     # 初始化攻击图像
-    aim_flatten = torch.zeros(1, h * w).to(device).requires_grad_()
+    aim_flatten = torch.zeros(1, 3, h , w).to(device).requires_grad_()
     optimizer = torch.optim.SGD([aim_flatten], lr=learning_rate)
 
     # 攻击过程
     for _ in tqdm(range(alpha), desc="Performing Attack"):
         optimizer.zero_grad()
         # 前向传播
-        output = model(aim_flatten)
+        _, logits = model(aim_flatten)  # ✅ 只取第一个返回值
         target = torch.tensor([target_label]).to(device)
-        loss = F.cross_entropy(output, target)
+        loss = F.cross_entropy(logits, target)
 
         # 反向传播与优化
         loss.backward()
@@ -68,16 +70,16 @@ def standard_attack(target_label, task_id=None):
         # 保存攻击结果
         os.makedirs(attack_dir, exist_ok=True)
         result_image_path = os.path.join(attack_dir, f"{task_id}_{target_label}.png")
-        save_image(aim_flatten.view(1, 1, h, w), result_image_path)
+        save_image(aim_flatten.view(1, 3, h, w), result_image_path)
         print(f"攻击完成，结果已保存至: {result_image_path}")
         
         # 同时也保存一个标准名称的副本，供兼容旧代码
         std_image_path = os.path.join(attack_dir, f"inverted_{target_label}.png")
-        save_image(aim_flatten.view(1, 1, h, w), std_image_path)
+        save_image(aim_flatten.view(1, 3, h, w), std_image_path)
         
         # 转换图像数据为base64
         img_byte_arr = BytesIO()
-        save_image(aim_flatten.view(1, 1, h, w), img_byte_arr, format='PNG')
+        save_image(aim_flatten.view(1, 3, h, w), img_byte_arr, format='PNG')
         img_byte_arr.seek(0)
         img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
         
@@ -86,7 +88,7 @@ def standard_attack(target_label, task_id=None):
     else:
         # 如果没有提供任务ID，只返回base64编码的图像数据
         img_byte_arr = BytesIO()
-        save_image(aim_flatten.view(1, 1, h, w), img_byte_arr, format='PNG')
+        save_image(aim_flatten.view(1, 3, h, w), img_byte_arr, format='PNG')
         img_byte_arr.seek(0)
         img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
         print(f"攻击完成，返回图像字节流数据。")
