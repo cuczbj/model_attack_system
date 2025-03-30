@@ -459,6 +459,7 @@ def attack():
     target_model = data.get("target_model", "MLP")  # 默认针对MLP目标模型
     class_num = data.get("class_num", 40)  # 默认分类数为40
     image_size = data.get("image_size", "64*64")  # 默认图像大小为224
+    channels = data.get("channels", 3)  # 默认彩色图像，通道数为3
     # 解析图像大小
     h,w = image_size.split("*")
     h,w = int(h), int(w)
@@ -514,7 +515,7 @@ def attack():
         os.makedirs(result_dir, exist_ok=True)
         
         # 执行攻击，传入任务ID
-        result_image = reconstruct(attack_method_name, model, target_label,  h, w, device, task_id)
+        result_image = reconstruct(attack_method_name, model, target_label,  h, w, channels, device, task_id)
         logging.debug(f"攻击完成，结果类型: {type(result_image)}")
         
         # 更新任务进度

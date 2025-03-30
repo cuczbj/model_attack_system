@@ -31,7 +31,7 @@ from upload_importlib import load_model
 5.迭代数
 6.学习率
 """
-def reconstruct(attack_method_name, model, target_label,  h, w, device, task_id=None):
+def reconstruct(attack_method_name, model, target_label,  h, w, channel, device, task_id=None):
     """执行指定的攻击方法，并使用任务ID标识结果"""
     attack_method = get_attack_method(attack_method_name)
 
@@ -42,7 +42,7 @@ def reconstruct(attack_method_name, model, target_label,  h, w, device, task_id=
         # 打印调试信息
         print(f"执行攻击方法: {attack_method_name}, 目标标签: {target_label}, 任务ID: {task_id}")
         # 传递任务ID给攻击方法
-        result = attack_method(target_label, model,  h, w, device, task_id)
+        result = attack_method(target_label, model,  h, w, channel, device, task_id)
         return result
     except Exception as e:
         print(f"攻击执行出错: {e}")

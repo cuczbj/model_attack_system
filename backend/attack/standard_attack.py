@@ -18,7 +18,7 @@ def normalize_image(im_flatten):
     im_flatten = (im_flatten - min_val) / (max_val - min_val + 1e-8)
     return im_flatten
 
-def standard_attack(target_label,  model,  h, w, device, task_id=None):
+def standard_attack(target_label,  model,  h, w, channel, device, task_id=None):
     """执行标准反演攻击
     
     Args:
@@ -47,8 +47,8 @@ def standard_attack(target_label,  model,  h, w, device, task_id=None):
     # model.eval()
 
     # 初始化攻击图像
-    aim_flatten = torch.zeros(1, 3, h , w).to(device).requires_grad_()
-    optimizer = torch.optim.SGD([aim_flatten], lr=learning_rate)
+    aim_flatten = torch.zeros(1, channel, h , w).to(device).requires_grad_()
+    optimizer = torch.optim.SGD([aim_flatten], lr=learning_rate) #优化图像数据（即噪声）
 
     # 攻击过程
     for _ in tqdm(range(alpha), desc="Performing Attack"):
@@ -70,16 +70,16 @@ def standard_attack(target_label,  model,  h, w, device, task_id=None):
         # 保存攻击结果
         os.makedirs(attack_dir, exist_ok=True)
         result_image_path = os.path.join(attack_dir, f"{task_id}_{target_label}.png")
-        save_image(aim_flatten.view(1, 3, h, w), result_image_path)
+        save_image(aim_flatten.view(1, channel, h, w), result_image_path)
         print(f"攻击完成，结果已保存至: {result_image_path}")
         
         # 同时也保存一个标准名称的副本，供兼容旧代码
         std_image_path = os.path.join(attack_dir, f"inverted_{target_label}.png")
-        save_image(aim_flatten.view(1, 3, h, w), std_image_path)
+        save_image(aim_flatten.view(1, channel, h, w), std_image_path)
         
         # 转换图像数据为base64
         img_byte_arr = BytesIO()
-        save_image(aim_flatten.view(1, 3, h, w), img_byte_arr, format='PNG')
+        save_image(aim_flatten.view(1, channel, h, w), img_byte_arr, format='PNG')
         img_byte_arr.seek(0)
         img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
         
@@ -88,7 +88,7 @@ def standard_attack(target_label,  model,  h, w, device, task_id=None):
     else:
         # 如果没有提供任务ID，只返回base64编码的图像数据
         img_byte_arr = BytesIO()
-        save_image(aim_flatten.view(1, 3, h, w), img_byte_arr, format='PNG')
+        save_image(aim_flatten.view(1, channel, h, w), img_byte_arr, format='PNG')
         img_byte_arr.seek(0)
         img_base64 = base64.b64encode(img_byte_arr.read()).decode('utf-8')
         print(f"攻击完成，返回图像字节流数据。")
