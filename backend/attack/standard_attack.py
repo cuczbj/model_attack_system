@@ -18,7 +18,7 @@ def normalize_image(im_flatten):
     im_flatten = (im_flatten - min_val) / (max_val - min_val + 1e-8)
     return im_flatten
 
-def standard_attack(target_label,  model,  h, w, channel, device, task_id=None):
+def standard_attack(target_label,  model, G,  h, w, channel, device, task_id=None):
     """执行标准反演攻击
     
     Args:

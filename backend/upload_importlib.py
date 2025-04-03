@@ -3,6 +3,7 @@ import os
 import torch
 from PIL import Image
 import torchvision.transforms as transforms
+from models.resnet64 import ResNetGenerator
 
 MODEL_DIR = "./models/classifiers"
 CHECKPOINT_DIR = "./checkpoint/target_model"
@@ -34,7 +35,7 @@ def get_available_params():
     """ 获取所有可用的模型参数文件 """
     return [f for f in os.listdir(CHECKPOINT_DIR) if f.endswith((".pth", ".h5",".tar",".pkl"))]
 
-
+# 载入目标模型
 def load_model(model_name, param_filename , device ,class_num) :
     try:
         # 动态导入模型文件
@@ -65,6 +66,22 @@ def load_model(model_name, param_filename , device ,class_num) :
     except Exception as e:
         raise RuntimeError(f"Error loading model {model_name}: {str(e)}")
 
+def load_G(attack_method, target_model, dataset, device, class_num):
+    try:
+        G_DIR = "./checkpoint/G_model"
+        target_model_name = target_model.split("_")[1]
+        G_param_filename = f"gen_{attack_method}_{target_model_name}_{dataset}.pth.tar"
+        G_param_file = G_DIR + "/" +  G_param_filename
+        print("G_param_file:", G_param_file)
+        
+        # 先固定为ResNetGenerator（PLG使用的生成器模型）
+        G = ResNetGenerator(num_classes=class_num).to(device)  # 实例化生成器模型
+        gen_ckpt = torch.load(G_param_file)['model'] 
+        G.load_state_dict(gen_ckpt)
+        G.eval()  # 切换到评估模式
+        return G
+    except Exception as e:
+        raise RuntimeError(f"Error loading G model {attack_method}: {str(e)}")
 
 
 

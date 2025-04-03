@@ -19,7 +19,7 @@ import numpy as np
 from threading import Thread
 import sys
 import torch
-from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor, MODEL_DIR, CHECKPOINT_DIR
+from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor, MODEL_DIR, CHECKPOINT_DIR,load_G
 from typing import Any, Tuple
 
 # 将attack目录添加到系统路径
@@ -457,6 +457,7 @@ def attack():
     target_label = data["target_label"]
     attack_method_name = data.get("attack_method", "standard_attack")  # 默认使用标准攻击
     target_model = data.get("target_model", "MLP")  # 默认针对MLP目标模型
+    dataset = data.get("dataset", "ATT40")  # 默认使用CIFAR-10数据集
     class_num = data.get("class_num", 40)  # 默认分类数为40
     image_size = data.get("image_size", "64*64")  # 默认图像大小为224
     channels = data.get("channels", 3)  # 默认彩色图像，通道数为3
@@ -476,9 +477,9 @@ def attack():
     print("param_file is",param_file)
     model = load_model(target_model, param_file , device , class_num)
     
-    # 验证目标标签
-    # if not isinstance(target_label, int) or target_label < 0 or target_label > 39:
-    #     return jsonify({"error": "无效的目标标签，必须是0到39之间的整数"}), 400
+    # 加载生成模型
+    G = load_G(attack_method_name, target_model, dataset, device, class_num)
+    
     
     # 创建任务记录
     task_id = f"task-{uuid.uuid4().hex[:8]}"
@@ -515,7 +516,7 @@ def attack():
         os.makedirs(result_dir, exist_ok=True)
         
         # 执行攻击，传入任务ID
-        result_image = reconstruct(attack_method_name, model, target_label,  h, w, channels, device, task_id)
+        result_image = reconstruct(attack_method_name, model, G, target_label,  h, w, channels, device, task_id)
         logging.debug(f"攻击完成，结果类型: {type(result_image)}")
         
         # 更新任务进度

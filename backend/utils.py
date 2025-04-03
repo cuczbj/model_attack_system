@@ -9,6 +9,16 @@ from io import BytesIO
 import torchvision.utils as vutils
 from PIL import Image
 
+
+def image_file_to_base64(image_path):
+    """ 读取已保存的 PNG 图片并转换为 Base64 """
+    try:
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode("utf-8")
+    except FileNotFoundError:
+        print(f"文件 {image_path} 未找到！")
+        return None
+
 def tensor_to_base64(tensor):
     """将 PyTorch tensor 转换为 Base64 编码的字符串"""
     tensor = (tensor + 1) / 2  # 反归一化 (假设数据是 [-1,1] 范围)

@@ -1,23 +1,24 @@
-import logging
-import numpy as np
-import os
-import random
-import statistics
-import time
 import torch
-from argparse import ArgumentParser
-from kornia import augmentation
-import sys
-# 将项目根目录添加到 sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import torch.nn.functional as F
+import kornia.augmentation as K
+import time
+import os
+import matplotlib.pyplot as plt
+from torchvision.utils import save_image
+import random
+import numpy as np
+
 import models.losses as L
-import utils
-from utils import save_tensor_images,tensor_to_base64
-from models.evaluation import get_knn_dist, calc_fid
-from models.classifiers import VGG16, IR152, FaceNet, FaceNet64
-from models.resnet64 import ResNetGenerator
+# from evaluation import get_knn_dist, calc_fid
+# from models.classifiers import VGG16, IR152, FaceNet, FaceNet64
+# from models.resnet64 import ResNetGenerator
+from utils import save_tensor_images, tensor_to_base64,image_file_to_base64
 from PIL import Image
-#设定随机种子，保证可复现性。
+from evaluation import test_evaluation
+
+
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
 def set_random_seed(seed=0):
     random.seed(seed)
     np.random.seed(seed)
@@ -27,276 +28,189 @@ def set_random_seed(seed=0):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-
 set_random_seed(42)
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
-# logger配置日志系统，输出日志信息。
-def get_logger():
-    logger_name = "main-logger"
-    logger = logging.getLogger(logger_name)
-    logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler()
-    fmt = "[%(asctime)s %(levelname)s %(filename)s line %(lineno)d %(process)d] %(message)s"
-    handler.setFormatter(logging.Formatter(fmt))
-    logger.addHandler(handler)
-    return logger
-
-#逆向攻击出对应标签的图像
-def inversion(G, T, E, iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_seeds=5, save_dir="", gen_dim_z=64, gen_distribution='', inv_loss_type=''):
-    """输入：
-    G：GAN 生成器（ResNetGenerator）
-    T：目标分类器（VGG16/IR152/FaceNet64）
-    E：评估模型（FaceNet）
-    iden：目标身份编号
-    task_id: 任务ID，用于生成唯一的文件名
-    """
-    save_img_dir = os.path.join(save_dir, 'all_imgs')
-    success_dir = os.path.join(save_dir, 'success_imgs')
-    os.makedirs(save_img_dir, exist_ok=True)
-    os.makedirs(success_dir, exist_ok=True)
-
-    # 使用任务ID创建特定目录
-    if task_id:
-        task_save_dir = os.path.join(save_dir, f'task_{task_id}')
-        os.makedirs(task_save_dir, exist_ok=True)
-
-    # 获取 目标身份编号的 batch size，并移动到 GPU 上。
-    bs = iden.shape[0] #bs=1,tensor([target_id])
-    iden = iden.view(-1).long().cuda() #好像没变
-
-    G.eval()
-    T.eval()
-    E.eval()
-
-    flag = torch.zeros(bs)
-    no = torch.zeros(bs)  # index for saving all success attack images
-
-    res = []
-    res5 = []
-    seed_acc = torch.zeros((bs, 5))
+# def plot_loss_curves(loss_history, save_path='loss_curves.png'):
+#     """绘制损失下降曲线"""
+#     plt.figure(figsize=(12, 6))
     
-    # 存储最后生成的图像
-    final_image = None
+#     for seed, losses in loss_history.items():
+#         # 平滑处理（移动平均）
+#         window_size = 50
+#         smoothed_losses = np.convolve(losses, np.ones(window_size)/window_size, mode='valid')
+        
+#         plt.plot(smoothed_losses, label=f'Seed {seed}', alpha=0.7)
     
-    #使用图像增强 (augmentation)：
-    """
-    随机裁剪 64x64 贴近目标分类器输入。
+#     plt.xlabel('Steps')
+#     plt.ylabel('Smoothed Loss')
+#     plt.title('Training Loss Curves (Smoothed)')
+#     plt.legend()
+#     plt.grid(True)
+#     plt.savefig(save_path, dpi=300, bbox_inches='tight')
+#     plt.close()
 
-    颜色抖动 调整亮度 & 对比度。
+def inversion_attack(
+    args,            # 参数对象
+    G,               # 生成器
+    T,               # 目标模型
+    target_id,       # 目标类别ID
+    num_seeds=5,     # 随机种子数量
+    return_images=True,
+    device=device    # 设备
+):
+    device = next(G.parameters()).device
+    iden = target_id.view(-1).long().to(device) if isinstance(target_id, torch.Tensor) \
+           else torch.tensor([target_id], device=device).long()
+    bs = iden.shape[0]
 
-    水平翻转 & 旋转 增强样本多样性"""
-    aug_list = augmentation.container.ImageSequential(
-        augmentation.RandomResizedCrop((64, 64), scale=(0.8, 1.0), ratio=(1.0, 1.0)),
-        augmentation.ColorJitter(brightness=0.2, contrast=0.2),
-        augmentation.RandomHorizontalFlip(),
-        augmentation.RandomRotation(5),
+    # 数据增强,固定定为64*64，这里就不传参了，这个问题后面处理吧
+    aug_list = K.AugmentationSequential(
+        K.RandomResizedCrop((64, 64), scale=(0.8, 1.0)),
+        K.ColorJitter(brightness=0.2, contrast=0.2),
+        K.RandomHorizontalFlip(),
+        same_on_batch=True
     )
 
-    """执行攻击：
-    每轮攻击  bs个类别，共 5 轮
-    计算Top-1 和 Top-5 攻击成功率
-    计算 KNN 评估距离
-    计算 FID 评估生成图像的质量"""
-    for random_seed in range(num_seeds):
-        tf = time.time()
-        r_idx = random_seed
+    # 结果容器
+    all_images = []
+    success_images = []
+    loss_history = {seed: [] for seed in range(num_seeds)}  # 记录损失
 
-        set_random_seed(random_seed)
+    for seed in range(num_seeds):
+        torch.manual_seed(seed)
+        
+        z = torch.randn(bs, args.gen_dim_z, device=device)
+        z.requires_grad_(True)
+        
+        # 改进的优化器配置
+        optimizer = torch.optim.AdamW([z], lr=args.lr, weight_decay=0.01)
+        
+        # 优化学习率调度器（余弦退火）
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=args.iter_times, eta_min=args.lr/10)
+        
+        best_loss = float('inf')
+        best_z = None
 
-        z = utils.sample_z(
-            bs, gen_dim_z, device, gen_distribution
-        )
-        z.requires_grad = True
-
-        optimizer = torch.optim.Adam([z], lr=lr)
-
-        for i in range(iter_times): #1500次迭代
-            #生成伪造图像。
-            fake = G(z, iden)
-            #将其输入到目标分类器 ,获取其最后一层的特征表示。
-            out1 = T(aug_list(fake))[-1]
-            out2 = T(aug_list(fake))[-1]
-
-            if z.grad is not None:
-                z.grad.data.zero_()
-
-            if inv_loss_type == 'ce':
-                inv_loss = L.cross_entropy_loss(out1, iden) + L.cross_entropy_loss(out2, iden)
-            elif inv_loss_type == 'margin':
-                inv_loss = L.max_margin_loss(out1, iden) + L.max_margin_loss(out2, iden)
-            elif inv_loss_type == 'poincare':
-                inv_loss = L.poincare_loss(out1, iden) + L.poincare_loss(out2, iden)
-
-            #优化 z 使得生成的伪造图像更接近目标身份。
+        for step in range(args.iter_times):
             optimizer.zero_grad()
-            inv_loss.backward()
-            optimizer.step()
-
-            inv_loss_val = inv_loss.item()
-
-            #每 100 次迭代 计算一次 攻击成功率：并生成新的伪造图像
-            if (i + 1) % 100 == 0:
-                with torch.no_grad():
-                    fake_img = G(z, iden)
-                    eval_prob = E(augmentation.Resize((112, 112))(fake_img))[-1]
-                    eval_iden = torch.argmax(eval_prob, dim=1).view(-1)
-                    acc = iden.eq(eval_iden.long()).sum().item() * 1.0 / bs
-                    print("Iteration:{}\tInv Loss:{:.2f}\tAttack Acc:{:.2f}".format(i + 1, inv_loss_val, acc))
-        
-        # 额外的评估分类器评估
-        with torch.no_grad():
-            fake = G(z, iden)
-            score = T(fake)[-1]
-            eval_prob = E(augmentation.Resize((112, 112))(fake))[-1]
-            eval_iden = torch.argmax(eval_prob, dim=1).view(-1)
-
-            cnt, cnt5 = 0, 0
-            for i in range(bs):
-                gt = iden[i].item()
-                sample = G(z, iden)[i]
-                
-                # 保存最后一个样本作为最终结果
-                if i == bs - 1:
-                    final_image = sample.detach()
-                
-                all_img_class_path = os.path.join(save_img_dir, str(gt))
-                if not os.path.exists(all_img_class_path):
-                    os.makedirs(all_img_class_path)
-                
-                # 保存标准路径的图像
-                save_tensor_images(sample.detach(),
-                                  os.path.join(all_img_class_path, "attack_iden_{}_{}.png".format(gt, r_idx)))
-                
-                # 如果提供了任务ID，也保存到任务特定目录
-                if task_id:
-                    task_img_path = os.path.join(task_save_dir, "attack_iden_{}_{}.png".format(gt, r_idx))
-                    save_tensor_images(sample.detach(), task_img_path)
-                    
-                    # 同时保存到标准的攻击结果目录
-                    attack_dir = "./result/attack/"
-                    os.makedirs(attack_dir, exist_ok=True)
-                    task_result_path = os.path.join(attack_dir, f"{task_id}_{gt}.png")
-                    save_tensor_images(sample.detach(), task_result_path)
-                    
-                    # 为兼容旧代码，也保存一个标准命名的副本
-                    std_result_path = os.path.join(attack_dir, f"inverted_{gt}.png")
-                    save_tensor_images(sample.detach(), std_result_path)
-
-                if eval_iden[i].item() == gt:
-                    seed_acc[i, r_idx] = 1
-                    cnt += 1
-                    flag[i] = 1
-                    best_img = G(z, iden)[i]
-                    success_img_class_path = os.path.join(success_dir, str(gt))
-                    if not os.path.exists(success_img_class_path):
-                        os.makedirs(success_img_class_path)
-                    
-                    # 保存成功的攻击结果
-                    success_img_path = os.path.join(success_img_class_path,
-                                                  "{}_attack_iden_{}_{}.png".format(itr, gt, int(no[i])))
-                    save_tensor_images(best_img.detach(), success_img_path)
-                    
-                    # 如果有任务ID，也保存到任务特定目录
-                    if task_id:
-                        task_success_path = os.path.join(task_save_dir,
-                                                       "{}_attack_iden_{}_{}.png".format(itr, gt, int(no[i])))
-                        save_tensor_images(best_img.detach(), task_success_path)
-                    
-                    no[i] += 1
-                
-                _, top5_idx = torch.topk(eval_prob[i], 5)
-                if gt in top5_idx:
-                    cnt5 += 1
-
-            interval = time.time() - tf
-            print("Time:{:.2f}\tAcc:{:.2f}\t".format(interval, cnt * 1.0 / bs))
-            res.append(cnt * 1.0 / bs)
-            res5.append(cnt5 * 1.0 / bs)
-            torch.cuda.empty_cache()
-
-    # 添加检查以防止方差计算错误
-    if len(res) >= 2:
-        acc = statistics.mean(res)
-        acc_var = statistics.variance(res)
-    else:
-        acc = res[0] if res else 0
-        acc_var = 0
-
-    if len(res5) >= 2:
-        acc_5 = statistics.mean(res5)
-        acc_var5 = statistics.variance(res5)
-    else:
-        acc_5 = res5[0] if res5 else 0
-        acc_var5 = 0
-    print("Acc:{:.2f}\tAcc_5:{:.2f}\tAcc_var:{:.4f}\tAcc_var5:{:.4f}".format(acc, acc_5, acc_var, acc_var5))
-
-    # 将最终生成的图像转换为base64
-    base64_img = tensor_to_base64(final_image)
-    return base64_img, acc, acc_5, acc_var, acc_var5
-
-#发起PIG逆向攻击
-def PIG_attack(target_labels, task_id=None, batch_num=None,num_seeds=None,model='VGG16', inv_loss_type='margin', lr=0.1, iter_times=600,
-                          gen_num_features=64, gen_dim_z=128, gen_bottom_width=4,
-                          gen_distribution='normal', save_dir='./result/PLG_MI_Inversion', path_G='./checkpoint/PIG/gen_VGG16_celeba.pth.tar'):
-    """执行PIG逆向攻击
-    
-    Args:
-        target_labels: 目标标签
-        task_id: 任务ID，用于生成唯一的结果文件名
-        model: 目标模型类型
-        其他参数: PIG攻击的配置参数
-        
-    Returns:
-        base64编码的图像数据
-    """
-    # Load Generator
-    # G = ResNetGenerator(gen_num_features, gen_dim_z, gen_bottom_width, num_classes=1000, distribution=gen_distribution)
-    G = ResNetGenerator(num_classes=1000)
-    
-    gen_ckpt = torch.load(path_G)['model']
-    G.load_state_dict(gen_ckpt)
-    G = G.cuda()
-
-    # Load Target Model
-    if model.startswith("VGG16"):
-        T = VGG16(1000)
-        path_T = './checkpoint/target_model/VGG16_88.26.tar'
-    elif model.startswith('IR152'):
-        T = IR152(1000)
-        path_T = './checkpoint/target_model/IR152_91.16.tar'
-    elif model == "FaceNet64":
-        T = FaceNet64(1000)
-        path_T = './checkpoint/target_model/FaceNet64_88.50.tar'
-    T = torch.nn.DataParallel(T).cuda()
-    ckp_T = torch.load(path_T)
-    T.load_state_dict(ckp_T['state_dict'], strict=False)
-
-    # Load Evaluation Model
-    E = FaceNet(1000)
-    E = torch.nn.DataParallel(E).cuda()
-    path_E = './checkpoint/evaluate_model/FaceNet_95.88.tar'
-    ckp_E = torch.load(path_E)
-    E.load_state_dict(ckp_E['state_dict'], strict=False)
-
-    aver_acc, aver_acc5, aver_var, aver_var5 = 0, 0, 0, 0
-    for i in range(1):
-        iden = torch.tensor([target_labels])  # 这里只攻击指定类别，包含单个元素的 1D 张量
-        # 批量攻击次数
-        batch_num = 1
-        for idx in range(batch_num):
-            print(f"--------------------- Attack batch [{idx}]------------------------------")
-            base64_img, acc, acc5, var, var5 = inversion(G, T, E, iden, itr=i, task_id=task_id, lr=lr, iter_times=iter_times,
-                                            num_seeds=1, save_dir=save_dir, gen_dim_z=gen_dim_z, gen_distribution=gen_distribution, inv_loss_type=inv_loss_type)
             
-          
-          
-            # iden += 60
-            aver_acc += acc / batch_num
-            aver_acc5 += acc5 / batch_num
-            aver_var += var / batch_num
-            aver_var5 += var5 / batch_num
+            fake = G(z, iden)
+            fake_aug1 = aug_list(fake)
+            fake_aug2 = aug_list(fake)
+            
+            logits1 = T(fake_aug1)[-1]
+            logits2 = T(fake_aug2)[-1]
+            
+            if args.inv_loss_type == 'ce':
+                loss = L.cross_entropy_loss(logits1, iden) + L.cross_entropy_loss(logits2, iden)
+            elif args.inv_loss_type == 'margin':
+                loss = (L.max_margin_loss(logits1, iden) + L.max_margin_loss(logits2, iden))
+            elif args.inv_loss_type == 'poincare':
+                loss = (L.poincare_loss(logits1, iden) + L.poincare_loss(logits2, iden))
+
+            # 记录损失
+            loss_history[seed].append(loss.item())
+            
+            loss.backward()
+            
+            # 梯度裁剪
+            torch.nn.utils.clip_grad_norm_([z], max_norm=1.0)
+            
+            optimizer.step()
+            scheduler.step()
+
+            # 保存最佳z
+            if loss.item() < best_loss:
+                best_loss = loss.item()
+                best_z = z.clone().detach()
+
+            if (step + 1) % 100 == 0:
+                current_lr = optimizer.param_groups[0]['lr']
+                print(f'Seed {seed}, Step {step+1}: Loss = {loss.item():.4f}, LR = {current_lr:.2e}')
+
+        # 使用最佳z生成最终图像
+        with torch.no_grad():
+            final_images = G(best_z, iden)
+            all_images.append(final_images.cpu())
+            
+            preds = T(final_images)[-1].argmax(dim=1)
+            for i in range(bs):
+                if preds[i] == iden[i]:
+                    success_images.append(final_images[i].cpu())
+
+    # 绘制损失曲线
+    # plot_loss_curves(loss_history)
+
+    if return_images:
+        return {
+            'all_images': torch.cat(all_images, dim=0),
+            'success_images': torch.stack(success_images, dim=0) if success_images else None,
+            'loss_history': loss_history  # 返回损失历史记录
+        }
+
+def PIG_attack(target_label,  model, G,  h, w, channel, device, task_id=None):
+    """
+    基于PLG的攻击
+    :param target_label: 目标类别
+    :param model: 目标模型   输入为(1,channel,h,w，这里已经载入完毕)
+    :param h: 图像高度
+    :param w: 图像宽度
+    :param channel: 图像通道数
+    :param device: 设备
+    :param task_id: 任务ID
+    :return: 攻击后的图像
+    """
+    class Args:
+        inv_loss_type = 'margin'
+        lr = 2e-2
+        iter_times = 1500
+        gen_dim_z = 128
+    args = Args()
+    print("参数配置完成")
     
-    print(f"Average Acc:{aver_acc:.2f}\tAverage Acc5:{aver_acc5:.2f}\tAverage Acc_var:{aver_var:.4f}\tAverage Acc_var5:{aver_var5:.4f}")
+    results = inversion_attack(args, G, model, target_label, num_seeds=5, device=device)
+    # 保存结果
+    if results['success_images'] is not None:
+        save_image(results['success_images'], './result/PLG_MI_Inversion/success_imgs/{}/{}_success_attacks.png'.format(target_label,target_label), nrow=5, normalize=True)
+    save_image(results['all_images'], './result/PLG_MI_Inversion/all_imgs/{}/{}_all_generated.png'.format(target_label,target_label), nrow=5, normalize=True)
+    
+    print("攻击完成，结果已保存")
+
+    # 测试评估的结果# 取出所有生成的图像,后面应该放到server里
+    all_images_tensor = results['all_images']  # 形状: (N, C, H, W)
+    accuary = test_evaluation(all_images_tensor)
+
+    #返回 Base64 编码的图片
+    image_path = f"./result/PLG_MI_Inversion/success_imgs/{target_label}/{target_label}_success_attacks.png"
+    base64_img = image_file_to_base64(image_path)
     return base64_img
+
+# 使用示例
+# if __name__ == "__main__":
+#     class Args:
+#         inv_loss_type = 'margin'
+#         lr = 2e-2
+#         iter_times = 1500
+#         gen_dim_z = 128
+    
+#     args = Args()
+#     print("参数配置完成")
+    
+#     # 加载模型
+#     G = ResNetGenerator(num_classes=1000).cuda().eval()
+#     T = VGG16(n_classes=1000).cuda().eval()
+#     G.load_state_dict(torch.load('./PLG_MI_Results/ffhq/VGG16/gen_latest.pth.tar')['model'])
+#     G=G.to(device)
+#     T.load_state_dict(torch.load('./checkpoints/target_model/VGG16_88.26.tar')['state_dict'], strict=False)
+#     T=T.to(device)
+
+#     # 执行攻击
+#     results = inversion_attack(args, G, T, target_id=0, num_seeds=5)
+    
+#     # 保存结果
+#     if results['success_images'] is not None:
+#         save_image(results['success_images'], 'success_attacks.png', nrow=5, normalize=True)
+#     save_image(results['all_images'], 'all_generated.png', nrow=5, normalize=True)
+    
+#     print("攻击完成，结果已保存")
