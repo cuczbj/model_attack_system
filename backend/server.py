@@ -26,6 +26,7 @@ from model_scanner import get_model_scanner, ModelConfig
 import torch
 import json
 from flask import jsonify, request
+import uuid
 
 # 将attack目录添加到系统路径
 attack_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'attack')
@@ -685,6 +686,7 @@ def get_model_configurations():
     _, _, configs = scanner.scan()
     return jsonify([config.to_dict() for config in configs])
 
+# 修改模型配置创建API
 @app.route('/api/models/configurations', methods=['POST'])
 def create_model_configuration():
     """创建新的模型配置"""
@@ -696,7 +698,7 @@ def create_model_configuration():
         if field not in data:
             return jsonify({'error': f'缺少必要字段: {field}'}), 400
     
-    # 创建配置对象
+    # 创建配置对象，ModelConfig类会自动生成model_id
     config = ModelConfig(
         model_name=data['model_name'],
         param_file=data['param_file'],
@@ -830,7 +832,103 @@ def auto_detect_model_config():
         'message': f'自动检测到适合的模型类型: {model_name}',
         'suggested_config': suggested_config
     }), 200
+@app.route('/api/models/search', methods=['POST'])
+def search_model():
+    """根据模型名称搜索模型结构和参数文件"""
+    data = request.json
+    model_name = data.get('model_name', '').strip()
+    
+    if not model_name:
+        return jsonify({'error': '请提供模型名称'}), 400
+    
+    scanner = get_model_scanner()
+    model_defs, param_files, configs = scanner.scan()
+    
+    # 检查是否存在模型结构
+    structure_found = False
+    for name in model_defs.keys():
+        if name.lower() == model_name.lower() or name.lower().startswith(model_name.lower()):
+            structure_found = True
+            model_name = name  # 使用找到的精确名称
+            break
+    
+    # 检查是否存在匹配的参数文件
+    matching_parameters = []
+    for param_file in param_files:
+        param_lower = param_file.lower()
+        if model_name.lower() in param_lower:
+            matching_parameters.append(param_file)
+    
+    # 检查是否已经有配置
+    existing_config = None
+    config_id = None
+    for config in configs:
+        if config.model_name.lower() == model_name.lower():
+            existing_config = config
+            config_id = config.model_id if hasattr(config, 'model_id') else f"{config.model_name}-{config.param_file}"
+            break
+    
+    # 如果找到结构和参数但没有配置，尝试创建自动配置建议
+    auto_config = None
+    if structure_found and matching_parameters and not existing_config:
+        # 选择第一个匹配的参数文件
+        param_file = matching_parameters[0]
+        
+        if model_name == "MLP":
+            auto_config = {
+                "model_name": model_name,
+                "param_file": param_file,
+                "class_num": 40,  # AT&T Faces默认40类
+                "input_shape": [112, 92],  # MLP默认输入形状
+                "model_type": model_name
+            }
+        elif model_name in ["VGG16", "FaceNet64", "IR152"]:
+            auto_config = {
+                "model_name": model_name,
+                "param_file": param_file,
+                "class_num": 1000,  # CelebA默认1000类
+                "input_shape": [64, 64],  # 默认输入形状
+                "model_type": model_name
+            }
+        else:
+            auto_config = {
+                "model_name": model_name,
+                "param_file": param_file,
+                "class_num": 10,  # 默认10类
+                "input_shape": [64, 64],  # 默认输入形状
+                "model_type": model_name
+            }
+    
+    return jsonify({
+        'model_name': model_name,
+        'structure_found': structure_found,
+        'parameters_found': len(matching_parameters) > 0,
+        'matching_parameters': matching_parameters,
+        'id': config_id,
+        'auto_config': auto_config
+    })
 
+# 添加获取已配置模型的API
+@app.route('/api/models/configured', methods=['GET'])
+def get_configured_models():
+    """获取所有已配置的模型，供攻击页面使用"""
+    scanner = get_model_scanner()
+    _, _, configs = scanner.scan()
+    
+    configured_models = []
+    for config in configs:
+        model_id = config.model_id if hasattr(config, 'model_id') else f"{config.model_name}-{config.param_file}"
+        model_data = {
+            "id": model_id,
+            "name": f"{config.model_name}-{config.class_num}类",
+            "model_name": config.model_name,
+            "param_file": config.param_file,
+            "class_num": config.class_num,
+            "input_shape": list(config.input_shape) if isinstance(config.input_shape, tuple) else config.input_shape
+        }
+        configured_models.append(model_data)
+    
+    return jsonify(configured_models)
 # 修改模型预测端点，使用配置的模型
 @app.route("/predict", methods=["POST"])
 def predict():

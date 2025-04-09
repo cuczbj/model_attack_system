@@ -1,5 +1,5 @@
 "use client";
-
+import ModelCreationPage from "./path/to/ModelCreationPage";
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
@@ -35,7 +35,11 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
-  Snackbar
+  Snackbar,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useDropzone } from "react-dropzone";
@@ -50,6 +54,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import SearchIcon from "@mui/icons-material/Search";
 
 // API基础URL
 const API_URL = "http://localhost:5000";
@@ -66,6 +71,27 @@ interface ModelConfig {
   input_shape: [number, number];
   model_type: string;
   created_time: number;
+  model_id?: string;
+}
+
+interface SearchResult {
+  model_name: string;
+  structure_found: boolean;
+  structure_file?: string;
+  parameters_found: boolean;
+  matching_parameters: string[];
+  id: string | null;
+  auto_config: ModelConfig | null;
+  missing_files?: {
+    structure: boolean;
+    parameters: boolean;
+  };
+}
+
+interface PendingUpload {
+  modelName: string;
+  needStructure: boolean;
+  needParams: boolean;
 }
 
 // 自定义样式组件
@@ -238,13 +264,229 @@ const validateModelConfig = async (config: Partial<ModelConfig>): Promise<any> =
   }
 };
 
+const searchModelByName = async (modelName: string): Promise<SearchResult> => {
+  try {
+    const response = await fetch(`${API_URL}/api/models/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ model_name: modelName }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "搜索失败");
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error("Error searching for model:", error);
+    throw error;
+  }
+};
+
+// 模型搜索组件
+const ModelSearch = ({ onSearchResult, initialSearchTerm = "" }) => {
+  const [modelName, setModelName] = useState(initialSearchTerm);
+  const [searching, setSearching] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // 当initialSearchTerm变化时更新modelName
+  useEffect(() => {
+    if (initialSearchTerm) {
+      setModelName(initialSearchTerm);
+    }
+  }, [initialSearchTerm]);
+  
+  const handleSearch = async () => {
+    if (!modelName.trim()) {
+      setError("请输入模型名称");
+      return;
+    }
+    
+    setSearching(true);
+    setError(null);
+    
+    try {
+      const result = await searchModelByName(modelName);
+      onSearchResult(result);
+    } catch (error) {
+      console.error("Search error:", error);
+      setError(error.message || "搜索过程中发生错误");
+    } finally {
+      setSearching(false);
+    }
+  };
+  
+  return (
+    <Box sx={{ mb: 4 }}>
+      <Typography variant="h6" gutterBottom>
+        搜索模型
+      </Typography>
+      
+      <Typography variant="body2" color="textSecondary" paragraph>
+        输入模型名称，系统将自动检查是否已存在对应的模型结构和参数文件
+      </Typography>
+      
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={8}>
+          <TextField
+            fullWidth
+            label="模型名称"
+            value={modelName}
+            onChange={(e) => setModelName(e.target.value)}
+            placeholder="例如: MLP, VGG16, IR152, FaceNet64"
+            error={!!error}
+            helperText={error}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handleSearch();
+              }
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleSearch}
+            disabled={searching || !modelName.trim()}
+            sx={{ height: '56px' }}
+            startIcon={searching ? <CircularProgress size={24} color="inherit" /> : <SearchIcon />}
+          >
+            {searching ? "搜索中..." : "搜索模型"}
+          </Button>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+// 搜索结果组件
+const SearchResult = ({ result, onCreateConfig, onUpload }) => {
+  if (!result) return null;
+  
+  // 确定具体缺少哪些文件
+  const missingStructure = !result.structure_found;
+  const missingParameters = !result.parameters_found;
+  
+  return (
+    <Card variant="outlined" sx={{ mb: 4 }}>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          搜索结果: {result.model_name}
+        </Typography>
+        
+        <Grid container spacing={2}>
+          {/* 模型结构状态提示 */}
+          <Grid item xs={12} md={6}>
+            <Alert 
+              severity={result.structure_found ? "success" : "warning"}
+              icon={result.structure_found ? <CheckCircleIcon /> : <ErrorIcon />}
+              sx={{ mb: 2 }}
+            >
+              <AlertTitle>{result.structure_found ? "模型结构已找到" : "模型结构未找到"}</AlertTitle>
+              {result.structure_found 
+                ? `系统已找到 ${result.model_name} 的模型结构定义` 
+                : `需要上传 ${result.model_name}.py 模型结构文件`}
+            </Alert>
+          </Grid>
+          
+          {/* 模型参数状态提示 */}
+          <Grid item xs={12} md={6}>
+            <Alert 
+              severity={result.parameters_found ? "success" : "warning"}
+              icon={result.parameters_found ? <CheckCircleIcon /> : <ErrorIcon />}
+              sx={{ mb: 2 }}
+            >
+              <AlertTitle>{result.parameters_found ? "模型参数已找到" : "模型参数未找到"}</AlertTitle>
+              {result.parameters_found 
+                ? `找到 ${result.matching_parameters.length} 个匹配的参数文件` 
+                : `需要上传 ${result.model_name}_xxx.pth/.tar/.pkl 格式的参数文件`}
+            </Alert>
+          </Grid>
+        </Grid>
+        
+        {/* 匹配的参数文件列表 */}
+        {result.matching_parameters.length > 0 && (
+          <Box sx={{ mt: 2, mb: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              匹配的参数文件:
+            </Typography>
+            <List dense>
+              {result.matching_parameters.map((param, index) => (
+                <ListItem key={index}>
+                  <ListItemIcon>
+                    <CheckCircleIcon color="success" />
+                  </ListItemIcon>
+                  <ListItemText primary={param} />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        )}
+        
+        {/* 操作按钮区域 */}
+        <Box sx={{ mt: 2 }}>
+          {result.id ? (
+            <Alert severity="info">
+              该模型已配置，ID: {result.id}
+            </Alert>
+          ) : result.structure_found && result.parameters_found ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => onCreateConfig(result.auto_config)}
+              startIcon={<CheckCircleIcon />}
+            >
+              自动创建配置
+            </Button>
+          ) : (
+            <Box>
+              <Typography variant="subtitle1" color="error" gutterBottom>
+                缺少必要文件，请上传：
+              </Typography>
+              
+              {/* 缺少模型结构文件时显示上传提示 */}
+              {missingStructure && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  <AlertTitle>缺少模型结构文件</AlertTitle>
+                  请上传名为 <strong>{result.model_name}.py</strong> 的模型结构文件
+                </Alert>
+              )}
+              
+              {/* 缺少参数文件时显示上传提示 */}
+              {missingParameters && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  <AlertTitle>缺少模型参数文件</AlertTitle>
+                  请上传形如 <strong>{result.model_name}_xxxx.pth</strong> 或 <strong>{result.model_name}_xxxx.tar</strong> 的参数文件
+                </Alert>
+              )}
+              
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={() => onUpload(result.model_name, missingStructure, missingParameters)}
+                startIcon={<CloudUploadIcon />}
+                sx={{ mt: 1 }}
+              >
+                前往上传缺失文件
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
+
 // 文件上传组件
-const ModelUploader: React.FC<{
-  onUploadSuccess: () => void;
-}> = ({ onUploadSuccess }) => {
+const ModelUploader = ({ onUploadSuccess, searchModelName }) => {
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [recentUploads, setRecentUploads] = useState<string[]>([]);
+  const [pendingUpload, setPendingUpload] = useState<PendingUpload | null>(null);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -255,13 +497,33 @@ const ModelUploader: React.FC<{
     severity: "info",
   });
 
-  // 加载最近上传记录
+  // 加载最近上传记录和待上传信息
   useEffect(() => {
+    // 加载最近上传记录
     const saved = localStorage.getItem("recentModelUploads");
     if (saved) {
       setRecentUploads(JSON.parse(saved));
     }
+    
+    // 加载待上传信息
+    const pendingData = localStorage.getItem('pendingUpload');
+    if (pendingData) {
+      try {
+        setPendingUpload(JSON.parse(pendingData));
+      } catch (e) {
+        console.error("解析待上传数据失败", e);
+      }
+    }
   }, []);
+
+  // 上传成功后清除待上传信息
+  const handleUploadComplete = useCallback(() => {
+    localStorage.removeItem('pendingUpload');
+    setPendingUpload(null);
+    
+    // 通知外部组件上传成功
+    onUploadSuccess();
+  }, [onUploadSuccess]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
@@ -349,11 +611,15 @@ const ModelUploader: React.FC<{
     xhr.send(formData);
   }, [recentUploads, onUploadSuccess]);
 
+  // 确定接受的文件类型
+  const fileTypes = {
+    'application/octet-stream': ['.pth', '.pkl', '.tar'],
+    'text/x-python': ['.py'],
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      'application/octet-stream': ['.pth', '.pkl', '.tar'],
-    },
+    accept: fileTypes,
     maxFiles: 1,
   });
 
@@ -364,12 +630,53 @@ const ModelUploader: React.FC<{
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
-        上传模型参数文件
+        上传模型文件
       </Typography>
       
       <Typography variant="body2" color="textSecondary" paragraph>
-        支持的文件格式: .pth, .pkl, .tar
+        支持的文件格式:
+        <br />- 模型结构文件: .py
+        <br />- 模型参数文件: .pth, .pkl, .tar
       </Typography>
+      
+      {/* 如果有待上传的文件需求，显示特定提示 */}
+      {pendingUpload && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          <AlertTitle>需要上传 {pendingUpload.modelName} 的文件</AlertTitle>
+          <Typography variant="body2">
+            {pendingUpload.needStructure && (
+              <Box sx={{ mb: 1 }}>
+                • 模型结构文件: <strong>{pendingUpload.modelName}.py</strong>
+              </Box>
+            )}
+            {pendingUpload.needParams && (
+              <Box>
+                • 模型参数文件: <strong>{pendingUpload.modelName}_xxxx.pth/tar/pkl</strong>
+              </Box>
+            )}
+          </Typography>
+          <Button 
+            size="small" 
+            onClick={() => {
+              localStorage.removeItem('pendingUpload');
+              setPendingUpload(null);
+            }} 
+            sx={{ mt: 1 }}
+            color="inherit"
+          >
+            取消此操作
+          </Button>
+        </Alert>
+      )}
+      
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <AlertTitle>命名规范</AlertTitle>
+        <Typography variant="body2">
+          <strong>模型结构文件</strong>应遵循 <code>[ModelName].py</code> 格式，例如 <code>MLP.py</code>、<code>VGG16.py</code>
+          <br />
+          <strong>参数文件</strong>应遵循 <code>[ModelName]_[Details].ext</code> 格式，例如 <code>MLP_ATT40.pkl</code>、<code>VGG16_CelebA1000.tar</code>
+        </Typography>
+      </Alert>
       
       <StyledDropzone {...getRootProps()}>
         <input {...getInputProps()} />
@@ -404,6 +711,29 @@ const ModelUploader: React.FC<{
       {uploadStatus === "error" && (
         <Alert severity="error" sx={{ mt: 2 }}>
           上传失败，请检查服务器连接或文件格式。
+        </Alert>
+      )}
+      
+      {/* 上传成功后，如果有待完成的模型配置，提示用户继续搜索该模型 */}
+      {uploadStatus === "success" && pendingUpload && (
+        <Alert severity="success" sx={{ mt: 2 }}>
+          <AlertTitle>文件上传成功！</AlertTitle>
+          <Typography variant="body2">
+            请再次搜索 <strong>{pendingUpload.modelName}</strong> 以检查是否已满足创建条件。
+          </Typography>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            sx={{ mt: 1 }}
+            onClick={() => {
+              // 清除pendingUpload
+              handleUploadComplete();
+              // 重新搜索该模型
+              searchModelName(pendingUpload.modelName);
+            }}
+          >
+            重新检查该模型
+          </Button>
         </Alert>
       )}
       
@@ -484,10 +814,7 @@ const ModelUploader: React.FC<{
 };
 
 // 模型配置组件
-const ModelConfiguration: React.FC<{
-  onConfigCreated: () => void;
-  refreshData: () => void;
-}> = ({ onConfigCreated, refreshData }) => {
+const ModelConfiguration = ({ onConfigCreated, refreshData }) => {
   // 状态
   const [availableModels, setAvailableModels] = useState<ModelType>({});
   const [modelParameters, setModelParameters] = useState<string[]>([]);
@@ -613,22 +940,15 @@ const ModelConfiguration: React.FC<{
   };
   
   // 处理模型选择变化
-  const handleModelChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedModel(event.target.value as string);
+  const handleModelChange = (event) => {
+    setSelectedModel(event.target.value);
     // 重置验证结果
     setValidationResult(null);
   };
   
   // 处理参数选择变化
-  const handleParameterChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedParameter(event.target.value as string);
-    // 重置验证结果
-    setValidationResult(null);
-  };
-  
-  // 处理类别数变化
-  const handleClassNumChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setClassNum(parseInt(event.target.value) || 0);
+  const handleParameterChange = (event) => {
+    setSelectedParameter(event.target.value);
     // 重置验证结果
     setValidationResult(null);
   };
@@ -701,7 +1021,7 @@ const ModelConfiguration: React.FC<{
               fullWidth
               margin="normal"
               value={classNum}
-              onChange={handleClassNumChange}
+              onChange={(e) => setClassNum(parseInt(e.target.value) || 0)}
               InputProps={{
                 inputProps: { min: 1 }
               }}
@@ -711,6 +1031,46 @@ const ModelConfiguration: React.FC<{
                   "CelebA 数据集默认 1000 类" : 
                   "请设置分类数量")}
             />
+          </Grid>
+          
+          {/* 输入形状 */}
+          <Grid item xs={12} md={6}>
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                输入形状:
+              </Typography>
+              <Grid container spacing={1}>
+                <Grid item xs={6}>
+                  <TextField
+                    label="高度"
+                    type="number"
+                    fullWidth
+                    value={inputShape[0]}
+                    onChange={(e) => setInputShape([parseInt(e.target.value) || 0, inputShape[1]])}
+                    InputProps={{
+                      inputProps: { min: 1 }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    label="宽度"
+                    type="number"
+                    fullWidth
+                    value={inputShape[1]}
+                    onChange={(e) => setInputShape([inputShape[0], parseInt(e.target.value) || 0])}
+                    InputProps={{
+                      inputProps: { min: 1 }
+                    }}
+                  />
+                </Grid>
+              </Grid>
+              <Typography variant="caption" color="textSecondary">
+                {selectedModel === "MLP" ? "MLP模型默认输入形状为 112×92" : 
+                 ["VGG16", "FaceNet64", "IR152"].includes(selectedModel) ? 
+                 "图像模型默认输入形状为 64×64" : "请设置合适的输入形状"}
+              </Typography>
+            </Box>
           </Grid>
           
           {/* 验证和创建按钮 */}
@@ -806,9 +1166,7 @@ const ModelConfiguration: React.FC<{
 };
 
 // 模型管理组件
-const ModelManager: React.FC<{
-  refreshData: () => void;
-}> = ({ refreshData }) => {
+const ModelManager = ({ refreshData }) => {
   const [modelConfigurations, setModelConfigurations] = useState<ModelConfig[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
@@ -895,6 +1253,11 @@ const ModelManager: React.FC<{
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     {config.model_name}
+                    {config.model_id && (
+                      <Typography variant="caption" color="textSecondary" sx={{ ml: 1 }}>
+                        ID: {config.model_id}
+                      </Typography>
+                    )}
                   </Typography>
                   
                   <Typography color="textSecondary" gutterBottom>
@@ -954,6 +1317,8 @@ const ModelManager: React.FC<{
 const ModelManagementPage: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
   const [refreshCounter, setRefreshCounter] = useState(0);
+  const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
+  const [searchModelTerm, setSearchModelTerm] = useState("");
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -994,9 +1359,13 @@ const ModelManagementPage: React.FC = () => {
     // 自动刷新数据
     refreshData();
     
-    // 切换到配置标签
-    setTabValue(1);
-  }, [refreshData]);
+    // 如果有搜索结果，重新搜索以更新状态
+    if (searchResult) {
+      searchModelByName(searchResult.model_name)
+        .then(newResult => setSearchResult(newResult))
+        .catch(error => console.error("Error refreshing search:", error));
+    }
+  }, [refreshData, searchResult]);
 
   // 处理配置创建成功
   const handleConfigCreated = useCallback(() => {
@@ -1008,6 +1377,137 @@ const ModelManagementPage: React.FC = () => {
     
     // 切换到管理标签
     setTabValue(2);
+    
+    // 刷新搜索结果
+    if (searchResult) {
+      searchModelByName(searchResult.model_name)
+        .then(newResult => setSearchResult(newResult))
+        .catch(error => console.error("Error refreshing search:", error));
+    }
+  }, [searchResult]);
+
+  // 搜索模型
+  const searchModel = useCallback(async (modelName: string) => {
+    if (!modelName.trim()) return;
+    
+    setSearchModelTerm(modelName);
+    
+    try {
+      const result = await searchModelByName(modelName);
+      setSearchResult(result);
+      
+      // 根据结果显示不同通知
+      if (result.id) {
+        // 已配置
+        setNotification({
+          open: true,
+          message: `模型 ${result.model_name} 已配置完成，ID: ${result.id}`,
+          severity: "info",
+        });
+      } else if (result.structure_found && result.parameters_found) {
+        // 找到结构和参数，但未配置
+        setNotification({
+          open: true,
+          message: `找到 ${result.model_name} 的结构和参数文件，可以创建配置`,
+          severity: "success",
+        });
+      } else {
+        // 缺失组件
+        setNotification({
+          open: true,
+          message: `${result.model_name} 配置不完整，需要上传缺失的文件`,
+          severity: "warning",
+        });
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      setNotification({
+        open: true,
+        message: `搜索失败: ${error.message || "未知错误"}`,
+        severity: "error",
+      });
+    }
+  }, []);
+
+  // 处理搜索结果
+  const handleSearchResult = useCallback((result: SearchResult) => {
+    setSearchResult(result);
+    
+    // 根据结果显示不同通知
+    if (result.id) {
+      // 已配置
+      setNotification({
+        open: true,
+        message: `模型 ${result.model_name} 已配置完成，ID: ${result.id}`,
+        severity: "info",
+      });
+    } else if (result.structure_found && result.parameters_found) {
+      // 找到结构和参数，但未配置
+      setNotification({
+        open: true,
+        message: `找到 ${result.model_name} 的结构和参数文件，可以创建配置`,
+        severity: "success",
+      });
+    } else {
+      // 缺失组件
+      setNotification({
+        open: true,
+        message: `${result.model_name} 配置不完整，需要上传缺失的文件`,
+        severity: "warning",
+      });
+    }
+  }, []);
+
+  // 处理自动创建配置
+  const handleAutoCreateConfig = useCallback(async (configData) => {
+    if (!configData) return;
+    
+    try {
+      await createModelConfiguration(configData);
+      
+      setNotification({
+        open: true,
+        message: "模型配置创建成功",
+        severity: "success",
+      });
+      
+      // 刷新数据并更新搜索结果
+      await refreshData();
+      
+      if (searchResult) {
+        const newResult = await searchModelByName(searchResult.model_name);
+        setSearchResult(newResult);
+      }
+      
+      // 切换到管理标签
+      setTabValue(2);
+    } catch (error) {
+      setNotification({
+        open: true,
+        message: `创建配置失败: ${error.message}`,
+        severity: "error",
+      });
+    }
+  }, [refreshData, searchResult]);
+
+  // 处理前往上传缺失文件
+  const handleNavigateToUpload = useCallback((modelName, needStructure, needParams) => {
+    // 保存需要上传的信息到localStorage，以便上传组件使用
+    localStorage.setItem('pendingUpload', JSON.stringify({
+      modelName,
+      needStructure,
+      needParams
+    }));
+    
+    // 切换到上传标签页
+    setTabValue(0);
+    
+    // 显示提示信息
+    setNotification({
+      open: true,
+      message: `请上传${modelName}的${needStructure && needParams ? "结构文件和参数文件" : needStructure ? "结构文件" : "参数文件"}`,
+      severity: "info",
+    });
   }, []);
 
   // 关闭通知
@@ -1020,6 +1520,22 @@ const ModelManagementPage: React.FC = () => {
       <Typography variant="h4" component="h1" gutterBottom align="center">
         机器学习模型管理
       </Typography>
+      
+      {/* 模型搜索部分 */}
+      <Box sx={{ mb: 4 }}>
+        <ModelSearch 
+          onSearchResult={handleSearchResult} 
+          initialSearchTerm={searchModelTerm}
+        />
+        
+        {searchResult && (
+          <SearchResult 
+            result={searchResult} 
+            onCreateConfig={handleAutoCreateConfig} 
+            onUpload={handleNavigateToUpload}
+          />
+        )}
+      </Box>
       
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
         <Button 
@@ -1045,7 +1561,10 @@ const ModelManagementPage: React.FC = () => {
         </Tabs>
         
         <TabPanel value={tabValue} index={0}>
-          <ModelUploader onUploadSuccess={handleUploadSuccess} />
+          <ModelUploader 
+            onUploadSuccess={handleUploadSuccess} 
+            searchModelName={searchModel}
+          />
         </TabPanel>
         
         <TabPanel value={tabValue} index={1}>
@@ -1069,16 +1588,22 @@ const ModelManagementPage: React.FC = () => {
           使用指南:
         </Typography>
         <Typography variant="body2">
-          1. 在"上传模型"标签页中，您可以上传模型参数文件(.pth, .pkl, .tar)。系统将自动扫描并尝试匹配适合的模型结构。
+          1. 在顶部搜索框输入模型名称，检查系统中是否存在该模型的结构和参数文件。
         </Typography>
         <Typography variant="body2">
-          2. 在"模型配置"标签页中，选择模型类型和对应的参数文件，设置分类数量等参数，创建配置。
+          2. 如果检测到模型结构和参数文件都存在，可以一键自动创建配置。
         </Typography>
         <Typography variant="body2">
-          3. 在"模型管理"标签页中，您可以查看已配置的模型，并进行测试或删除操作。
+          3. 如果缺少结构或参数文件，系统会提示您需要上传的具体文件，并引导您前往上传页面。
+        </Typography>
+        <Typography variant="body2">
+          4. 所有文件上传完成后，再次搜索该模型，系统会自动检测文件是否齐全可创建配置。
+        </Typography>
+        <Typography variant="body2">
+          5. 创建好的模型配置会在攻击效果评估页面的"选择预测模型"下拉栏中自动显示。
         </Typography>
         <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          提示: 上传新的模型参数文件后，系统会自动扫描并尝试匹配适合的模型结构。如果没有自动匹配，您可以手动创建配置。
+          提示: 请确保模型结构文件和参数文件遵循命名规范，这样系统才能正确匹配它们。
         </Typography>
       </Box>
       

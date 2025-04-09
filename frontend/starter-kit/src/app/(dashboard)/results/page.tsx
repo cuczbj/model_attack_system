@@ -20,6 +20,7 @@ import Tab from "@mui/material/Tab";
 import Slider from "@mui/material/Slider";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 const API_URL = "http://127.0.0.1:5000";
 
@@ -29,20 +30,6 @@ const ATTACK_METHODS = [
   { id: "PIG_attack", name: "PIG逆向攻击" },
   { id: "advanced", name: "高级逆向攻击" },
 ];
-
-
-
-/*3.12*/ 
-//预测模型选项
-const TARGET_MODEL =[
-  {id:"MLP",name:"多层感知机-ATT40"},
-  {id:"VGG16",name:"VGG16-celeba1000"},
-  {id:"IR152",name:"IR152-celeba1000"},
-  {id:"FaceNet64",name:"FaceNet64-celeba1000"},
-];
-
-
-
 
 // 状态映射
 const STATUS_MAP = {
@@ -75,10 +62,20 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+// 定义模型接口类型
+interface ModelType {
+  id: string;
+  name: string;
+  model_name: string;
+  param_file: string;
+  class_num: number;
+  input_shape: number[];
+}
+
 const AdvancedAttackResultsDisplay = () => {
   const [targetLabel, setTargetLabel] = useState<number>(0);
   const [attackMethod, setAttackMethod] = useState<string>("standard_attack");
-  const [targetModel, setTargetModel] = useState<string>("MLP"); // 新增状态来存储目标模型
+  const [targetModel, setTargetModel] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attackResult, setAttackResult] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -89,6 +86,10 @@ const AdvancedAttackResultsDisplay = () => {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
   
+  // 添加状态用于存储可用模型
+  const [availableModels, setAvailableModels] = useState<ModelType[]>([]);
+  const [modelsLoading, setModelsLoading] = useState<boolean>(false);
+  
   // 高级参数设置
   const [advancedSettings, setAdvancedSettings] = useState({
     iterations: 100,
@@ -96,9 +97,37 @@ const AdvancedAttackResultsDisplay = () => {
     useRegularization: true,
   });
 
-  // 新增选择目标模型的组件
-  const handleModelChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setTargetModel(event.target.value as string);
+  // 加载可用模型列表
+  const loadAvailableModels = async () => {
+    try {
+      setModelsLoading(true);
+      const response = await fetch(`${API_URL}/api/models/configured`);
+      if (!response.ok) {
+        throw new Error("获取模型列表失败");
+      }
+      const models = await response.json();
+      setAvailableModels(models);
+      
+      // 如果有模型且当前未选择，设置第一个为默认值
+      if (models.length > 0 && !targetModel) {
+        setTargetModel(models[0].id);
+      }
+    } catch (error) {
+      console.error("加载模型列表失败:", error);
+      setErrorMessage("无法加载可用模型列表，请检查服务器连接");
+    } finally {
+      setModelsLoading(false);
+    }
+  };
+
+  // 在组件挂载时加载模型列表
+  useEffect(() => {
+    loadAvailableModels();
+  }, []);
+
+  // 新增选择目标模型的回调函数
+  const handleModelChange = (event) => {
+    setTargetModel(event.target.value);
   };
 
   // 加载历史攻击记录
@@ -132,43 +161,41 @@ const AdvancedAttackResultsDisplay = () => {
       [setting]: value
     }));
   };
- // 图像加载错误处理函数
-const handleImageError = (e, taskId, targetLabel) => {
-  console.error(`图像加载失败`);
-  // 尝试其他可能的URL格式
-  const img = e.target;
-  const currentSrc = img.src;
   
-  // 尝试不同的路径格式
-  if (currentSrc.includes('/api/tasks/')) {
-    // 尝试直接访问静态文件
-    if (attackMethod === "PIG_attack") {
-      img.src = `${API_URL}/static/result/PLG_MI_Inversion/success_imgs/${targetLabel}/0_attack_iden_${targetLabel}_0.png?t=${Date.now()}`;
+  // 图像加载错误处理函数
+  const handleImageError = (e, taskId, targetLabel) => {
+    console.error(`图像加载失败`);
+    // 尝试其他可能的URL格式
+    const img = e.target;
+    const currentSrc = img.src;
+    
+    // 尝试不同的路径格式
+    if (currentSrc.includes('/api/tasks/')) {
+      // 尝试直接访问静态文件
+      if (attackMethod === "PIG_attack") {
+        img.src = `${API_URL}/static/result/PLG_MI_Inversion/success_imgs/${targetLabel}/0_attack_iden_${targetLabel}_0.png?t=${Date.now()}`;
+      } else {
+        img.src = `${API_URL}/static/result/attack/inverted_${targetLabel}.png?t=${Date.now()}`;
+      }
     } else {
-      img.src = `${API_URL}/static/result/attack/inverted_${targetLabel}.png?t=${Date.now()}`;
+      // 如果静态路径也失败，显示占位符
+      img.src = "https://via.placeholder.com/150x150?text=无图像";
     }
-  } else {
-    // 如果静态路径也失败，显示占位符
-    img.src = "https://via.placeholder.com/150x150?text=无图像";
-  }
-};
+  };
 
-// 更新显示图像的代码
-{attackResult && (
-  <img
-    src={attackResult}
-    alt={`重建的标签 ${targetLabel} 图像`}
-    style={{
-      maxWidth: "100%",
-      maxHeight: "250px",
-      objectFit: "contain",
-    }}
-    onError={(e) => handleImageError(e, currentTaskId, targetLabel)}
-  />
-)}
   // 处理标签页切换
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+  };
+
+  // 获取当前选择模型的配置信息
+  const getSelectedModelConfig = () => {
+    const model = availableModels.find(m => m.id === targetModel);
+    return model || {
+      model_name: "",
+      class_num: 40,
+      input_shape: [64, 64]
+    };
   };
 
   // 执行攻击
@@ -181,17 +208,22 @@ const handleImageError = (e, taskId, targetLabel) => {
       setConfidence(null);
       setCurrentTaskId(null);
       
+      // 获取选择的模型配置
+      const selectedModel = getSelectedModelConfig();
+      
       // 准备请求数据，包含高级参数
       const requestData = {
         target_label: targetLabel,
         attack_method: attackMethod,
         name: `${ATTACK_METHODS.find(m => m.id === attackMethod)?.name || "模型反演"} - 标签 ${targetLabel}`,
-        target_model: targetModel,  // 使用当前的选择的模型名称
+        target_model: selectedModel.model_name,  // 使用模型名称
         description: `针对标签 ${targetLabel} 的${ATTACK_METHODS.find(m => m.id === attackMethod)?.name || "模型反演"}攻击`,
         parameters: {
           iterations: advancedSettings.iterations,
           learning_rate: advancedSettings.learningRate,
-          use_regularization: advancedSettings.useRegularization
+          use_regularization: advancedSettings.useRegularization,
+          class_num: selectedModel.class_num,
+          input_shape: selectedModel.input_shape
         }
       };
 
@@ -210,14 +242,14 @@ const handleImageError = (e, taskId, targetLabel) => {
 
       const data = await response.json();
       console.log("攻击响应数据:", data);
+      
       // 保存任务ID
       if (data.task_id) {
         setCurrentTaskId(data.task_id);
       }
       
       let imageUrl = "";
-      // 如果后端返回base64图像
-      // 修改handleAttack函数中处理响应的部分
+      // 处理不同类型的图像响应
       if (data.image) {
         // base64图像
         imageUrl = `data:image/png;base64,${data.image}`;
@@ -238,11 +270,10 @@ const handleImageError = (e, taskId, targetLabel) => {
         imageUrl = `${API_URL}${data.result_image.replace("./data", "/static")}`;
         setAttackResult(imageUrl);
       }
-
       
-      // 获取模型预测结果
+      // 尝试获取预测结果
       try {
-        const predictionData = await fetchPrediction(targetModel);
+        await fetchPrediction();
       } catch (predError) {
         console.error("预测过程中出错:", predError);
       }
@@ -255,129 +286,130 @@ const handleImageError = (e, taskId, targetLabel) => {
     }
   };
 
- 
-// 获取预测结果
-const fetchPrediction = async () => {
-  try {
-    // 创建FormData对象
-    const formData = new FormData();
-    
-    let imageUrl;
-    let blob;
-    
-    // 根据是否有任务ID决定获取图像的方式
-    if (currentTaskId) {
-      // 使用任务ID API获取图像
-      imageUrl = `${API_URL}/api/tasks/${currentTaskId}/image?t=${Date.now()}`;
-    } else {
-      // 使用传统路径
-      if (attackMethod === "PIG_attack") {
-        imageUrl = `${API_URL}/static/result/PLG_MI_Inversion/success_imgs/${targetLabel}/0_attack_iden_${targetLabel}_0.png?t=${Date.now()}`;
+  // 获取预测结果
+  const fetchPrediction = async () => {
+    try {
+      // 创建FormData对象
+      const formData = new FormData();
+      
+      let imageUrl;
+      let blob;
+      
+      // 根据是否有任务ID决定获取图像的方式
+      if (currentTaskId) {
+        // 使用任务ID API获取图像
+        imageUrl = `${API_URL}/api/tasks/${currentTaskId}/image?t=${Date.now()}`;
       } else {
-        imageUrl = `${API_URL}/static/result/attack/inverted_${targetLabel}.png?t=${Date.now()}`;
+        // 使用传统路径
+        if (attackMethod === "PIG_attack") {
+          imageUrl = `${API_URL}/static/result/PLG_MI_Inversion/success_imgs/${targetLabel}/0_attack_iden_${targetLabel}_0.png?t=${Date.now()}`;
+        } else {
+          imageUrl = `${API_URL}/static/result/attack/inverted_${targetLabel}.png?t=${Date.now()}`;
+        }
       }
-    }
-    
-    console.log("尝试获取图像:", imageUrl);
-    
-    // 获取图像
-    const imageResponse = await fetch(imageUrl);
-    if (!imageResponse.ok) {
-      throw new Error(`获取图像失败: ${imageResponse.status} - ${imageUrl}`);
-    }
-    
-    blob = await imageResponse.blob();
-    formData.append("image_file", blob, `image_for_prediction.png`);
-    
-    // **3.12-eaglesfikr-修改第一部分：添加目标模型名称**
-    
-    formData.append("model_name", targetModel); // 传递目标模型名称
-    
-    // 发送预测请求
-    console.log("发送预测请求...");
-    const response = await fetch(`${API_URL}/predict`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`预测请求失败: ${response.status}`);
-    }
-
-    const predictionData = await response.json();
-    console.log("预测结果:", predictionData);
-    
-    let confidence = null;
-    // 根据backend返回格式不同处理confidence
-    if (predictionData.confidence) {
-      confidence = predictionData.confidence;
-    } else if (predictionData.confidences && Array.isArray(predictionData.confidences)) {
-      // 获取对应标签的置信度
-      if (predictionData.prediction !== null && predictionData.prediction !== undefined) {
-        confidence = predictionData.confidences[predictionData.prediction];
-      } else {
-        // 如果没有明确的预测，获取最高置信度
-        confidence = Math.max(...predictionData.confidences);
+      
+      console.log("尝试获取图像:", imageUrl);
+      
+      // 获取图像
+      const imageResponse = await fetch(imageUrl);
+      if (!imageResponse.ok) {
+        throw new Error(`获取图像失败: ${imageResponse.status} - ${imageUrl}`);
       }
-    }
-    
-    setPrediction(predictionData.prediction);
-    setConfidence(confidence);
-    
-    // 如果存在任务ID，更新任务状态
-    if (currentTaskId) {
-      try {
-        await fetch(`${API_URL}/api/tasks/${currentTaskId}/status`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "completed",
-            progress: 100,
-            result: {
-              prediction: predictionData.prediction,
-              confidence: confidence,
-              success: predictionData.prediction === targetLabel
-            }
-          }),
-        });
-      } catch (err) {
-        console.error("Error updating task status:", err);
-      }
-    }
-    
-    return {
-      prediction: predictionData.prediction,
-      confidence: confidence
-    };
-  } catch (error) {
-    console.error("预测错误详情:", error);
-    setErrorMessage(`加载预测结果失败: ${error.message}`);
-    
-    // 如果预测失败，更新任务状态为失败
-    if (currentTaskId) {
-      try {
-        await fetch(`${API_URL}/api/tasks/${currentTaskId}/status`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "completed", // 依然标记为完成，因为图像已生成
-            error_message: "预测失败: " + (error.message || "未知错误")
-          }),
-        });
-      } catch (err) {
-        console.error("Error updating task status:", err);
-      }
-    }
-    
-    return null;
-  }
-};
+      
+      blob = await imageResponse.blob();
+      formData.append("image_file", blob, `image_for_prediction.png`);
+      
+      // 获取选择的模型信息
+      const selectedModel = getSelectedModelConfig();
+      
+      // 添加模型参数到请求
+      formData.append("model_name", selectedModel.model_name); 
+      formData.append("param_file", selectedModel.param_file || "");
+      formData.append("class_num", selectedModel.class_num.toString());
+      
+      // 发送预测请求
+      console.log("发送预测请求...");
+      const response = await fetch(`${API_URL}/predict`, {
+        method: "POST",
+        body: formData,
+      });
 
+      if (!response.ok) {
+        throw new Error(`预测请求失败: ${response.status}`);
+      }
 
+      const predictionData = await response.json();
+      console.log("预测结果:", predictionData);
+      
+      let confidence = null;
+      // 根据backend返回格式不同处理confidence
+      if (predictionData.confidence) {
+        confidence = predictionData.confidence;
+      } else if (predictionData.confidences && Array.isArray(predictionData.confidences)) {
+        // 获取对应标签的置信度
+        if (predictionData.prediction !== null && predictionData.prediction !== undefined) {
+          confidence = predictionData.confidences[predictionData.prediction];
+        } else {
+          // 如果没有明确的预测，获取最高置信度
+          confidence = Math.max(...predictionData.confidences);
+        }
+      }
+      
+      setPrediction(predictionData.prediction);
+      setConfidence(confidence);
+      
+      // 如果存在任务ID，更新任务状态
+      if (currentTaskId) {
+        try {
+          await fetch(`${API_URL}/api/tasks/${currentTaskId}/status`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status: "completed",
+              progress: 100,
+              result: {
+                prediction: predictionData.prediction,
+                confidence: confidence,
+                success: predictionData.prediction === targetLabel
+              }
+            }),
+          });
+        } catch (err) {
+          console.error("Error updating task status:", err);
+        }
+      }
+      
+      return {
+        prediction: predictionData.prediction,
+        confidence: confidence
+      };
+    } catch (error) {
+      console.error("预测错误详情:", error);
+      setErrorMessage(`加载预测结果失败: ${error.message}`);
+      
+      // 如果预测失败，更新任务状态为失败
+      if (currentTaskId) {
+        try {
+          await fetch(`${API_URL}/api/tasks/${currentTaskId}/status`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status: "completed", // 依然标记为完成，因为图像已生成
+              error_message: "预测失败: " + (error.message || "未知错误")
+            }),
+          });
+        } catch (err) {
+          console.error("Error updating task status:", err);
+        }
+      }
+      
+      return null;
+    }
+  };
   
   // 查看历史任务详情
   const viewTaskResult = async (taskId) => {
@@ -407,8 +439,6 @@ const fetchPrediction = async () => {
           setAttackMethod(task.attack_type);
         }
       }
-
-    
       
       // 设置图像结果，使用任务ID API
       const timestamp = Date.now();
@@ -497,24 +527,46 @@ const fetchPrediction = async () => {
             </FormControl>
           </Grid>
 
-          {/* {预测模型选择} */}
+          {/* 预测模型选择 - 动态加载 */}
           <Grid item xs={12} md={6}>
-            <Typography gutterBottom>预测模型：</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography gutterBottom>预测模型：</Typography>
+              <Button 
+                size="small" 
+                startIcon={<RefreshIcon />} 
+                onClick={loadAvailableModels}
+                disabled={modelsLoading}
+              >
+                刷新
+              </Button>
+            </Box>
             <FormControl fullWidth>
               <InputLabel id="target-model-label">选择预测模型</InputLabel>
               <Select
                 labelId="target-model-label"
-                value={targetModel}  // 绑定状态
+                value={targetModel}
                 label="选择预测模型"
-                onChange={(e) => setTargetModel(e.target.value)}  // 监听变化
+                onChange={handleModelChange}
+                disabled={modelsLoading || availableModels.length === 0}
               >
-                {TARGET_MODEL.map((model) => (
-                  <MenuItem key={model.id} value={model.id}>
-                    {model.name}
-                  </MenuItem>
-                ))}
+                {modelsLoading ? (
+                  <MenuItem disabled value="">加载中...</MenuItem>
+                ) : availableModels.length === 0 ? (
+                  <MenuItem disabled value="">暂无可用模型</MenuItem>
+                ) : (
+                  availableModels.map((model) => (
+                    <MenuItem key={model.id} value={model.id}>
+                      {model.name}
+                    </MenuItem>
+                  ))
+                )}
               </Select>
             </FormControl>
+            {availableModels.length === 0 && !modelsLoading && (
+              <Alert severity="warning" sx={{ mt: 1 }}>
+                未找到可用模型，请先在模型管理页面配置模型
+              </Alert>
+            )}
           </Grid>
         </Grid>
 
@@ -525,7 +577,7 @@ const fetchPrediction = async () => {
             color="primary"
             fullWidth
             onClick={handleAttack}
-            disabled={isLoading}
+            disabled={isLoading || modelsLoading || availableModels.length === 0 || !targetModel}
             startIcon={isLoading ? <CircularProgress size={20} /> : null}
           >
             {isLoading ? "正在执行攻击..." : "执行攻击"}
@@ -563,6 +615,7 @@ const fetchPrediction = async () => {
                         maxHeight: "250px",
                         objectFit: "contain",
                       }}
+                      onError={(e) => handleImageError(e, currentTaskId, targetLabel)}
                     />
                   </Box>
                   {currentTaskId && (
@@ -742,6 +795,43 @@ const fetchPrediction = async () => {
             开启正则化可以生成更清晰的图像，但可能降低攻击成功率。
           </Typography>
         </Box>
+
+        {/* 模型信息展示 */}
+        {targetModel && availableModels.length > 0 && (
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              当前选择的模型信息
+            </Typography>
+            <Card variant="outlined">
+              <CardContent>
+                {(() => {
+                  const model = availableModels.find(m => m.id === targetModel);
+                  if (!model) return <Typography>未找到模型信息</Typography>;
+                  
+                  return (
+                    <>
+                      <Typography variant="body1">
+                        <strong>模型名称:</strong> {model.name}
+                      </Typography>
+                      <Typography variant="body1">
+                        <strong>模型类型:</strong> {model.model_name}
+                      </Typography>
+                      <Typography variant="body1">
+                        <strong>参数文件:</strong> {model.param_file}
+                      </Typography>
+                      <Typography variant="body1">
+                        <strong>分类数量:</strong> {model.class_num}
+                      </Typography>
+                      <Typography variant="body1">
+                        <strong>输入形状:</strong> {model.input_shape ? model.input_shape.join(' × ') : '未知'}
+                      </Typography>
+                    </>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+          </Box>
+        )}
       </TabPanel>
     </Box>
   );

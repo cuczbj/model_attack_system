@@ -4,6 +4,7 @@ import json
 import logging
 import torch
 import time
+import uuid
 from typing import Dict, List, Tuple, Optional, Any
 from threading import Thread
 from watchdog.observers import Observer
@@ -29,6 +30,7 @@ class ModelConfig:
         self.input_shape = input_shape  # 输入形状
         self.model_type = model_type    # 模型类型标识符
         self.created_time = time.time()  # 创建时间
+        self.model_id = f"{model_name}-{uuid.uuid4().hex[:8]}"  # 生成唯一模型ID
         
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -37,7 +39,8 @@ class ModelConfig:
             "class_num": self.class_num,
             "input_shape": self.input_shape,
             "model_type": self.model_type,
-            "created_time": self.created_time
+            "created_time": self.created_time,
+            "model_id": self.model_id
         }
     
     @classmethod
@@ -50,6 +53,7 @@ class ModelConfig:
             model_type=data.get("model_type", "")
         )
         config.created_time = data.get("created_time", time.time())
+        config.model_id = data.get("model_id", f"{config.model_name}-{uuid.uuid4().hex[:8]}")
         return config
 
 
@@ -419,7 +423,7 @@ if __name__ == "__main__":
         
     print(f"可用模型配置: {len(configs)}")
     for config in configs:
-        print(f"  - {config.model_name} + {config.param_file} ({config.class_num}类)")
+        print(f"  - {config.model_name} + {config.param_file} ({config.class_num}类) [ID: {config.model_id}]")
     
     # 启动监控
     print("启动文件监控，按Ctrl+C停止...")

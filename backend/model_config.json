@@ -1,13 +1,14 @@
 [
   {
-    "model_name": "target_vgg16",
+    "model_name": "vgg16",
     "param_file": "VGG16_88.26.tar",
-    "class_num": 40,
+    "class_num": 10,
     "input_shape": [
-      112,
-      92
+      64,
+      64
     ],
-    "model_type": "target_vgg16",
-    "created_time": 1743133637.3897102
+    "model_type": "vgg16",
+    "created_time": 1744033015.3738985,
+    "model_id": "vgg16-a1aa50d3"
   }
 ]
