@@ -1,0 +1,638 @@
+2025-04-09 16:29:29,230 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:29:29,762 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:29:29,764 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:29:29,766 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:29:29,767 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:29:29,770 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:29:29,772 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:29:29,776 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:29:29,777 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:29:29,778 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:29:29,779 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:29:29,782 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:29:29,792 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:29:29,795 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:29:29,796 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:29:29,797 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:29:29,800 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:29:29,805 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:29:29,806 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:29:29,808 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:29:29,809 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:29:29,843 - werkzeug - INFO - _internal.py:187 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.77:5000
+2025-04-09 16:29:29,847 - werkzeug - INFO - _internal.py:187 - _log - [33mPress CTRL+C to quit[0m
+2025-04-09 16:29:29,849 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:29:32,940 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:29:33,362 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:29:33,363 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:29:33,366 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:29:33,368 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:29:33,371 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:29:33,372 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:29:33,377 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:29:33,378 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:29:33,379 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:29:33,380 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:29:33,392 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:29:33,393 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:29:33,394 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:29:33,395 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:29:33,397 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:29:33,402 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:29:33,408 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:29:33,409 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:29:33,410 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:29:33,417 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:29:33,429 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:29:33,447 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:29:59,456 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:29:59,459 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:29:59,461 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:29:59,463 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:29:59,466 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:29:59,470 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:29:59,471 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:29:59,474 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:29:59,477 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:29:59,490 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:29:59] "GET /api/models/configured HTTP/1.1" 200 -
+2025-04-09 16:29:59,496 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:29:59,498 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:29:59,501 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:29:59,503 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:29:59,505 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:29:59,510 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:29:59,514 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:29:59,517 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:29:59,518 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:29:59,522 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:29:59] "GET /api/models/configured HTTP/1.1" 200 -
+2025-04-09 16:30:00,640 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:30:00] "OPTIONS /attack HTTP/1.1" 200 -
+2025-04-09 16:30:02,135 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:30:02] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-09 16:32:57,900 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\model_scanner.py', reloading
+2025-04-09 16:32:58,477 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:33:01,606 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:33:02,074 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:33:02,075 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:33:02,077 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:33:02,077 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:33:02,079 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:33:02,080 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:33:02,083 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:33:02,084 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:33:02,085 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:33:02,085 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:33:02,088 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:33:02,089 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:33:02,090 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:33:02,090 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:33:02,090 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:33:02,091 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:33:02,094 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:33:02,094 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:33:02,095 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:33:02,096 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:33:02,107 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:33:02,124 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:36:50,159 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\reconstruct.py', reloading
+2025-04-09 16:36:51,251 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:36:54,435 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:36:54,961 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:36:54,962 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:36:54,963 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:36:54,964 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:36:54,965 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:36:54,967 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:36:54,970 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:36:54,971 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:36:54,972 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:36:54,973 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:36:54,975 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:36:54,976 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:36:54,977 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:36:54,977 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:36:54,978 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:36:54,979 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:36:54,981 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:36:54,982 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:36:54,986 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:36:54,987 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:36:54,998 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:36:55,016 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:39:11,701 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:12,873 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:39:16,757 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:39:17,198 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:39:17,202 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:39:17,204 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:39:17,204 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:39:17,205 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:39:17,207 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:39:17,210 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:39:17,212 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:39:17,213 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:39:17,214 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:39:17,219 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:39:17,219 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:39:17,220 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:39:17,221 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:39:17,221 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:39:17,222 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:39:17,228 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:39:17,231 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:39:17,233 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:39:17,234 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:39:17,247 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:39:17,268 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:39:26,429 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:26,438 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:27,740 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:39:31,161 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:39:31,612 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:39:31,614 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:39:31,618 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:39:31,618 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:39:31,620 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:39:31,621 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:39:31,627 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:39:31,647 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:39:31,656 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:39:31,657 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:39:31,660 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:39:31,664 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:39:31,665 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:39:31,666 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:39:31,667 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:39:31,668 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:39:31,671 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:39:31,672 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:39:31,673 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:39:31,674 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:39:31,687 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:39:31,705 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:39:43,317 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:43,320 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:44,158 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:39:47,581 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:39:48,135 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:39:48,136 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:39:48,138 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:39:48,138 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:39:48,140 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:39:48,141 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:39:48,143 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:39:48,145 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:39:48,146 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:39:48,146 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:39:48,148 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:39:48,149 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:39:48,149 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:39:48,150 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:39:48,151 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:39:48,153 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:39:48,156 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:39:48,156 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:39:48,157 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:39:48,158 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:39:48,171 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:39:48,190 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:39:48,327 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:48,334 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:48,966 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:48,969 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:39:49,482 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:39:52,914 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:39:53,384 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:39:53,385 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:39:53,387 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:39:53,388 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:39:53,389 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:39:53,391 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:39:53,394 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:39:53,395 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:39:53,396 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:39:53,397 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:39:53,399 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:39:53,400 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:39:53,400 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:39:53,401 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:39:53,401 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:39:53,402 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:39:53,405 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:39:53,406 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:39:53,407 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:39:53,407 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:39:53,419 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:39:53,437 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:40:04,198 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:40:04,201 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:40:04,856 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:40:08,596 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:40:09,141 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:40:09,142 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:09,144 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:09,144 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:09,146 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:09,148 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:09,150 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:09,151 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:09,152 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:09,153 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:09,155 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:09,156 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:09,157 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:09,157 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:40:09,158 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:09,168 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:09,171 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:09,172 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:09,172 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:09,174 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:09,185 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:40:09,211 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:40:14,181 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:40:14,641 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:40:14,642 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:14,644 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:14,645 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:14,647 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:14,649 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:14,652 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:14,653 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:14,654 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:14,663 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:14,667 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:14,668 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:14,669 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:14,669 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:40:14,672 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:14,674 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:14,679 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:14,680 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:14,683 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:14,683 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:14,720 - werkzeug - INFO - _internal.py:187 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.77:5000
+2025-04-09 16:40:14,729 - werkzeug - INFO - _internal.py:187 - _log - [33mPress CTRL+C to quit[0m
+2025-04-09 16:40:14,731 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:40:18,120 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:40:18,639 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:40:18,641 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:18,643 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:18,643 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:18,649 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:18,651 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:18,654 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:18,656 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:18,660 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:18,661 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:18,673 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:18,677 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:18,685 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:18,690 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:40:18,696 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:18,702 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:18,706 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:18,712 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:18,719 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:18,720 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:18,749 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:40:18,770 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:40:29,220 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:29,222 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:29,223 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:29,224 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:29,228 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:29,232 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:29,233 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:29,233 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:29,243 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:29,247 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:40:29] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:40:29,479 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:29,479 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:29,481 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:29,483 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:29,484 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:29,487 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:29,488 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:29,489 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:29,490 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:29,499 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:40:29] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:40:30,803 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:30,805 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:30,808 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:30,811 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:30,812 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:30,819 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:30,821 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:30,831 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:30,833 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:30,834 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:40:30] "GET /api/models/configured HTTP/1.1" 200 -
+2025-04-09 16:40:30,840 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:40:30,842 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:40:30,845 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:40:30,846 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:40:30,849 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:40:30,855 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:40:30,861 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:40:30,864 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:40:30,865 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:40:30,867 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:40:30] "GET /api/models/configured HTTP/1.1" 200 -
+2025-04-09 16:40:32,126 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:40:32] "OPTIONS /attack HTTP/1.1" 200 -
+2025-04-09 16:40:33,514 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:40:33] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-09 16:48:55,465 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:48:55,919 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:48:55,920 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:48:55,922 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:48:55,922 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:48:55,925 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:48:55,928 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:48:55,933 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:48:55,939 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:48:55,941 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:48:55,944 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:48:55,952 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:48:55,953 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:48:55,955 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:48:55,959 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:48:55,960 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:48:55,970 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:48:55,975 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:48:55,978 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:48:55,982 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:48:55,984 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:48:56,029 - werkzeug - INFO - _internal.py:187 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.77:5000
+2025-04-09 16:48:56,031 - werkzeug - INFO - _internal.py:187 - _log - [33mPress CTRL+C to quit[0m
+2025-04-09 16:48:56,035 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:48:59,475 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:48:59,960 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:48:59,961 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:48:59,962 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:48:59,963 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:48:59,964 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:48:59,967 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:48:59,971 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:48:59,972 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:48:59,975 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:48:59,976 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:48:59,980 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:48:59,983 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:48:59,999 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:48:59,999 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:49:00,004 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:49:00,009 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:49:00,014 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:49:00,023 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:49:00,031 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:49:00,033 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:49:00,049 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:49:00,069 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:49:00,836 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:49:00] "OPTIONS /attack HTTP/1.1" 200 -
+2025-04-09 16:49:02,146 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\.conda\\envs\\my_env\\Lib\\site-packages\\flask\\app.py', reloading
+2025-04-09 16:49:02,186 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:49:02] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-09 16:49:03,387 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:49:06,626 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:49:07,153 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:49:07,154 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:49:07,157 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:49:07,161 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:49:07,162 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:49:07,164 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:49:07,167 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:49:07,168 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:49:07,169 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:49:07,170 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:49:07,172 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:49:07,174 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:49:07,175 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:49:07,175 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:49:07,175 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:49:07,177 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:49:07,179 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:49:07,180 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:49:07,182 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:49:07,183 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:49:07,198 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:49:07,221 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:49:07,240 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:49:07] "OPTIONS /attack HTTP/1.1" 200 -
+2025-04-09 16:49:08,636 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:49:08] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-09 16:50:00,700 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:50:00,701 - werkzeug - INFO - _internal.py:187 - _log -  * Detected change in 'C:\\Users\\lenovo\\Desktop\\my_model_attack\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-09 16:50:01,149 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:50:08,485 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:50:09,000 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:50:09,001 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:50:09,003 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:50:09,004 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:50:09,007 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:50:09,009 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:50:09,012 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:50:09,014 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:50:09,015 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:50:09,016 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:50:09,019 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:50:09,036 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:50:09,038 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:50:09,040 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:50:09,043 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:50:09,045 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:50:09,048 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:50:09,049 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:50:09,059 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:50:09,060 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:50:09,090 - werkzeug - INFO - _internal.py:187 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.77:5000
+2025-04-09 16:50:09,091 - werkzeug - INFO - _internal.py:187 - _log - [33mPress CTRL+C to quit[0m
+2025-04-09 16:50:09,093 - werkzeug - INFO - _internal.py:187 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-09 16:50:12,115 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-09 16:50:12,559 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-09 16:50:12,561 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:50:12,562 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:50:12,563 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:50:12,566 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:50:12,568 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:50:12,573 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:50:12,580 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:50:12,582 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:50:12,584 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:50:12,588 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:50:12,595 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:50:12,599 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:50:12,599 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-09 16:50:12,602 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:50:12,608 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:50:12,614 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:50:12,615 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:50:12,617 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:50:12,618 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:50:12,635 - werkzeug - WARNING - _internal.py:187 - _log -  * Debugger is active!
+2025-04-09 16:50:12,653 - werkzeug - INFO - _internal.py:187 - _log -  * Debugger PIN: 825-832-359
+2025-04-09 16:50:22,938 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:50:22] "OPTIONS /attack HTTP/1.1" 200 -
+2025-04-09 16:51:25,476 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:51:30,412 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:51:45,485 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:51:50,108 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:52:38,030 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:52:57,733 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:53:11,101 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:53:11,102 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:53:15,857 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:53:16,165 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:53:16,165 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:53:36,172 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:53:36,173 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:53:36,174 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:54:16,944 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,946 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,947 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,953 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,969 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,974 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,978 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,978 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,979 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,980 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,981 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,985 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,998 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:16,998 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:17,000 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,001 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,002 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,003 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,004 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,004 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,005 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,006 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,008 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,009 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,010 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,010 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,012 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,013 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,014 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,015 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,016 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,027 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,028 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,029 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,030 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,030 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,032 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,034 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,035 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,035 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,036 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,037 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,038 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,038 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,039 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,040 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,040 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,042 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,044 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,045 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,046 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,047 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,055 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,056 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,057 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,058 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,063 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,066 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,066 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,068 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,069 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,070 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,070 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,072 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,072 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,073 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configured HTTP/1.1" 200 -
+2025-04-09 16:54:17,074 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,074 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,076 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:54:17,077 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,079 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,082 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,083 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,086 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,086 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,090 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,090 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,092 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,092 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,095 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,095 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,096 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,097 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:54:17,100 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,100 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,100 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,102 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,102 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,102 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,103 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,105 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,106 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,108 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,110 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,112 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,116 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,117 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,119 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,119 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,120 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,121 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,121 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,124 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:54:17,126 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,127 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,128 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,130 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/parameters HTTP/1.1" 200 -
+2025-04-09 16:54:17,130 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,131 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,132 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/parameters HTTP/1.1" 200 -
+2025-04-09 16:54:17,132 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,133 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:54:17,133 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/available HTTP/1.1" 200 -
+2025-04-09 16:54:17,136 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,136 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,137 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,148 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,150 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:54:17,151 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:54:17,154 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,155 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,157 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,159 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/parameters HTTP/1.1" 200 -
+2025-04-09 16:54:17,161 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configured HTTP/1.1" 200 -
+2025-04-09 16:54:17,162 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/available HTTP/1.1" 200 -
+2025-04-09 16:54:17,163 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/available HTTP/1.1" 200 -
+2025-04-09 16:54:17,417 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:54:17,419 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:17,420 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,421 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,423 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,428 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,429 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,431 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,438 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,440 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configurations HTTP/1.1" 200 -
+2025-04-09 16:54:17,463 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-09 16:54:17,465 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: resnet50_scratch_dag -> Resnet50_scratch_dag
+2025-04-09 16:54:17,466 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-09 16:54:17,467 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-09 16:54:17,470 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-09 16:54:17,477 - model_scanner - ERROR - model_scanner.py:93 - scan_model_definitions - 加载模型 test 出错: No module named 'target_vgg16'
+2025-04-09 16:54:17,482 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: vgg16 -> VGG16
+2025-04-09 16:54:17,483 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: mynet_50.pkl
+2025-04-09 16:54:17,484 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-09 16:54:17,485 - werkzeug - INFO - _internal.py:187 - _log - 127.0.0.1 - - [09/Apr/2025 16:54:17] "GET /api/models/configurations HTTP/1.1" 200 -

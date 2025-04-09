@@ -36,7 +36,7 @@ def get_available_params():
     return [f for f in os.listdir(CHECKPOINT_DIR) if f.endswith((".pth", ".h5",".tar",".pkl"))]
 
 # 载入目标模型
-def load_model(model_name, param_filename , device ,class_num) :
+def load_model(model_name, param_filename, device, class_num):
     try:
         # 动态导入模型文件
         model_module = importlib.import_module(f"models.classifiers.{model_name}")
@@ -45,34 +45,46 @@ def load_model(model_name, param_filename , device ,class_num) :
         if not hasattr(model_module, "MODEL_CLASS_NAME"):
             raise RuntimeError(f"MODEL_CLASS_NAME not found in {model_name}.py")
 
-        model_class_name = getattr(model_module, "MODEL_CLASS_NAME")  # 变量是字符串
-        model_class = getattr(model_module, model_class_name, None)  # 获取类
+        model_class_name = getattr(model_module, "MODEL_CLASS_NAME")
+        model_class = getattr(model_module, model_class_name, None)
 
-        # 实例化模型（传入计算得到的维度）
+        # 实例化模型
         model = model_class(class_num).to(device) 
 
-        # 加载模型参数
-        # param_file = os.path.join(CHECKPOINT_DIR, param_filename)
-        # 直接拼接路径
-        param_file = CHECKPOINT_DIR + "/" + param_filename
+        # 使用os.path.join构建路径
+        param_file = os.path.join(CHECKPOINT_DIR, param_filename)
+        
+        # 检查文件是否存在并可访问
+        if not os.path.isfile(param_file):
+            raise FileNotFoundError(f"参数文件不存在: {param_file}")
+            
+        print(f"尝试加载参数文件: {param_file}")
 
-        if param_file[-3:] == "tar":                #要加个文件类型判断
+        if param_file.endswith("tar"):
             checkpoint = torch.load(param_file, map_location=device)
             model.load_state_dict(checkpoint['state_dict'], strict=False)
         else:
             model.load_state_dict(torch.load(param_file, map_location=device)) 
-        model.eval()  # 切换到评估模式
+        model.eval()
         return model
     except Exception as e:
+        print(f"加载模型出错详情: {str(e)}")  # 打印详细错误
         raise RuntimeError(f"Error loading model {model_name}: {str(e)}")
-
+    
 def load_G(attack_method, target_model, dataset, device, class_num):
     try:
         G_DIR = "./checkpoint/G_model"
-        target_model_name = target_model.split("_")[1]
+        # 安全处理target_model名称
+        parts = target_model.split("_")
+        target_model_name = parts[1] if len(parts) > 1 else target_model
+        
         G_param_filename = f"gen_{attack_method}_{target_model_name}_{dataset}.pth.tar"
-        G_param_file = G_DIR + "/" +  G_param_filename
+        G_param_file = G_DIR + "/" + G_param_filename
         print("G_param_file:", G_param_file)
+        
+        # 检查文件是否存在
+        if not os.path.exists(G_param_file):
+            raise FileNotFoundError(f"找不到生成器模型文件: {G_param_file}")
         
         # 先固定为ResNetGenerator（PLG使用的生成器模型）
         G = ResNetGenerator(num_classes=class_num).to(device)  # 实例化生成器模型

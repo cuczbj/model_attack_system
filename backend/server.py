@@ -28,6 +28,47 @@ import torch
 import json
 from flask import jsonify, request
 import uuid
+import logging
+import os
+from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
+
+# 创建日志目录
+log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+os.makedirs(log_dir, exist_ok=True)
+
+# 配置根日志记录器
+log_file = os.path.join(log_dir, 'server.log')
+
+# 创建日志处理器 - 使用RotatingFileHandler自动管理文件大小
+handler = RotatingFileHandler(
+    log_file,
+    maxBytes=10*1024*1024,  # 10MB
+    backupCount=5,          # 保留5个备份文件
+    encoding='utf-8'
+)
+
+# 设置日志格式
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s'
+)
+handler.setFormatter(formatter)
+
+# 配置日志级别
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)  # 设置为DEBUG可以捕获所有级别的日志
+root_logger.addHandler(handler)
+
+# 保留控制台输出
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+root_logger.addHandler(console_handler)
+
+# 配置特定模块的日志级别
+logging.getLogger('werkzeug').setLevel(logging.INFO)  # Flask请求日志
+logging.getLogger('PIL').setLevel(logging.INFO)       # 图像处理库
+
+# 应用启动日志
+logging.info("模型攻击系统服务启动中...")
 
 
 # 将attack目录添加到系统路径
@@ -324,95 +365,7 @@ MODEL_CONFIGS = {
     "IR152": {"mode": "RGB", "h": 64, "w": 64, "class_num": 1000},
 }
 
-# 目标模型预测接口，看看要不要加个参数（数据集为哪个），或者时攻击图像展示只包含固定数据集就行
-@app.route("/predict", methods=["POST"])
-def predict():
-    # if "image_file" not in request.files:
-    #     return jsonify({"error": "No image file provided"}), 400
-    # # 获取模型名称和模型参数文件
-    # model_name = request.form.get("model_name", type=str, default="target_mlp")
-    # param_file = request.form.get("param_file", type=str)
-    # # 加载模型
-    # try:
-    #     model = load_model(model_name, param_file)
-    # except Exception as e:
-    #     return jsonify({"error": str(e)}), 500
-    # # 获取上传的图像文件
-    # image_file = request.files["image_file"]
-    # try:
-    #     # 打印图像文件的路径
-    #     print(f"Received image file: {image_file.filename}")
-    #     # 尝试加载图像
-    #     image = Image.open(image_file).convert("RGB")
-    #     # 根据模型名称确定输入输出维度
-    #     if model_name == "target_mlp":
-    #         h, w, class_num = 112, 92, 40
-    #     else:
-    #         h, w, class_num = 64, 64, 1000  # 默认处理 VGG, FaceNet 等
-    #     # 进行预测
-    #     prediction, confidences = predict_target_model(image, model, h, w, class_num)
-    #     return jsonify({"prediction": prediction, "confidences": confidences})
-    # except Exception as e:
-    #     return jsonify({"error": f"Error processing image: {str(e)}"}), 500
 
-
-    # 接收图像文件
-    if "image_file" not in request.files:
-        return jsonify({"error": "No image file provided"}), 400
-    
-    # 获取目标模型名称参数
-    model_name = request.form.get("model_name", type=str, default="MLP")  # 默认是 MLP
-
-    #根据目标模型名称确定输入输出维度
-    # if model_name=="target_mlp":
-    try:
-        # 读取图像文件并转换为灰度图
-        image_file = request.files["image_file"]
-        
-        # # 获取模型名称和模型参数文件
-        model_name = request.form.get("model_name", type=str, default="target_mlp")
-        param_file = request.form.get("param_file", type=str)
-        class_num = request.form.get("class_num", type=int, default=40)
-        # 加载模型
-        # 先硬编码输入输出维度
-        # h, w, class_num = 112, 92, 40
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
-        model = load_model(model_name, param_file ,device , class_num)
-        
-        # 2. 载入并处理图像
-        
-        image_tensor = image_to_tensor(image_file).to(device)
-    
-        
-        # 3. 调用模型预测
-        with torch.no_grad():
-            output = model.predict(image_tensor)
-            confidences = torch.softmax(output, dim=-1).squeeze(0)
-            prediction = torch.argmax(confidences).item()
-        
-        # 4. 输出预测结果
-        print(f"预测类别: {prediction}")                        
-        #     prediction, confidences = predict_target_model(image_tensor, model, class_num)
-            
-        return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
-    except Exception as e:
-        return jsonify({"error,predict 's problem:": str(e)}), 500
-    # elif model_name in ["target_vgg16", "target_facenet64", "target_ir152"]:
-    #     try:
-    #         # 读取图像文件并转换为灰度图
-    #         image_file = request.files["image_file"]
-    #         image = Image.open(image_file).convert("RGB")
-            
-    #         #单独的输入输出维度
-    #         h, w, class_num = 64, 64, 1000
-    #         # 调用模型预测
-    #         logging.debug(f"predict_target_model type: {type(predict_target_model)}")
-    #         print(f"predict_target_model type: {type(predict_target_model)}")
-    #         prediction, confidences = predict_target_model(image, model_name, class_num)
-            
-    #         return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
-    #     except Exception as e:
-    #         return jsonify({"error,MLP 's problem:": str(e)}), 500
 
 # 更新任务状态    
 @app.route("/api/tasks/<task_id>/status", methods=["PUT"])
@@ -674,32 +627,7 @@ def get_upload_path(filename):
         return os.path.join(MODEL_DIR, filename)
     else:
         return None  # 不支持的文件类型
-# 文件上传接口
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if "file" not in request.files:
-        return jsonify({"error": "缺少文件"}), 400
-    
-    file = request.files["file"]
-    filename = file.filename
 
-    if not filename:
-        return jsonify({"error": "文件名为空"}), 400
-
-    ext = os.path.splitext(filename)[1].lower()
-    if ext not in ALLOWED_EXTENSIONS:
-        return jsonify({"error": f"不支持的文件类型: {ext}"}), 400
-
-    # 获取文件存储路径
-    save_path = get_upload_path(filename)
-    if save_path is None:
-        return jsonify({"error": "无法确定存储路径"}), 400
-
-    try:
-        file.save(save_path)
-        return jsonify({"message": "文件上传成功", "path": save_path}), 200
-    except Exception as e:
-        return jsonify({"error": f"文件上传失败: {str(e)}"}), 500
 
 #################################################
 # 新增的评估API端点
