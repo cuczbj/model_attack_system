@@ -19,14 +19,16 @@ import numpy as np
 from threading import Thread
 import sys
 import torch
-from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor
+from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor, MODEL_DIR, CHECKPOINT_DIR,load_G
 from typing import Any, Tuple
+
 import model_scanner
 from model_scanner import get_model_scanner, ModelConfig
 import torch
 import json
 from flask import jsonify, request
 import uuid
+
 
 # 将attack目录添加到系统路径
 attack_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'attack')
@@ -94,8 +96,13 @@ def init_db():
 app = Flask(__name__, static_url_path="/static", static_folder="./")
 CORS(app)  # 启用CORS，允许所有源访问
 
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), './models')
-app.config['ALLOWED_EXTENSIONS'] = {'pth', 'pkl','tar'}
+# app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), './models')
+# app.config['ALLOWED_EXTENSIONS'] = {'pth', 'pkl','tar'}
+os.makedirs(MODEL_DIR, exist_ok=True)
+os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+# 允许上传的文件扩展名
+ALLOWED_EXTENSIONS = {'.tar', '.pkl', '.pth', '.py'}
 
 # 在启动应用时初始化数据库
 init_db()
@@ -317,6 +324,95 @@ MODEL_CONFIGS = {
     "IR152": {"mode": "RGB", "h": 64, "w": 64, "class_num": 1000},
 }
 
+# 目标模型预测接口，看看要不要加个参数（数据集为哪个），或者时攻击图像展示只包含固定数据集就行
+@app.route("/predict", methods=["POST"])
+def predict():
+    # if "image_file" not in request.files:
+    #     return jsonify({"error": "No image file provided"}), 400
+    # # 获取模型名称和模型参数文件
+    # model_name = request.form.get("model_name", type=str, default="target_mlp")
+    # param_file = request.form.get("param_file", type=str)
+    # # 加载模型
+    # try:
+    #     model = load_model(model_name, param_file)
+    # except Exception as e:
+    #     return jsonify({"error": str(e)}), 500
+    # # 获取上传的图像文件
+    # image_file = request.files["image_file"]
+    # try:
+    #     # 打印图像文件的路径
+    #     print(f"Received image file: {image_file.filename}")
+    #     # 尝试加载图像
+    #     image = Image.open(image_file).convert("RGB")
+    #     # 根据模型名称确定输入输出维度
+    #     if model_name == "target_mlp":
+    #         h, w, class_num = 112, 92, 40
+    #     else:
+    #         h, w, class_num = 64, 64, 1000  # 默认处理 VGG, FaceNet 等
+    #     # 进行预测
+    #     prediction, confidences = predict_target_model(image, model, h, w, class_num)
+    #     return jsonify({"prediction": prediction, "confidences": confidences})
+    # except Exception as e:
+    #     return jsonify({"error": f"Error processing image: {str(e)}"}), 500
+
+
+    # 接收图像文件
+    if "image_file" not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+    
+    # 获取目标模型名称参数
+    model_name = request.form.get("model_name", type=str, default="MLP")  # 默认是 MLP
+
+    #根据目标模型名称确定输入输出维度
+    # if model_name=="target_mlp":
+    try:
+        # 读取图像文件并转换为灰度图
+        image_file = request.files["image_file"]
+        
+        # # 获取模型名称和模型参数文件
+        model_name = request.form.get("model_name", type=str, default="target_mlp")
+        param_file = request.form.get("param_file", type=str)
+        class_num = request.form.get("class_num", type=int, default=40)
+        # 加载模型
+        # 先硬编码输入输出维度
+        # h, w, class_num = 112, 92, 40
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
+        model = load_model(model_name, param_file ,device , class_num)
+        
+        # 2. 载入并处理图像
+        
+        image_tensor = image_to_tensor(image_file).to(device)
+    
+        
+        # 3. 调用模型预测
+        with torch.no_grad():
+            output = model.predict(image_tensor)
+            confidences = torch.softmax(output, dim=-1).squeeze(0)
+            prediction = torch.argmax(confidences).item()
+        
+        # 4. 输出预测结果
+        print(f"预测类别: {prediction}")                        
+        #     prediction, confidences = predict_target_model(image_tensor, model, class_num)
+            
+        return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
+    except Exception as e:
+        return jsonify({"error,predict 's problem:": str(e)}), 500
+    # elif model_name in ["target_vgg16", "target_facenet64", "target_ir152"]:
+    #     try:
+    #         # 读取图像文件并转换为灰度图
+    #         image_file = request.files["image_file"]
+    #         image = Image.open(image_file).convert("RGB")
+            
+    #         #单独的输入输出维度
+    #         h, w, class_num = 64, 64, 1000
+    #         # 调用模型预测
+    #         logging.debug(f"predict_target_model type: {type(predict_target_model)}")
+    #         print(f"predict_target_model type: {type(predict_target_model)}")
+    #         prediction, confidences = predict_target_model(image, model_name, class_num)
+            
+    #         return jsonify({"prediction": prediction, "confidences": confidences.tolist()})
+    #     except Exception as e:
+    #         return jsonify({"error,MLP 's problem:": str(e)}), 500
 
 # 更新任务状态    
 @app.route("/api/tasks/<task_id>/status", methods=["PUT"])
@@ -368,10 +464,30 @@ def attack():
     
     target_label = data["target_label"]
     attack_method_name = data.get("attack_method", "standard_attack")  # 默认使用标准攻击
-
-    # 验证目标标签
-    if not isinstance(target_label, int) or target_label < 0 or target_label > 39:
-        return jsonify({"error": "无效的目标标签，必须是0到39之间的整数"}), 400
+    target_model = data.get("target_model", "MLP")  # 默认针对MLP目标模型
+    dataset = data.get("dataset", "ATT40")  # 默认使用CIFAR-10数据集
+    class_num = data.get("class_num", 40)  # 默认分类数为40
+    image_size = data.get("image_size", "64*64")  # 默认图像大小为224
+    channels = data.get("channels", 3)  # 默认彩色图像，通道数为3
+    # 解析图像大小
+    h,w = image_size.split("*")
+    h,w = int(h), int(w)
+    print("Value of w:", w)
+    # 找到相应的可用目标模型
+    param_file = ""
+    for key, value in matched_models.items():
+        print("key is",key)
+        print("value is",value)
+        if key == target_model:
+            param_file = value
+            break
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
+    print("param_file is",param_file)
+    model = load_model(target_model, param_file , device , class_num)
+    
+    # 加载生成模型
+    G = load_G(attack_method_name, target_model, dataset, device, class_num)
+    
     
     # 创建任务记录
     task_id = f"task-{uuid.uuid4().hex[:8]}"
@@ -408,7 +524,7 @@ def attack():
         os.makedirs(result_dir, exist_ok=True)
         
         # 执行攻击，传入任务ID
-        result_image = reconstruct(attack_method_name, target_label, task_id)
+        result_image = reconstruct(attack_method_name, model, G, target_label,  h, w, channels, device, task_id)
         logging.debug(f"攻击完成，结果类型: {type(result_image)}")
         
         # 更新任务进度
@@ -549,6 +665,41 @@ def attack():
         return jsonify({"error": "内部服务器错误", "message": error_message, "task_id": task_id}), 500
 
 
+def get_upload_path(filename):
+    """根据文件类型返回存储路径"""
+    ext = os.path.splitext(filename)[1].lower()
+    if ext in {'.tar', '.pkl', '.pth'}:
+        return os.path.join(CHECKPOINT_DIR, filename)
+    elif ext == '.py':
+        return os.path.join(MODEL_DIR, filename)
+    else:
+        return None  # 不支持的文件类型
+# 文件上传接口
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if "file" not in request.files:
+        return jsonify({"error": "缺少文件"}), 400
+    
+    file = request.files["file"]
+    filename = file.filename
+
+    if not filename:
+        return jsonify({"error": "文件名为空"}), 400
+
+    ext = os.path.splitext(filename)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        return jsonify({"error": f"不支持的文件类型: {ext}"}), 400
+
+    # 获取文件存储路径
+    save_path = get_upload_path(filename)
+    if save_path is None:
+        return jsonify({"error": "无法确定存储路径"}), 400
+
+    try:
+        file.save(save_path)
+        return jsonify({"message": "文件上传成功", "path": save_path}), 200
+    except Exception as e:
+        return jsonify({"error": f"文件上传失败: {str(e)}"}), 500
 
 #################################################
 # 新增的评估API端点
@@ -1052,6 +1203,7 @@ with app.app_context():
 
 
 
+
 # 下载评估报告API
 @app.route("/api/evaluations/<evaluation_id>/report", methods=["GET"])
 def download_evaluation_report(evaluation_id):
@@ -1482,17 +1634,29 @@ def run_evaluation(evaluation_id, config):
         except Exception as db_error:
             logging.error(f"更新评估失败状态时出错: {db_error}")
 
+# 全局变量存储匹配的模型和参数即可用的模型
+matched_models = {}
 # 返回所有可用的模型函数
 @app.route('/models', methods=['GET'])
-def get_models():
-    """ 获取所有可用的模型 """
-    return jsonify(get_available_models())
+def get_models_and_checkpoints():
+    """ 获取所有可用的模型和已上传的模型参数，并匹配对应关系 """
+    models = get_available_models()
+    checkpoints = get_available_params()
 
-# 获取所有可用模型的参数文件
-@app.route('/checkpoints', methods=['GET'])
-def get_checkpoints():
-    """ 获取所有已上传的模型参数 """
-    return jsonify(get_available_params())
+    global matched_models
+    matched_models = {}
+
+    for checkpoint in checkpoints:
+        checkpoint_prefix = checkpoint.split("_")[0]  # 取 _ 之前的部分
+        for key, value in models.items():
+            if value == checkpoint_prefix:
+                matched_models[key] = checkpoint  # 存入匹配的模型
+
+    return jsonify({
+        "models": models,
+        "checkpoints": checkpoints,
+        "matched_models": matched_models  # 返回匹配结果
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

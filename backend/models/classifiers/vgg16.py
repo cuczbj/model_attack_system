@@ -18,7 +18,6 @@ class VGG16(nn.Module):
         self.fc_layer = nn.Linear(self.feat_dim, self.n_classes)
 
     def forward(self, x):
-        # x = x.unsqueeze(0)  # 增加 batch 维度
         feature = self.feature(x)
         feature = feature.view(feature.size(0), -1)
         feature = self.bn(feature)

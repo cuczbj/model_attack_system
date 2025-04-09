@@ -132,8 +132,13 @@ class Block(nn.Module):
 
 
 class ResNetGenerator(nn.Module):
-    """Generator generates 64x64."""
-
+    """Generator generates 64x64.
+    num_features: 控制卷积层输出通道的数量（默认 64）。
+    dim_z: 噪声向量的维度，通常是一个随机向量，生成的图像将基于这个向量生成（默认 128）。
+    bottom_width: 表示特征图的初始宽度（默认为 4），决定了生成的图像尺寸。
+    activation: 激活函数，默认是 ReLU。
+    num_classes: 如果使用条件生成，表示类别数目。
+    distribution: 用于从噪声向量中采样的分布类型，通常是 normal（正态分布）"""
     def __init__(self, num_features=64, dim_z=128, bottom_width=4,
                  activation=F.relu, num_classes=0, distribution='normal'):
         super(ResNetGenerator, self).__init__()
@@ -165,9 +170,16 @@ class ResNetGenerator(nn.Module):
         init.xavier_uniform_(self.l1.weight.tensor)
         init.xavier_uniform_(self.conv7.weight.tensor)
 
+    """接受输入 z（噪声向量）和可选的 y（条件标签）。
+    第一步：通过 l1 全连接层将噪声向量 z 映射到一个 64x64x3 的初始特征图。
+    接下来，通过 block2 到 block5（Block 类实例），每个模块将特征图进行一系
+    列的卷积、批量归一化、激活和上采样操作，逐步增加特征图的大小，接近目标输出。
+    最后通过 b6 和 conv6 将生成的特征图映射到 3 通道的 RGB 图像，并通过 
+    torch.tanh 激活函数确保输出值在 [-1, 1] 范围内。"""
     def forward(self, z, y=None, **kwargs):
         h = self.l1(z).view(z.size(0), -1, self.bottom_width, self.bottom_width)
         for i in range(2, 6):
             h = getattr(self, 'block{}'.format(i))(h, y, **kwargs)
         h = self.activation(self.b6(h))
         return torch.tanh(self.conv6(h))
+    
