@@ -52,7 +52,7 @@ def load_model(model_name, param_filename, device, class_num):
         model = model_class(class_num).to(device) 
 
         # 使用os.path.join构建路径
-        param_file = os.path.join(CHECKPOINT_DIR, param_filename)
+        param_file = CHECKPOINT_DIR +"/"+ param_filename
         
         # 检查文件是否存在并可访问
         if not os.path.isfile(param_file):

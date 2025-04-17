@@ -1,5 +1,5 @@
 "use client";
-import ModelCreationPage from "./path/to/ModelCreationPage";
+import ModelCreationPage from "./ModelCreationPage";
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
@@ -55,6 +55,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 // API基础URL
 const API_URL = "http://localhost:5000";
@@ -1319,6 +1322,7 @@ const ModelManagementPage: React.FC = () => {
   const [refreshCounter, setRefreshCounter] = useState(0);
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
   const [searchModelTerm, setSearchModelTerm] = useState("");
+  const [showModelCreation, setShowModelCreation] = useState(false);
   const [notification, setNotification] = useState<{
     open: boolean;
     message: string;
@@ -1510,16 +1514,70 @@ const ModelManagementPage: React.FC = () => {
     });
   }, []);
 
+  // 处理模型创建完成
+  const handleModelCreationComplete = useCallback((model) => {
+    setShowModelCreation(false);
+    setNotification({
+      open: true,
+      message: `模型 ${model?.model_name || ''} 创建成功！`,
+      severity: "success",
+    });
+    refreshData();
+  }, [refreshData]);
+
   // 关闭通知
   const handleCloseNotification = () => {
     setNotification({ ...notification, open: false });
   };
+
+  // 如果显示模型创建界面，则直接渲染ModelCreationPage
+  if (showModelCreation) {
+    return (
+      <Box sx={{ width: '100%', mt: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => setShowModelCreation(false)}
+          >
+            返回模型管理
+          </Button>
+        </Box>
+        
+        <ModelCreationPage onComplete={handleModelCreationComplete} />
+        
+        {/* 全局通知 */}
+        <Snackbar
+          open={notification.open}
+          autoHideDuration={6000}
+          onClose={handleCloseNotification}
+        >
+          <Alert onClose={handleCloseNotification} severity={notification.severity}>
+            {notification.message}
+          </Alert>
+        </Snackbar>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ width: '100%', mt: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom align="center">
         机器学习模型管理
       </Typography>
+      
+      {/* 创建新模型按钮 */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          startIcon={<AddIcon />}
+          onClick={() => setShowModelCreation(true)}
+          sx={{ px: 4, py: 1.5 }}
+        >
+          创建新模型
+        </Button>
+      </Box>
       
       {/* 模型搜索部分 */}
       <Box sx={{ mb: 4 }}>

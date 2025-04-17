@@ -81,18 +81,47 @@ from typing import Any, Tuple
 
 
 # 预测函数
-def predict_target_model(image_tensor, model, class_num):
-    try:
+def predict_target_model(image, model_name, h, w, class_num):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # 加载模型（使用model_scanner或upload_importlib中的函数）
+    from upload_importlib import load_model, get_available_params
+    
+    # 获取模型参数文件
+    params = get_available_params()
+    param_file = None
+    for p in params:
+        if model_name in p:
+            param_file = p
+            break
+    
+    if not param_file:
+        raise ValueError(f"找不到模型{model_name}的参数文件")
+    
+    model = load_model(model_name, param_file, device, class_num)
+    
+    # 预处理图像
+    transform = transforms.Compose([
+        transforms.Resize((h, w)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5], std=[0.5])
+    ])
+    
+    image_tensor = transform(image).unsqueeze(0).to(device)
+    
+    with torch.no_grad():
+        if hasattr(model, 'predict'):
+            output = model.predict(image_tensor)
+        else:
+            # 如果模型没有predict方法，尝试直接调用
+            output = model(image_tensor)
+            if isinstance(output, tuple):
+                # 某些模型可能返回(特征, 输出)
+                output = output[1]
         
-
-        output = model.predict(image_tensor)
         predicted_class = torch.argmax(output, dim=1).item()
-        print(f"预测类别: {predicted_class}")
-        
-        return prediction, output.squeeze(0).numpy()
-    except Exception as e:
-        raise RuntimeError(f"Error in prediction: {str(e)}")
-
+    
+    return predicted_class, output.squeeze(0).cpu().numpy()
 
 # 训练目标模型,无调用，备用,这里只保留前面第一种MLP目标模型
 def train_target_model():

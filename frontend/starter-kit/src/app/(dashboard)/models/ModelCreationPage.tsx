@@ -23,7 +23,8 @@ import {
   Divider,
   Snackbar,
   IconButton,
-  styled
+  styled,
+  LinearProgress,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -49,6 +50,7 @@ interface ModelConfig {
   class_num: number;
   input_shape: [number, number];
   model_type: string;
+  model_id?: string;
 }
 
 // 自定义样式组件
@@ -430,61 +432,23 @@ const StepTwo = ({ modelName, fileStatus, onRefresh, onNext, onBack, onUploadSuc
   );
 };
 
-const StepThree = ({ modelName, fileStatus, onBack, onComplete }) => {
-  const [formData, setFormData] = useState<Partial<ModelConfig>>({
+const StepThree = ({ modelName, fileStatus, onBack, onNext, onComplete }) => {
+  // 表单数据状态 - 初始不设置param_file
+  const [formData, setFormData] = useState({
     model_name: modelName,
-    param_file: fileStatus.parameterFiles.length > 0 ? fileStatus.parameterFiles[0] : "",
+    param_file: "",  // 初始为空
     class_num: 40, // 默认分类数
-    input_shape: [112, 92] as [number, number], // 默认输入形状
+    input_shape: [112, 92], // 默认输入形状
     model_type: modelName,
   });
   
-  const [loading, setLoading] = useState(false);
+  // 上传数据集相关状态
+  const [datasetFile, setDatasetFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
-  
-  // 处理输入形状变化
-  const handleInputShapeChange = (index: number, value: number) => {
-    const newShape = [...formData.input_shape] as [number, number];
-    newShape[index] = value;
-    setFormData({ ...formData, input_shape: newShape });
-  };
-  
-  // 处理表单字段变化
-  const handleChange = (field: string, value: any) => {
-    setFormData({ ...formData, [field]: value });
-  };
-  
-  // 创建模型配置
-  const handleCreateModel = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      
-      // 调用API创建模型配置
-      const response = await fetch(`${API_URL}/api/models/configurations`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || "创建模型失败");
-      }
-      
-      // 创建成功，进入完成步骤
-      onComplete(data.config);
-      
-    } catch (error) {
-      console.error("创建模型出错:", error);
-      setError(error.message || "创建模型时出错");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [validationResult, setValidationResult] = useState(null);
+  const [isCreating, setIsCreating] = useState(false);
   
   // 根据模型类型设置默认配置
   useEffect(() => {
@@ -504,110 +468,363 @@ const StepThree = ({ modelName, fileStatus, onBack, onComplete }) => {
     });
   }, [modelName]);
   
+  // 处理输入形状变化
+  const handleInputShapeChange = (index, value) => {
+    const newShape = [...formData.input_shape];
+    newShape[index] = value;
+    setFormData({ ...formData, input_shape: newShape as [number, number] });
+  };
+  
+  // 处理表单字段变化
+  const handleChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+  
+  // 文件选择处理函数
+  const handleFileChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      setDatasetFile(event.target.files[0]);
+      setError("");
+    }
+  };
+  
+  // 验证配置
+  const validateConfig = async () => {
+    if (!formData.model_name || !formData.param_file) {
+      setValidationResult({
+        valid: false,
+        message: "请选择模型和参数文件"
+      });
+      return false;
+    }
+    
+    try {
+      const response = await fetch(`${API_URL}/api/models/validate-config`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await response.json();
+      const result = {
+        valid: response.ok,
+        message: data.message || (response.ok ? "配置有效" : "配置无效")
+      };
+      
+      setValidationResult(result);
+      return result.valid;
+    } catch (error) {
+      setValidationResult({
+        valid: false,
+        message: "验证配置时出错: " + (error.message || "未知错误")
+      });
+      return false;
+    }
+  };
+  
+  // 上传数据集并创建模型
+  const handleUploadAndCreate = async () => {
+    // 首先验证配置是否有效
+    const isValid = await validateConfig();
+    if (!isValid) {
+      return;
+    }
+    
+    if (!datasetFile) {
+      setError("请选择隐私数据集文件");
+      return;
+    }
+    
+    setUploading(true);
+    setUploadProgress(0);
+    setError("");
+    
+    try {
+      // 创建FormData对象用于文件上传
+      const uploadFormData = new FormData();
+      uploadFormData.append("dataset_file", datasetFile);
+      uploadFormData.append("dataset_name", `${modelName}_dataset`);
+      uploadFormData.append("model_name", modelName);
+      uploadFormData.append("description", `${modelName}模型的隐私数据集`);
+      
+      // 创建XMLHttpRequest以监控上传进度
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${API_URL}/api/datasets/upload-for-model`, true);
+      
+      // 监控上传进度
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(progress);
+        }
+      };
+      
+      // 设置上传完成回调
+      xhr.onload = async () => {
+        if (xhr.status === 200 || xhr.status === 201) {
+          try {
+            // 解析上传结果
+            const uploadResult = JSON.parse(xhr.responseText);
+            
+            // 数据集上传成功后，创建模型配置
+            setIsCreating(true);
+            
+            // 准备模型配置数据，包含数据集ID
+            const modelConfigData = {
+              model_name: formData.model_name,
+              param_file: formData.param_file,
+              class_num: formData.class_num,
+              input_shape: formData.input_shape,
+              model_type: formData.model_type || formData.model_name,
+              dataset_id: uploadResult.id
+            };
+            
+            // 调用API创建模型配置
+            const configResponse = await fetch(`${API_URL}/api/models/configurations`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(modelConfigData),
+            });
+            
+            const configData = await configResponse.json();
+            
+            if (!configResponse.ok) {
+              throw new Error(configData.error || "创建模型配置失败");
+            }
+            
+            // 完成整个流程
+            onComplete(configData.config);
+          } catch (error) {
+            setError("创建模型配置失败: " + (error.message || "未知错误"));
+          } finally {
+            setIsCreating(false);
+          }
+        } else {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            setError(response.error || "上传数据集失败");
+          } catch (e) {
+            setError("上传数据集失败");
+          }
+        }
+        
+        setUploading(false);
+      };
+      
+      // 错误处理
+      xhr.onerror = () => {
+        setUploading(false);
+        setError("网络错误，上传失败");
+      };
+      
+      // 发送请求
+      xhr.send(uploadFormData);
+    } catch (error) {
+      setUploading(false);
+      setError("上传数据集时出错: " + (error.message || "未知错误"));
+    }
+  };
+  
   return (
     <Box sx={{ mt: 4 }}>
       <Typography variant="h6" gutterBottom>
-        第三步：配置模型参数
+        第三步：配置模型参数并上传隐私数据集
       </Typography>
       
       <Typography variant="body2" color="textSecondary" paragraph>
-        请为您的模型配置以下参数。这些参数将确定模型的输入输出形状。
+        请配置模型参数并上传对应的隐私数据集。数据集应按类别组织，每个文件夹名称对应模型的一个分类标签。
       </Typography>
       
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="模型名称"
-            value={formData.model_name}
-            disabled
-            helperText="模型名称不可更改"
-          />
-        </Grid>
-        
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <InputLabel id="param-file-label">参数文件</InputLabel>
-            <Select
-              labelId="param-file-label"
-              value={formData.param_file}
-              label="参数文件"
-              onChange={(e) => handleChange("param_file", e.target.value)}
+        {/* 模型配置部分 */}
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              模型配置
+            </Typography>
+            
+            <TextField
+              fullWidth
+              label="模型名称"
+              value={formData.model_name}
+              disabled
+              margin="normal"
+              helperText="模型名称不可更改"
+            />
+            
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="param-file-label">参数文件</InputLabel>
+              <Select
+                labelId="param-file-label"
+                value={formData.param_file}
+                label="参数文件"
+                onChange={(e) => handleChange("param_file", e.target.value)}
+              >
+                {fileStatus?.parameterFiles?.map((file) => (
+                  <MenuItem key={file} value={file}>
+                    {file}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            
+            <TextField
+              fullWidth
+              label="分类数量"
+              type="number"
+              value={formData.class_num}
+              onChange={(e) => handleChange("class_num", parseInt(e.target.value) || 0)}
+              margin="normal"
+              InputProps={{ inputProps: { min: 1 } }}
+              helperText={
+                formData.model_name.includes("MLP") 
+                  ? "AT&T Faces数据集默认为40类" 
+                  : (formData.model_name.includes("VGG") || formData.model_name.includes("FaceNet") || formData.model_name.includes("IR"))
+                    ? "CelebA数据集默认为1000类"
+                    : "请输入模型的分类数量"
+              }
+            />
+            
+            <Typography variant="subtitle2" gutterBottom sx={{ mt: 2 }}>
+              输入形状:
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="高度"
+                  type="number"
+                  value={formData.input_shape[0]}
+                  onChange={(e) => handleInputShapeChange(0, parseInt(e.target.value) || 0)}
+                  InputProps={{ inputProps: { min: 1 } }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="宽度"
+                  type="number"
+                  value={formData.input_shape[1]}
+                  onChange={(e) => handleInputShapeChange(1, parseInt(e.target.value) || 0)}
+                  InputProps={{ inputProps: { min: 1 } }}
+                />
+              </Grid>
+            </Grid>
+            <Typography variant="caption" color="textSecondary">
+              {formData.model_name.includes("MLP") 
+                ? "MLP模型默认输入形状为 112×92" 
+                : (formData.model_name.includes("VGG") || formData.model_name.includes("FaceNet") || formData.model_name.includes("IR"))
+                  ? "图像模型默认输入形状为 64×64"
+                  : "请设置合适的输入形状"}
+            </Typography>
+            
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={validateConfig}
+              disabled={uploading || isCreating}
+              sx={{ mt: 2 }}
             >
-              {fileStatus.parameterFiles.map((file) => (
-                <MenuItem key={file} value={file}>
-                  {file}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              验证配置
+            </Button>
+            
+            {validationResult && (
+              <Alert 
+                severity={validationResult.valid ? "success" : "error"}
+                sx={{ mt: 1 }}
+              >
+                {validationResult.message}
+              </Alert>
+            )}
+          </Paper>
         </Grid>
         
+        {/* 数据集上传部分 */}
         <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            label="分类数量"
-            type="number"
-            value={formData.class_num}
-            onChange={(e) => handleChange("class_num", parseInt(e.target.value) || 0)}
-            InputProps={{ inputProps: { min: 1 } }}
-            helperText={
-              modelName.includes("MLP") 
-                ? "AT&T Faces数据集默认为40类" 
-                : (modelName.includes("VGG") || modelName.includes("FaceNet") || modelName.includes("IR"))
-                  ? "CelebA数据集默认为1000类"
-                  : "请输入模型的分类数量"
-            }
-          />
-        </Grid>
-        
-        <Grid item xs={12} md={6}>
-          <Typography variant="subtitle2" gutterBottom>
-            输入形状:
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="高度"
-                type="number"
-                value={formData.input_shape[0]}
-                onChange={(e) => handleInputShapeChange(0, parseInt(e.target.value) || 0)}
-                InputProps={{ inputProps: { min: 1 } }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="宽度"
-                type="number"
-                value={formData.input_shape[1]}
-                onChange={(e) => handleInputShapeChange(1, parseInt(e.target.value) || 0)}
-                InputProps={{ inputProps: { min: 1 } }}
-              />
-            </Grid>
-          </Grid>
-          <Typography variant="caption" color="textSecondary">
-            {modelName.includes("MLP") 
-              ? "MLP模型默认输入形状为 112×92" 
-              : (modelName.includes("VGG") || modelName.includes("FaceNet") || modelName.includes("IR"))
-                ? "图像模型默认输入形状为 64×64"
-                : "请设置合适的输入形状"}
-          </Typography>
+          <Paper sx={{ p: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              上传隐私数据集
+            </Typography>
+            
+            <Alert severity="info" sx={{ mb: 2 }}>
+              <AlertTitle>数据集格式要求</AlertTitle>
+              <Typography variant="body2">
+                • 支持的格式：ZIP压缩文件<br/>
+                • 目录结构：根目录下应包含按类别命名的子文件夹（如"0"、"1"、"2"等）<br/>
+                • 每个子文件夹中包含该类别的隐私图像文件<br/>
+                • 示例："5"文件夹中包含所有第5类的隐私图像
+              </Typography>
+            </Alert>
+            
+            <Box
+              sx={{
+                border: '2px dashed',
+                borderColor: 'primary.main',
+                borderRadius: 1,
+                p: 3,
+                mb: 2,
+                textAlign: 'center',
+                cursor: 'pointer'
+              }}
+              onClick={() => document.getElementById('dataset-upload-input').click()}
+            >
+              <CloudUploadIcon color="primary" sx={{ fontSize: 48, mb: 1 }} />
+              
+              {datasetFile ? (
+                <Typography variant="body1" color="primary">
+                  已选择: {datasetFile.name}
+                </Typography>
+              ) : (
+                <Typography variant="body1">
+                  点击选择数据集文件
+                </Typography>
+              )}
+              
+              <Typography variant="caption" color="textSecondary" display="block" sx={{ mt: 1 }}>
+                支持 .zip、.tar.gz、.tar 格式
+              </Typography>
+            </Box>
+            
+            <input
+              accept=".zip,.tar.gz,.tar"
+              style={{ display: 'none' }}
+              id="dataset-upload-input"
+              type="file"
+              onChange={handleFileChange}
+            />
+            
+            {uploading && (
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2">
+                  上传进度: {uploadProgress}%
+                </Typography>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={uploadProgress} 
+                  sx={{ height: 8, borderRadius: 1, mt: 1 }}
+                />
+              </Box>
+            )}
+          </Paper>
         </Grid>
       </Grid>
       
       {error && (
-        <Alert severity="error" sx={{ mt: 3 }}>
+        <Alert severity="error" sx={{ mt: 2 }}>
           {error}
         </Alert>
       )}
       
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
         <Button
           variant="outlined"
           onClick={onBack}
           startIcon={<ArrowBackIcon />}
+          disabled={uploading || isCreating}
         >
           上一步
         </Button>
@@ -615,11 +832,15 @@ const StepThree = ({ modelName, fileStatus, onBack, onComplete }) => {
         <Button
           variant="contained"
           color="primary"
-          onClick={handleCreateModel}
-          disabled={loading}
-          startIcon={loading ? <CircularProgress size={20} /> : null}
+          onClick={handleUploadAndCreate}
+          disabled={!datasetFile || uploading || isCreating}
+          endIcon={
+            uploading || isCreating ? 
+            <CircularProgress size={20} color="inherit" /> : 
+            null
+          }
         >
-          {loading ? "创建中..." : "创建模型"}
+          {uploading ? "上传中..." : isCreating ? "创建中..." : "上传并创建模型"}
         </Button>
       </Box>
     </Box>
@@ -638,7 +859,7 @@ const StepFour = ({ createdModel, onReset }) => {
       <Card variant="outlined" sx={{ mb: 4, mx: 'auto', maxWidth: 600 }}>
         <CardContent>
           <Typography variant="h6" align="center" gutterBottom>
-            {createdModel.model_name}
+            {createdModel?.model_name}
           </Typography>
           
           <Divider sx={{ my: 2 }} />
@@ -648,28 +869,28 @@ const StepFour = ({ createdModel, onReset }) => {
               <Typography variant="body2" color="textSecondary">模型ID:</Typography>
             </Grid>
             <Grid item xs={6} textAlign="left">
-              <Typography variant="body2">{createdModel.model_id}</Typography>
+              <Typography variant="body2">{createdModel?.model_id}</Typography>
             </Grid>
             
             <Grid item xs={6} textAlign="right">
               <Typography variant="body2" color="textSecondary">参数文件:</Typography>
             </Grid>
             <Grid item xs={6} textAlign="left">
-              <Typography variant="body2">{createdModel.param_file}</Typography>
+              <Typography variant="body2">{createdModel?.param_file}</Typography>
             </Grid>
             
             <Grid item xs={6} textAlign="right">
               <Typography variant="body2" color="textSecondary">分类数量:</Typography>
             </Grid>
             <Grid item xs={6} textAlign="left">
-              <Typography variant="body2">{createdModel.class_num}</Typography>
+              <Typography variant="body2">{createdModel?.class_num}</Typography>
             </Grid>
             
             <Grid item xs={6} textAlign="right">
               <Typography variant="body2" color="textSecondary">输入形状:</Typography>
             </Grid>
             <Grid item xs={6} textAlign="left">
-              <Typography variant="body2">{createdModel.input_shape.join(' × ')}</Typography>
+              <Typography variant="body2">{createdModel?.input_shape.join(' × ')}</Typography>
             </Grid>
           </Grid>
         </CardContent>
@@ -693,7 +914,7 @@ const StepFour = ({ createdModel, onReset }) => {
 };
 
 // 模型创建页面主组件
-const ModelCreationPage: React.FC = () => {
+const ModelCreationPage = ({ onComplete }) => {
   // 状态定义
   const [activeStep, setActiveStep] = useState(0);
   const [modelName, setModelName] = useState("");
@@ -705,6 +926,7 @@ const ModelCreationPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [createdModel, setCreatedModel] = useState<ModelConfig | null>(null);
   const [error, setError] = useState("");
+  const [datasetId, setDatasetId] = useState(null);
 
   // 清空模型数据
   const handleReset = () => {
@@ -716,6 +938,7 @@ const ModelCreationPage: React.FC = () => {
       parameterFiles: []
     });
     setCreatedModel(null);
+    setDatasetId(null);
     setError("");
   };
 
@@ -777,50 +1000,63 @@ const ModelCreationPage: React.FC = () => {
   const handleComplete = (model: ModelConfig) => {
     setCreatedModel(model);
     setActiveStep(3); // 直接跳到最后一步
+    
+    // 通知父组件创建完成
+    if (onComplete) {
+      onComplete(model);
+    }
   };
 
   // 渲染步骤内容
-  const renderStepContent = () => {
-    switch (activeStep) {
-      case 0:
-        return (
-          <StepOne 
-            modelName={modelName} 
-            setModelName={setModelName} 
-            onNext={handleNext} 
-          />
-        );
-      case 1:
-        return (
-          <StepTwo 
-            modelName={modelName}
-            fileStatus={fileStatus}
-            onRefresh={checkModelFiles}
-            onNext={handleNext}
-            onBack={handleBack}
-            onUploadSuccess={checkModelFiles}
-          />
-        );
+// 更新renderStepContent函数
+const renderStepContent = () => {
+  switch (activeStep) {
+    case 0:
+      return (
+        <StepOne 
+          modelName={modelName} 
+          setModelName={setModelName} 
+          onNext={handleNext} 
+        />
+      );
+    case 1:
+      return (
+        <StepTwo 
+          modelName={modelName}
+          fileStatus={fileStatus}
+          onRefresh={checkModelFiles}
+          onNext={handleNext}
+          onBack={handleBack}
+          onUploadSuccess={checkModelFiles}
+        />
+      );
       case 2:
-        return (
-          <StepThree 
-            modelName={modelName}
-            fileStatus={fileStatus}
-            onBack={handleBack}
-            onComplete={handleComplete}
-          />
-        );
-      case 3:
-        return (
-          <StepFour 
-            createdModel={createdModel}
-            onReset={handleReset}
-          />
-        );
-      default:
-        return null;
-    }
-  };
+  return (
+    <StepThree 
+      modelName={modelName}
+      fileStatus={fileStatus}
+      onNext={(datasetId) => {
+        setDatasetId(datasetId);
+        handleNext();
+      }}
+      onBack={handleBack}
+      onComplete={handleComplete}  // 添加这一行
+    />
+  );
+    case 3:
+      return (
+        <StepFour 
+          modelName={modelName}
+          fileStatus={fileStatus}
+          datasetId={datasetId}
+          onBack={handleBack}
+          onComplete={handleComplete}
+        />
+      );
+    default:
+      return null;
+  }
+};
 
   const steps = ['输入模型名称', '检查/上传模型文件', '配置模型参数', '完成'];
 
