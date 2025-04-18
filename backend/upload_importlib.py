@@ -52,8 +52,8 @@ def load_model(model_name, param_filename, device, class_num):
         model = model_class(class_num).to(device) 
 
         # 使用os.path.join构建路径
-        param_file = CHECKPOINT_DIR +"/"+  param_filename
-
+        param_file = CHECKPOINT_DIR +"/"+ param_filename
+        
         # 检查文件是否存在并可访问
         if not os.path.isfile(param_file):
             raise FileNotFoundError(f"参数文件不存在: {param_file}")
@@ -90,7 +90,7 @@ def load_G(attack_method, target_model, dataset, device, class_num):
         G = ResNetGenerator(num_classes=class_num).to(device)  # 实例化生成器模型
         gen_ckpt = torch.load(G_param_file)['model'] 
         G.load_state_dict(gen_ckpt)
-        G.eval()  
+        G.eval()  # 切换到评估模式
         return G
     except Exception as e:
         raise RuntimeError(f"Error loading G model {attack_method}: {str(e)}")

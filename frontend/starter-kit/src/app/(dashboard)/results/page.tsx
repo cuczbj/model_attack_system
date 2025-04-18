@@ -97,28 +97,39 @@ const AdvancedAttackResultsDisplay = () => {
     useRegularization: true,
   });
 
-  // 加载可用模型列表
-  const loadAvailableModels = async () => {
-    try {
-      setModelsLoading(true);
-      const response = await fetch(`${API_URL}/api/models/configured`);
-      if (!response.ok) {
-        throw new Error("获取模型列表失败");
-      }
-      const models = await response.json();
-      setAvailableModels(models);
-      
-      // 如果有模型且当前未选择，设置第一个为默认值
-      if (models.length > 0 && !targetModel) {
-        setTargetModel(models[0].id);
-      }
-    } catch (error) {
-      console.error("加载模型列表失败:", error);
-      setErrorMessage("无法加载可用模型列表，请检查服务器连接");
-    } finally {
-      setModelsLoading(false);
+// 加载可用模型列表
+const loadAvailableModels = async () => {
+  try {
+    setModelsLoading(true);
+    
+    // 首先获取后端模型列表
+    console.log("请求/models接口...");
+    const modelsListResponse = await fetch(`${API_URL}/models`);
+    if (!modelsListResponse.ok) {
+      throw new Error("获取模型列表失败");
     }
-  };
+    const modelsList = await modelsListResponse.json();
+    console.log("基础模型列表:", modelsList);
+    
+    // 然后获取已配置的模型
+    const response = await fetch(`${API_URL}/api/models/configured`);
+    if (!response.ok) {
+      throw new Error("获取配置模型列表失败");
+    }
+    const models = await response.json();
+    setAvailableModels(models);
+    
+    // 如果有模型且当前未选择，设置第一个为默认值
+    if (models.length > 0 && !targetModel) {
+      setTargetModel(models[0].id);
+    }
+  } catch (error) {
+    console.error("加载模型列表失败:", error);
+    setErrorMessage("无法加载可用模型列表，请检查服务器连接");
+  } finally {
+    setModelsLoading(false);
+  }
+};
 
   // 在组件挂载时加载模型列表
   useEffect(() => {
@@ -199,92 +210,100 @@ const AdvancedAttackResultsDisplay = () => {
   };
 
   // 执行攻击
-  const handleAttack = async () => {
-    try {
-      setIsLoading(true);
-      setErrorMessage(null);
-      setAttackResult(null);
-      setPrediction(null);
-      setConfidence(null);
-      setCurrentTaskId(null);
-      
-      // 获取选择的模型配置
-      const selectedModel = getSelectedModelConfig();
-      
-      // 准备请求数据，包含高级参数
-      const requestData = {
-        target_label: targetLabel,
-        attack_method: attackMethod,
-        name: `${ATTACK_METHODS.find(m => m.id === attackMethod)?.name || "模型反演"} - 标签 ${targetLabel}`,
-        target_model: selectedModel.model_name,  // 使用模型名称
-        description: `针对标签 ${targetLabel} 的${ATTACK_METHODS.find(m => m.id === attackMethod)?.name || "模型反演"}攻击`,
-        parameters: {
-          iterations: advancedSettings.iterations,
-          learning_rate: advancedSettings.learningRate,
-          use_regularization: advancedSettings.useRegularization,
-          class_num: selectedModel.class_num,
-          input_shape: selectedModel.input_shape
-        }
-      };
-
-      // 调用后端接口
-      const response = await fetch(`${API_URL}/attack`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`攻击失败: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log("攻击响应数据:", data);
-      
-      // 保存任务ID
-      if (data.task_id) {
-        setCurrentTaskId(data.task_id);
-      }
-      
-      let imageUrl = "";
-      // 处理不同类型的图像响应
-      if (data.image) {
-        // base64图像
-        imageUrl = `data:image/png;base64,${data.image}`;
-        setAttackResult(imageUrl);
-      } 
-      else if (data.image_path) {
-        // 路径格式的图像
-        imageUrl = `${API_URL}${data.image_path}`;
-        setAttackResult(imageUrl);
-      }
-      else if (data.task_id) {
-        // 使用任务ID构建图像URL
-        imageUrl = `${API_URL}/api/tasks/${data.task_id}/image?t=${new Date().getTime()}`;
-        setAttackResult(imageUrl);
-      }
-      else if (data.result_image) {
-        // 兼容旧格式
-        imageUrl = `${API_URL}${data.result_image.replace("./data", "/static")}`;
-        setAttackResult(imageUrl);
-      }
-      
-      // 尝试获取预测结果
-      try {
-        await fetchPrediction();
-      } catch (predError) {
-        console.error("预测过程中出错:", predError);
-      }
-
-    } catch (error) {
-      console.error("Attack error:", error);
-      setErrorMessage((error as Error).message || "执行攻击时发生错误");
-    } finally {
-      setIsLoading(false);
+// 执行攻击
+const handleAttack = async () => {
+  try {
+    setIsLoading(true);
+    setErrorMessage(null);
+    setAttackResult(null);
+    setPrediction(null);
+    setConfidence(null);
+    setCurrentTaskId(null);
+    
+    // 获取选择的模型配置
+    const selectedModel = getSelectedModelConfig();
+    
+    // ==================== 新增：先请求模型列表 ====================
+    console.log("先请求模型列表...");
+    const modelsResponse = await fetch(`${API_URL}/models`);
+    if (!modelsResponse.ok) {
+      throw new Error(`获取模型列表失败: ${modelsResponse.statusText}`);
     }
-  };
+    const modelsData = await modelsResponse.json();
+    console.log("获取到的模型列表:", modelsData);
+    // ==================== 新增部分结束 ====================
+    
+    // 准备请求数据 - 使用新的格式
+    const requestData = {
+      target_label: targetLabel,
+      attack_method: attackMethod,
+      target_model: selectedModel.model_name,
+      dataset: "celeba", // 使用默认数据集
+      class_num: selectedModel.class_num,
+      image_size: selectedModel.input_shape ? `${selectedModel.input_shape[0]}*${selectedModel.input_shape[1]}` : "64*64",
+      channels: 3 // 默认为3通道彩色图像
+    };
+
+    console.log("发送攻击请求:", requestData);
+
+    // 调用后端接口
+    const response = await fetch(`${API_URL}/attack`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`攻击失败: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log("攻击响应数据:", data);
+    
+    // 保存任务ID
+    if (data.task_id) {
+      setCurrentTaskId(data.task_id);
+    }
+    
+    let imageUrl = "";
+    // 处理不同类型的图像响应
+    if (data.image) {
+      // base64图像
+      imageUrl = `data:image/png;base64,${data.image}`;
+      setAttackResult(imageUrl);
+    } 
+    else if (data.image_path) {
+      // 路径格式的图像
+      imageUrl = `${API_URL}${data.image_path}`;
+      setAttackResult(imageUrl);
+    }
+    else if (data.task_id) {
+      // 使用任务ID构建图像URL
+      imageUrl = `${API_URL}/api/tasks/${data.task_id}/image?t=${new Date().getTime()}`;
+      setAttackResult(imageUrl);
+    }
+    else if (data.result_image) {
+      // 兼容旧格式
+      imageUrl = `${API_URL}${data.result_image.replace("./data", "/static")}`;
+      setAttackResult(imageUrl);
+    }
+    
+    // 尝试获取预测结果
+    try {
+      await fetchPrediction();
+    } catch (predError) {
+      console.error("预测过程中出错:", predError);
+    }
+
+  } catch (error) {
+    console.error("Attack error:", error);
+    setErrorMessage((error as Error).message || "执行攻击时发生错误");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   // 获取预测结果
   const fetchPrediction = async () => {

@@ -21,7 +21,7 @@ import sys
 import torch
 from upload_importlib import get_available_models, get_available_params, load_model, image_to_tensor, MODEL_DIR, CHECKPOINT_DIR,load_G
 from typing import Any, Tuple
-
+import dataset_manager
 import model_scanner
 from model_scanner import get_model_scanner, ModelConfig
 import torch
@@ -365,7 +365,169 @@ MODEL_CONFIGS = {
     "IR152": {"mode": "RGB", "h": 64, "w": 64, "class_num": 1000},
 }
 
+# 数据集上传API
+@app.route("/api/datasets/upload", methods=["POST"])
+def upload_dataset():
+    """处理数据集上传请求"""
+    try:
+        if "dataset_file" not in request.files:
+            return jsonify({"error": "未提供数据集文件"}), 400
+            
+        dataset_file = request.files["dataset_file"]
+        if dataset_file.filename == '':
+            return jsonify({"error": "未选择文件"}), 400
+            
+        if not dataset_file.filename.endswith('.zip'):
+            return jsonify({"error": "仅支持zip格式的数据集文件"}), 400
+        
+        dataset_name = request.form.get("dataset_name", "未命名数据集")
+        description = request.form.get("description", "用户上传的数据集")
+        
+        # 处理上传的数据集
+        result = dataset_manager.process_uploaded_dataset(
+            dataset_file, dataset_name, description
+        )
+        
+        return jsonify(result), 201
+    
+    except Exception as e:
+        return jsonify({"error": f"上传数据集失败: {str(e)}"}), 500
 
+# 获取数据集列表API
+@app.route("/api/datasets", methods=["GET"])
+def get_datasets():
+    """获取所有可用数据集"""
+    try:
+        datasets = dataset_manager.get_all_datasets()
+        return jsonify(datasets)
+    except Exception as e:
+        return jsonify({"error": f"获取数据集失败: {str(e)}"}), 500
+
+# 获取数据集类别图像API
+@app.route("/api/datasets/<dataset_id>/images/<int:label>", methods=["GET"])
+def get_dataset_image(dataset_id, label):
+    """获取指定数据集和类别的代表图像"""
+    try:
+        image_path = dataset_manager.get_dataset_class_image(dataset_id, label)
+        return send_file(image_path)
+    except Exception as e:
+        return jsonify({"error": f"获取图像失败: {str(e)}"}), 500
+
+# 评估攻击效果API
+@app.route("/api/evaluations/evaluate", methods=["POST"])
+def evaluate_attack():
+    """评估攻击效果"""
+    try:
+        data = request.json
+        task_id = data.get("task_id")
+        dataset_id = data.get("dataset_id")
+        metrics = data.get("metrics", ["psnr", "ssim", "mse", "target_accuracy"])
+        
+        if not task_id or not dataset_id:
+            return jsonify({"error": "必须提供task_id和dataset_id"}), 400
+        
+        result = dataset_manager.evaluate_attack_result(task_id, dataset_id, metrics)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": f"评估失败: {str(e)}"}), 500
+
+@app.route("/api/datasets/by-model/<model_name>", methods=["GET"])
+def get_dataset_by_model(model_name):
+    """获取模型关联的数据集"""
+    try:
+        # 查询数据库获取与模型关联的数据集
+        conn = get_db_connection()
+        dataset = conn.execute('SELECT * FROM datasets WHERE model_name = ?', (model_name,)).fetchone()
+        conn.close()
+        
+        if dataset is None:
+            return jsonify({"error": f"未找到模型 {model_name} 关联的数据集"}), 404
+        
+        return jsonify(dict(dataset))
+    except Exception as e:
+        return jsonify({"error": f"获取模型数据集失败: {str(e)}"}), 500
+# 获取评估结果API
+@app.route("/api/evaluations/results", methods=["GET"])
+def get_evaluations_results():
+    """获取所有评估结果"""
+    try:
+        task_id = request.args.get("task_id")
+        results = dataset_manager.get_evaluation_results(task_id)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({"error": f"获取评估结果失败: {str(e)}"}), 500
+
+# 获取评估图表API
+@app.route("/api/evaluations/charts/<chart_type>", methods=["GET"])
+def get_evaluation_charts(chart_type):
+    """获取评估结果图表"""
+    try:
+        charts = dataset_manager.generate_evaluation_charts()
+        
+        if chart_type not in charts:
+            return jsonify({"error": f"图表类型{chart_type}不存在"}), 404
+        
+        # 将base64图像转换为响应
+        chart_data = charts[chart_type]
+        image_data = base64.b64decode(chart_data)
+        
+        return Response(
+            image_data,
+            mimetype='image/png'
+        )
+    except Exception as e:
+        return jsonify({"error": f"获取图表失败: {str(e)}"}), 500
+@app.route("/api/datasets/upload-for-model", methods=["POST"])
+def upload_dataset_for_model():
+    """处理与模型关联的数据集上传请求"""
+    try:
+        if "dataset_file" not in request.files:
+            return jsonify({"error": "未提供数据集文件"}), 400
+            
+        dataset_file = request.files["dataset_file"]
+        if dataset_file.filename == '':
+            return jsonify({"error": "未选择文件"}), 400
+            
+        if not dataset_file.filename.endswith(('.zip', '.tar.gz', '.tar')):
+            return jsonify({"error": "仅支持zip、tar.gz或tar格式的数据集文件"}), 400
+        
+        dataset_name = request.form.get("dataset_name", "未命名数据集")
+        model_name = request.form.get("model_name")
+        description = request.form.get("description", "与模型关联的数据集")
+        
+        if not model_name:
+            return jsonify({"error": "必须提供关联的模型名称"}), 400
+        
+        # 处理上传的数据集
+        result = dataset_manager.process_uploaded_dataset_for_model(
+            dataset_file, dataset_name, model_name, description
+        )
+        
+        # 使用model_scanner更新配置，而不是直接操作不存在的数据库表
+        try:
+            scanner = get_model_scanner()
+            for config in scanner.model_configs:
+                if config.model_name == model_name:
+                    config.dataset_id = result["id"]
+                    scanner.save_config()
+                    break
+        except Exception as e:
+            logging.error(f"更新模型配置出错: {e}")
+        
+        return jsonify(result), 201
+    
+    except Exception as e:
+        return jsonify({"error": f"上传数据集失败: {str(e)}"}), 500
+# 批量评估API
+@app.route("/api/evaluations", methods=["POST"])
+def create_batch_evaluation():
+    """创建批量评估任务"""
+    try:
+        data = request.json
+        evaluation_id = dataset_manager.run_batch_evaluation(data)
+        return jsonify({"id": evaluation_id, "message": "批量评估任务已创建"})
+    except Exception as e:
+        return jsonify({"error": f"创建批量评估任务失败: {str(e)}"}), 500
 
 # 更新任务状态    
 @app.route("/api/tasks/<task_id>/status", methods=["PUT"])
@@ -1587,4 +1749,4 @@ def get_models_and_checkpoints():
     })
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True,use_reloader=False)

@@ -23,7 +23,8 @@ MODEL_CONFIG_FILE = "./model_config.json"  # 模型配置文件
 # 模型配置类型
 class ModelConfig:
     def __init__(self, model_name: str, param_file: str, class_num: int = 0, 
-                 input_shape: Tuple[int, int] = (0, 0), model_type: str = ""):
+                 input_shape: Tuple[int, int] = (0, 0), model_type: str = "",
+                 dataset_id: str = None):
         self.model_name = model_name  # 模型定义文件名
         self.param_file = param_file  # 参数文件名
         self.class_num = class_num    # 分类数
@@ -31,6 +32,7 @@ class ModelConfig:
         self.model_type = model_type    # 模型类型标识符
         self.created_time = time.time()  # 创建时间
         self.model_id = f"{model_name}-{uuid.uuid4().hex[:8]}"  # 生成唯一模型ID
+        self.dataset_id = dataset_id    # 关联的数据集ID
         
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -40,7 +42,8 @@ class ModelConfig:
             "input_shape": self.input_shape,
             "model_type": self.model_type,
             "created_time": self.created_time,
-            "model_id": self.model_id
+            "model_id": self.model_id,
+            "dataset_id": self.dataset_id
         }
     
     @classmethod
@@ -50,12 +53,12 @@ class ModelConfig:
             param_file=data.get("param_file", ""),
             class_num=data.get("class_num", 0),
             input_shape=tuple(data.get("input_shape", (0, 0))),
-            model_type=data.get("model_type", "")
+            model_type=data.get("model_type", ""),
+            dataset_id=data.get("dataset_id")
         )
         config.created_time = data.get("created_time", time.time())
         config.model_id = data.get("model_id", f"{config.model_name}-{uuid.uuid4().hex[:8]}")
         return config
-
 
 class ModelScanner:
     """模型扫描器，用于扫描模型定义和参数文件，并尝试自动匹配"""
