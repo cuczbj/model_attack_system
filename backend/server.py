@@ -1334,7 +1334,7 @@ def run_evaluation(evaluation_id, config):
                             from attack.standard_attack import standard_attack
                             image_data = standard_attack(label, temp_task_id)
                         elif method == "PIG_attack":
-                            from backend.attack.PIG_attack import PIG_attack
+                            from backend.attack.PIG_attack1 import PIG_attack
                             # 添加参数以减少批次和种子数量
                             image_data = PIG_attack(label, temp_task_id, batch_num=1, num_seeds=1, iter_times=200)
                         else:

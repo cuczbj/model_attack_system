@@ -1425,3 +1425,525 @@
 2025-04-14 18:15:36,782 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
 2025-04-14 18:16:41,646 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [14/Apr/2025 18:16:41] "GET /models HTTP/1.1" 200 -
 2025-04-14 18:17:03,565 - root - DEBUG - server.py:473 - attack - 开始执行攻击 方法:PIG_attack 目标:5 任务ID:task-27b91625
+2025-04-14 20:39:55,912 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-14 20:39:56,388 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-14 20:39:56,392 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-14 20:39:56,392 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-14 20:39:56,392 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-14 20:39:56,396 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-14 20:39:56,399 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-14 20:39:56,399 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-14 20:39:56,401 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-14 20:39:56,402 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-14 20:39:56,402 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-14 20:39:56,405 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-14 20:39:56,407 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-14 20:39:56,407 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-14 20:39:56,409 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-14 20:39:56,409 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-14 20:39:56,409 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-14 20:39:56,412 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-14 20:39:56,413 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-14 20:39:56,413 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-14 20:39:56,415 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-14 20:39:56,446 - werkzeug - INFO - _internal.py:97 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.208.111.173:5000
+2025-04-14 20:39:56,452 - werkzeug - INFO - _internal.py:97 - _log - [33mPress CTRL+C to quit[0m
+2025-04-14 20:39:56,457 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-14 20:40:03,553 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-14 20:40:04,117 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-14 20:40:04,117 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-14 20:40:04,117 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-14 20:40:04,122 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-14 20:40:04,124 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-14 20:40:04,124 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-14 20:40:04,124 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-14 20:40:04,128 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-14 20:40:04,128 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-14 20:40:04,128 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-14 20:40:04,132 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-14 20:40:04,134 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-14 20:40:04,135 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-14 20:40:04,135 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-14 20:40:04,135 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-14 20:40:04,139 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-14 20:40:04,139 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-14 20:40:04,139 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-14 20:40:04,139 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-14 20:40:04,143 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-14 20:40:04,156 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-14 20:40:04,166 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-14 20:40:10,473 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [14/Apr/2025 20:40:10] "GET /models HTTP/1.1" 200 -
+2025-04-18 14:20:04,610 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 14:20:07,078 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 14:20:07,078 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:20:07,078 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:20:07,078 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:20:07,087 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:20:07,087 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:20:07,087 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:20:07,093 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:20:07,093 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:20:07,095 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:20:07,095 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:20:07,095 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:20:07,095 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:20:07,095 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 14:20:07,095 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:20:07,095 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:20:07,103 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:20:07,103 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:20:07,103 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:20:07,103 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:20:08,012 - werkzeug - INFO - _internal.py:97 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.63:5000
+2025-04-18 14:20:08,012 - werkzeug - INFO - _internal.py:97 - _log - [33mPress CTRL+C to quit[0m
+2025-04-18 14:20:08,012 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 14:20:15,513 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 14:20:15,969 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 14:20:15,969 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:20:15,969 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:20:15,974 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:20:15,976 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:20:15,978 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:20:15,978 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:20:15,978 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:20:15,978 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:20:15,978 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:20:15,978 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:20:15,986 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:20:15,988 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:20:15,988 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 14:20:15,988 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:20:15,991 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:20:15,993 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:20:15,993 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:20:15,993 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:20:15,996 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:20:16,005 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 14:20:16,030 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 14:21:14,388 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 14:21:14] "GET /models HTTP/1.1" 200 -
+2025-04-18 14:21:34,668 - root - DEBUG - server.py:473 - attack - 开始执行攻击 方法:PIG_attack 目标:5 任务ID:task-4d55117f
+2025-04-18 14:21:34,668 - root - ERROR - server.py:609 - attack - 攻击过程中发生错误: 'module' object is not callable
+2025-04-18 14:21:34,668 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 14:21:34] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-18 14:21:59,978 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\sansio\\app.py', reloading
+2025-04-18 14:22:00,016 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\sansio\\scaffold.py', reloading
+2025-04-18 14:22:00,043 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\globals.py', reloading
+2025-04-18 14:22:00,052 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\__init__.py', reloading
+2025-04-18 14:22:00,073 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\wrappers.py', reloading
+2025-04-18 14:22:00,076 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\wrappers\\__init__.py', reloading
+2025-04-18 14:22:00,109 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\wrappers\\request.py', reloading
+2025-04-18 14:22:00,132 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\sansio\\request.py', reloading
+2025-04-18 14:22:00,139 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\client.py', reloading
+2025-04-18 14:22:00,161 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\json\\__init__.py', reloading
+2025-04-18 14:22:00,178 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\commands\\__init__.py', reloading
+2025-04-18 14:22:00,186 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\wrappers\\response.py', reloading
+2025-04-18 14:22:00,193 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\commands\\redismodules.py', reloading
+2025-04-18 14:22:00,209 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\sansio\\response.py', reloading
+2025-04-18 14:22:00,236 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\commands\\core.py', reloading
+2025-04-18 14:22:00,260 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\helpers.py', reloading
+2025-04-18 14:22:00,301 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\typing.py', reloading
+2025-04-18 14:22:00,340 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\commands\\sentinel.py', reloading
+2025-04-18 14:22:00,357 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\ctx.py', reloading
+2025-04-18 14:22:00,394 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\typing.py', reloading
+2025-04-18 14:22:00,417 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\datastructures\\__init__.py', reloading
+2025-04-18 14:22:00,434 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\datastructures\\headers.py', reloading
+2025-04-18 14:22:00,604 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\utils.py', reloading
+2025-04-18 14:22:00,641 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\credentials.py', reloading
+2025-04-18 14:22:00,653 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\redis\\cache.py', reloading
+2025-04-18 14:22:00,676 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\blueprints.py', reloading
+2025-04-18 14:22:00,698 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\sansio\\blueprints.py', reloading
+2025-04-18 14:22:00,733 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\flask\\config.py', reloading
+2025-04-18 14:22:00,787 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\sqlite3\\__init__.py', reloading
+2025-04-18 14:22:00,811 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\datetime.py', reloading
+2025-04-18 14:22:00,865 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\py3nvml\\py3nvml.py', reloading
+2025-04-18 14:22:02,397 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 14:22:10,054 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 14:22:10,594 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 14:22:10,594 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:22:10,594 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:22:10,600 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:22:10,600 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:22:10,600 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:22:10,604 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:22:10,604 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:22:10,606 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:22:10,607 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:22:10,607 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:22:10,610 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:22:10,612 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:22:10,612 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 14:22:10,612 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:22:10,612 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:22:10,612 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:22:10,612 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:22:10,612 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:22:10,618 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:22:10,630 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 14:22:10,642 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 14:22:13,075 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\psutil\\_common.py', reloading
+2025-04-18 14:22:13,169 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\psutil\\_pswindows.py', reloading
+2025-04-18 14:22:13,253 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\psutil\\__init__.py', reloading
+2025-04-18 14:22:15,076 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 14:22:23,054 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 14:22:23,547 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 14:22:23,547 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:22:23,562 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:22:23,562 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:22:23,567 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:22:23,571 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:22:23,572 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:22:23,574 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:22:23,574 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:22:23,577 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:22:23,577 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:22:23,577 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:22:23,584 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:22:23,584 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 14:22:23,584 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:22:23,584 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:22:23,584 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:22:23,589 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:22:23,590 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:22:23,591 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:22:23,603 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 14:22:23,614 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 14:22:46,196 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 14:22:46] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-18 14:24:38,030 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\types.py', reloading
+2025-04-18 14:24:38,655 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\importlib\\__init__.py', reloading
+2025-04-18 14:24:40,526 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 14:24:48,147 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 14:24:48,644 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 14:24:48,644 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:24:48,644 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:24:48,648 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:24:48,651 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:24:48,651 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:24:48,655 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:24:48,656 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:24:48,656 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:24:48,656 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:24:48,661 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:24:48,662 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:24:48,662 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:24:48,664 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 14:24:48,665 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:24:48,666 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:24:48,667 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:24:48,667 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:24:48,670 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:24:48,670 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:24:48,683 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 14:24:48,696 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 14:26:00,326 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\workshop\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-18 14:26:00,334 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\workshop\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-18 14:26:00,336 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\workshop\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-18 14:26:02,489 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 14:26:52,520 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 14:26:53,464 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 14:26:53,471 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:26:53,471 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:26:53,476 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:26:53,482 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:26:53,484 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:26:53,487 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:26:53,487 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:26:53,492 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:26:53,494 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:26:53,500 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:26:53,502 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:26:53,503 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:26:53,503 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 14:26:53,507 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:26:53,507 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:26:53,511 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:26:53,512 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:26:53,515 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:26:53,515 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:26:54,397 - werkzeug - INFO - _internal.py:97 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.63:5000
+2025-04-18 14:26:54,402 - werkzeug - INFO - _internal.py:97 - _log - [33mPress CTRL+C to quit[0m
+2025-04-18 14:26:54,408 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 14:27:04,081 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 14:27:05,062 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 14:27:05,062 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:27:05,062 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:27:05,076 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:27:05,080 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:27:05,082 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:27:05,087 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:27:05,087 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:27:05,090 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:27:05,090 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:27:05,099 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:27:05,099 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:27:05,104 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:27:05,104 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 14:27:05,104 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:27:05,109 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:27:05,110 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:27:05,113 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:27:05,114 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:27:05,116 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:27:05,129 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 14:27:05,171 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 14:27:05,213 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 14:27:05] "GET /models HTTP/1.1" 200 -
+2025-04-18 14:27:17,109 - root - DEBUG - server.py:473 - attack - 开始执行攻击 方法:PIG_attack 目标:5 任务ID:task-e94de5b1
+2025-04-18 14:27:17,109 - root - ERROR - server.py:609 - attack - 攻击过程中发生错误: 'module' object is not callable
+2025-04-18 14:27:17,119 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 14:27:17] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-18 14:35:36,711 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\workshop\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-18 14:35:36,711 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\workshop\\model_attack_system\\backend\\upload_importlib.py', reloading
+2025-04-18 14:35:38,692 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 14:35:46,410 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 14:35:46,880 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 14:35:46,880 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:35:46,885 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:35:46,885 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:35:46,890 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:35:46,890 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:35:46,890 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:35:46,890 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:35:46,890 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:35:46,890 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:35:46,898 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 14:35:46,904 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 14:35:46,906 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 14:35:46,906 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 14:35:46,908 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 14:35:46,908 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 14:35:46,910 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 14:35:46,913 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 14:35:46,913 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 14:35:46,915 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 14:35:46,929 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 14:35:46,946 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 16:25:09,824 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 16:25:11,524 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 16:25:11,524 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:25:11,524 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:25:11,524 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:25:11,524 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:25:11,524 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:25:11,524 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:25:11,524 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:25:11,524 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:25:11,531 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:25:11,532 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:25:11,532 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:25:11,533 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:25:11,533 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 16:25:11,533 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:25:11,534 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:25:11,534 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:25:11,536 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:25:11,536 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:25:11,536 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:25:12,399 - werkzeug - INFO - _internal.py:97 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.208.111.173:5000
+2025-04-18 16:25:12,399 - werkzeug - INFO - _internal.py:97 - _log - [33mPress CTRL+C to quit[0m
+2025-04-18 16:25:12,399 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 16:25:16,109 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 16:25:16,393 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 16:25:16,393 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:25:16,393 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:25:16,393 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:25:16,393 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:25:16,393 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:25:16,409 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:25:16,409 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:25:16,409 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:25:16,409 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:25:16,412 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:25:16,413 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:25:16,414 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:25:16,414 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:25:16,414 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 16:25:16,415 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:25:16,415 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:25:16,415 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:25:16,416 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:25:16,416 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:25:16,424 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 16:25:16,430 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 16:25:27,962 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 16:25:27] "GET /models HTTP/1.1" 200 -
+2025-04-18 16:25:36,190 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\torchvision\\models\\_utils.py', reloading
+2025-04-18 16:25:37,712 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 16:25:41,340 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 16:25:41,628 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 16:25:41,633 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:25:41,634 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:25:41,634 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:25:41,634 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:25:41,634 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:25:41,634 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:25:41,634 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:25:41,634 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:25:41,634 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:25:41,640 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:25:41,640 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:25:41,641 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:25:41,641 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 16:25:41,641 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:25:41,642 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:25:41,642 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:25:41,643 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:25:41,643 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:25:41,644 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:25:41,652 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 16:25:41,661 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 16:25:54,025 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 16:25:54] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-18 16:26:02,337 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 16:26:02] "GET /models HTTP/1.1" 200 -
+2025-04-18 16:26:06,811 - root - DEBUG - server.py:473 - attack - 开始执行攻击 方法:PIG_attack 目标:5 任务ID:task-e39a15da
+2025-04-18 16:26:06,811 - root - ERROR - server.py:609 - attack - 攻击过程中发生错误: 'module' object is not callable
+2025-04-18 16:26:06,826 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 16:26:06] "[35m[1mPOST /attack HTTP/1.1[0m" 500 -
+2025-04-18 16:28:11,037 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\kornia\\__init__.py', reloading
+2025-04-18 16:28:11,075 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\kornia\\augmentation\\_2d\\geometric\\rotation.py', reloading
+2025-04-18 16:28:11,135 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\torch\\optim\\adam.py', reloading
+2025-04-18 16:28:11,523 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\statistics.py', reloading
+2025-04-18 16:28:12,291 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 16:28:16,107 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 16:28:16,382 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:28:16,382 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:28:16,399 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:28:16,400 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:28:16,401 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:28:16,401 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 16:28:16,401 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:28:16,402 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:28:16,402 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:28:16,403 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:28:16,403 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:28:16,403 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:28:16,407 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 16:28:16,420 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 16:36:09,482 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\tqdm\\__init__.py', reloading
+2025-04-18 16:36:09,948 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\tqdm\\std.py', reloading
+2025-04-18 16:36:09,991 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\tqdm\\utils.py', reloading
+2025-04-18 16:36:12,076 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 16:36:16,749 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 16:36:17,032 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:36:17,032 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:36:17,040 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:36:17,041 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:36:17,041 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:36:17,042 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 16:36:17,042 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:36:17,042 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:36:17,042 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:36:17,043 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:36:17,043 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:36:17,043 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:36:17,051 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 16:36:17,059 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 16:37:38,228 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\workshop\\model_attack_system\\backend\\attack\\__init__.py', reloading
+2025-04-18 16:37:38,228 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\workshop\\model_attack_system\\backend\\attack\\__init__.py', reloading
+2025-04-18 16:37:40,464 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 16:38:12,719 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 16:38:12,989 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 16:38:12,989 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:38:12,989 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:38:12,989 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:38:12,989 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:38:12,989 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:38:12,995 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:38:12,995 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:38:12,995 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:38:12,997 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:38:12,998 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:38:12,998 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:38:12,999 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:38:13,000 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 16:38:13,000 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:38:13,001 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:38:13,001 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:38:13,002 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:38:13,002 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:38:13,003 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:38:13,852 - werkzeug - INFO - _internal.py:97 - _log - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.208.111.173:5000
+2025-04-18 16:38:13,852 - werkzeug - INFO - _internal.py:97 - _log - [33mPress CTRL+C to quit[0m
+2025-04-18 16:38:13,852 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 16:38:17,310 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 16:38:17,587 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 16:38:17,587 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:38:17,587 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:38:17,587 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:38:17,587 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:38:17,603 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:38:17,603 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:38:17,603 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:38:17,605 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:38:17,605 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:38:17,607 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:38:17,607 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:38:17,608 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:38:17,608 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:38:17,608 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 16:38:17,608 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:38:17,609 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:38:17,610 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:38:17,610 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:38:17,611 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:38:17,618 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 16:38:17,627 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 16:38:21,240 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 16:38:21] "GET /models HTTP/1.1" 200 -
+2025-04-18 16:38:33,730 - root - DEBUG - server.py:473 - attack - 开始执行攻击 方法:PIG_attack 目标:5 任务ID:task-7df25422
+2025-04-18 16:38:33,948 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\debug\\__init__.py', reloading
+2025-04-18 16:38:33,948 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\site-packages\\werkzeug\\serving.py', reloading
+2025-04-18 16:38:33,971 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\http\\server.py', reloading
+2025-04-18 16:38:33,983 - werkzeug - INFO - _internal.py:97 - _log -  * Detected change in 'D:\\soft\\Anaconda\\Anaconda\\envs\\MAS\\Lib\\socketserver.py', reloading
+2025-04-18 16:38:35,536 - werkzeug - INFO - _internal.py:97 - _log -  * Restarting with watchdog (windowsapi)
+2025-04-18 16:38:38,981 - root - INFO - server.py:71 - <module> - 模型攻击系统服务启动中...
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:256 - load_config - 已加载 1 个模型配置
+2025-04-18 16:38:39,313 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:38:39,313 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:38:39,322 - model_scanner - WARNING - model_scanner.py:90 - scan_model_definitions - 模型 classifier 未定义 MODEL_CLASS_NAME
+2025-04-18 16:38:39,322 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_facenet64 -> FaceNet64
+2025-04-18 16:38:39,322 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_iri152 -> IR152
+2025-04-18 16:38:39,323 - model_scanner - INFO - model_scanner.py:381 - start_model_watcher - 模型文件监控器已启动
+2025-04-18 16:38:39,323 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_mlp -> MLP
+2025-04-18 16:38:39,325 - model_scanner - INFO - model_scanner.py:88 - scan_model_definitions - 发现模型定义: target_vgg16 -> VGG16
+2025-04-18 16:38:39,326 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: FaceNet64_88.50.tar
+2025-04-18 16:38:39,326 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: IR152_91.16.tar
+2025-04-18 16:38:39,326 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: MLP_50.pkl
+2025-04-18 16:38:39,327 - model_scanner - INFO - model_scanner.py:109 - scan_param_files - 发现参数文件: VGG16_88.26.tar
+2025-04-18 16:38:39,339 - werkzeug - WARNING - _internal.py:97 - _log -  * Debugger is active!
+2025-04-18 16:38:39,346 - werkzeug - INFO - _internal.py:97 - _log -  * Debugger PIN: 123-573-737
+2025-04-18 16:38:42,063 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 16:38:42] "GET /models HTTP/1.1" 200 -
+2025-04-18 16:38:47,877 - root - DEBUG - server.py:473 - attack - 开始执行攻击 方法:PIG_attack 目标:5 任务ID:task-7239ab49
+2025-04-18 16:39:13,460 - root - DEBUG - server.py:481 - attack - 攻击完成，结果类型: <class 'str'>
+2025-04-18 16:39:13,476 - root - DEBUG - server.py:517 - attack - 结果是base64字符串，长度: 7628
+2025-04-18 16:39:13,482 - werkzeug - INFO - _internal.py:97 - _log - 127.0.0.1 - - [18/Apr/2025 16:39:13] "POST /attack HTTP/1.1" 200 -
