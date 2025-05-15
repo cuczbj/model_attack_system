@@ -149,13 +149,15 @@ def init_db():
 app = Flask(__name__, static_url_path="/static", static_folder="./")
 CORS(app)  # 启用CORS，允许所有源访问
 
-# app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), './models')
+app.config['PYTHON_FOLDER'] = os.path.join(os.getcwd(), './models/classifiers')
+app.config['CTP_FOLDER'] = os.path.join(os.getcwd(), './checkpoint/target_model')
 # app.config['ALLOWED_EXTENSIONS'] = {'pth', 'pkl','tar'}
 os.makedirs(MODEL_DIR, exist_ok=True)
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
 # 允许上传的文件扩展名
-ALLOWED_EXTENSIONS = {'.tar', '.pkl', '.pth', '.py'}
+ALLOWED_EXTENSIONS = {'tar', 'pkl', 'pth', 'py'}
+app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 
 # 在启动应用时初始化数据库
 init_db()
@@ -1274,37 +1276,40 @@ def predict():
 # 更新文件上传端点
 @app.route('/checkpoint', methods=['POST'])
 def upload_file():
-    # 检查请求中是否包含文件
     if 'file' not in request.files:
         return jsonify({"error": "No file part in the request"}), 400
     file = request.files['file']
-    # 如果用户没有选择文件
     if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
-    # 检查文件是否合法
     if file and allowed_file(file.filename):
         filename = file.filename
-        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
-        # 如果文件夹不存在，创建文件夹
-        if not os.path.exists(app.config['UPLOAD_FOLDER']):
-            os.makedirs(app.config['UPLOAD_FOLDER'])
-        
-        # 保存文件
+        ext = filename.rsplit('.', 1)[1].lower()
+
+        # 根据文件扩展名选择上传目录
+        if ext == 'py':
+            upload_dir = app.config['PYTHON_FOLDER']
+        else:
+            upload_dir = app.config['CTP_FOLDER']
+
+        # 如果文件夹不存在，创建
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+
+        upload_path = os.path.join(upload_dir, filename)
         file.save(upload_path)
-        
-        # 触发模型扫描以检测新上传的文件
+
+        # 扫描模型文件
         scanner = get_model_scanner()
         scanner.scan()
-        
-        # 尝试自动检测配置
+
+        # 尝试自动识别模型类型
         model_name = scanner.guess_model_type(filename)
         auto_config_info = {}
-        
+
         if model_name:
             auto_config_info["detected_model"] = model_name
             auto_config_info["message"] = f"检测到可能匹配的模型: {model_name}"
-        
+
         return jsonify({
             "message": f"File {filename} uploaded successfully",
             "auto_detection": auto_config_info

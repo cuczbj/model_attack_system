@@ -1,15 +1,28 @@
 [
   {
-    "model_name": "vgg16",
-    "param_file": "VGG16_88.26.tar",
+    "model_name": "target_iri152",
+    "param_file": "IR152_91.16.tar",
     "class_num": 1000,
     "input_shape": [
-      112,
-      92
+      64,
+      64
+    ],
+    "model_type": "target_iri152",
+    "created_time": 1747322981.3289375,
+    "model_id": "target_iri152-b241559f",
+    "dataset_id": null
+  },
+  {
+    "model_name": "vgg16",
+    "param_file": "VGG16_88.26.tar",
+    "class_num": 10,
+    "input_shape": [
+      64,
+      64
     ],
     "model_type": "vgg16",
-    "created_time": 1744878393.755511,
-    "model_id": "vgg16-f2f1ec9d",
+    "created_time": 1747323564.0850306,
+    "model_id": "vgg16-eda55197",
     "dataset_id": null
   }
 ]

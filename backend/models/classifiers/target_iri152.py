@@ -4,8 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import models.classifiers.evolve as evolve
 
-MODEL_CLASS_NAME ="IR152"
-
 class IR152(nn.Module):
     def __init__(self, num_classes=1000):
         super(IR152, self).__init__()
