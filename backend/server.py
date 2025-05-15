@@ -130,8 +130,20 @@ def init_db():
         create_time TEXT NOT NULL
     )
     ''')
+
+    # 新增用户表
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        create_time TEXT NOT NULL
+    )
+    ''')
     conn.commit()
     conn.close()
+
+
 
 # 创建Flask应用
 app = Flask(__name__, static_url_path="/static", static_folder="./")
@@ -152,6 +164,12 @@ init_db()
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+# 简单示例，真实环境请加密密码和数据库支持
+users = {
+    "admin": "admin",
+    "user": "admin"
+}
+
 #################################################
 # 原有API端点
 #################################################
@@ -161,6 +179,20 @@ def allowed_file(filename):
 def train():
     response = train_target_model()
     return jsonify({"message": response})
+
+# 用户登录
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    if username in users and users[username] == password:
+        # 登录成功，返回简单 token（演示用，生产建议用 JWT）
+        token = f"token-for-{username}"
+        return jsonify({"token": token}), 200
+    else:
+        return jsonify({"error": "Invalid username or password"}), 401
 
 # 获取任务图像
 @app.route("/api/tasks/<task_id>/image", methods=["GET"])
