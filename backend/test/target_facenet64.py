@@ -3,6 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import models.classifiers.evolve as evolve
 
+
+MODEL_CLASS_NAME = "FaceNet64"
+
 # Flatten
 class Flatten(nn.Module):
     def forward(self, input):

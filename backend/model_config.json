@@ -1,5 +1,31 @@
 [
   {
+    "model_name": "target_mlp",
+    "param_file": "MLP_50.pkl",
+    "class_num": 40,
+    "input_shape": [
+      112,
+      92
+    ],
+    "model_type": "target_mlp",
+    "created_time": 1747325791.3293352,
+    "model_id": "target_mlp-f7131264",
+    "dataset_id": null
+  },
+  {
+    "model_name": "target_facenet64",
+    "param_file": "FaceNet64_88.50.tar",
+    "class_num": 1000,
+    "input_shape": [
+      64,
+      64
+    ],
+    "model_type": "target_facenet64",
+    "created_time": 1747502083.6748488,
+    "model_id": "target_facenet64-7ad975e7",
+    "dataset_id": null
+  },
+  {
     "model_name": "target_iri152",
     "param_file": "IR152_91.16.tar",
     "class_num": 1000,
@@ -8,21 +34,21 @@
       64
     ],
     "model_type": "target_iri152",
-    "created_time": 1747322981.3289375,
-    "model_id": "target_iri152-b241559f",
+    "created_time": 1747500050.928778,
+    "model_id": "target_iri152-1f42f3e5",
     "dataset_id": null
   },
   {
-    "model_name": "vgg16",
+    "model_name": "target_vgg16",
     "param_file": "VGG16_88.26.tar",
-    "class_num": 10,
+    "class_num": 1000,
     "input_shape": [
       64,
       64
     ],
-    "model_type": "vgg16",
-    "created_time": 1747323564.0850306,
-    "model_id": "vgg16-eda55197",
+    "model_type": "target_vgg16",
+    "created_time": 1747502115.3209534,
+    "model_id": "target_vgg16-4971ea88",
     "dataset_id": null
   }
 ]
