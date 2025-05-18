@@ -15,8 +15,8 @@ import utils
 from utils import save_tensor_images,tensor_to_base64
 # from models.evaluation import get_knn_dist, calc_fid
 # from models.classifiers import VGG16, IR152, FaceNet, FaceNet64
-from models.evalute_model import FaceNet
-# from models.resnet64 import ResNetGenerator
+from models.evalute_model import VGG16, IR152, FaceNet, FaceNet64
+from models.resnet64 import ResNetGenerator
 from PIL import Image
 #设定随机种子，保证可复现性。
 def set_random_seed(seed=0):
@@ -80,7 +80,8 @@ def inversion(G, T, E,iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_see
     
     # 存储最后生成的图像
     final_image = None
-    
+    predcit_class = None
+    confidence = None
     #使用图像增强 (augmentation)：
     """
     随机裁剪 64x64 贴近目标分类器输入。
@@ -145,7 +146,7 @@ def inversion(G, T, E,iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_see
             inv_loss_val = inv_loss.item()
 
             # 每 10 次迭代 计算一次 攻击成功率：并生成新的伪造图像
-            if (i + 1) % 10 == 0:
+            if (i + 1) % 100 == 0:
                 with torch.no_grad():
                     fake_img = G(z, iden)
                     eval_prob = E(augmentation.Resize((112, 112))(fake_img))[-1]
@@ -160,7 +161,8 @@ def inversion(G, T, E,iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_see
             score = T(fake)[-1]
             eval_prob = E(augmentation.Resize((112, 112))(fake))[-1]
             eval_iden = torch.argmax(eval_prob, dim=1).view(-1)
-
+            predcit_class = eval_iden[0].item()
+            confidence = torch.max(eval_prob, dim=1)[0][0].item()
             cnt, cnt5 = 0, 0
             for i in range(bs):
                 gt = iden[i].item()
@@ -241,14 +243,15 @@ def inversion(G, T, E,iden, itr, task_id=None, lr=2e-2, iter_times=1500, num_see
         acc_var5 = 0
     print("Acc:{:.2f}\tAcc_5:{:.2f}\tAcc_var:{:.4f}\tAcc_var5:{:.4f}".format(acc, acc_5, acc_var, acc_var5))
 
+    
     # 将最终生成的图像转换为base64
     base64_img = tensor_to_base64(final_image)
-    return base64_img
+    return base64_img,predcit_class,confidence
 
 #发起PIG逆向攻击
 def PIG_attack(target_labels, model, G, h, w, channel,task_id=None, batch_num=None,num_seeds=None, inv_loss_type='margin', lr=0.1, iter_times=600,
                           gen_num_features=64, gen_dim_z=128, gen_bottom_width=4,
-                          gen_distribution='normal', save_dir='./result/PLG_MI_Inversion', path_G='./checkpoint/PIG/gen_VGG16_celeba.pth.tar'):
+                          gen_distribution='normal', save_dir='./result/PLG_MI_Inversion', path_G='./checkpoint/G_model/gen_PIG_attack_vgg16_celeba.pth.tar'):
     """执行PIG逆向攻击
     
     Args:
@@ -261,26 +264,26 @@ def PIG_attack(target_labels, model, G, h, w, channel,task_id=None, batch_num=No
         base64编码的图像数据
     """
     # Load Generator
-    # G = ResNetGenerator(gen_num_features, gen_dim_z, gen_bottom_width, num_classes=1000, distribution=gen_distribution)
-    # G = ResNetGenerator(num_classes=1000)
+    G = ResNetGenerator(gen_num_features, gen_dim_z, gen_bottom_width, num_classes=1000, distribution=gen_distribution)
+    G = ResNetGenerator(num_classes=1000)
     
-    # gen_ckpt = torch.load(path_G)['model']
-    # G.load_state_dict(gen_ckpt)
-    # G = G.cuda()
+    gen_ckpt = torch.load(path_G)['model']
+    G.load_state_dict(gen_ckpt)
+    G = G.cuda()
 
     # Load Target Model
     # if model.startswith("VGG16"):
-    #     T = VGG16(1000)
-    #     path_T = './checkpoint/target_model/VGG16_88.26.tar'
+    T = VGG16(1000)
+    path_T = './checkpoint/target_model/VGG16_88.26.tar'
     # elif model.startswith('IR152'):
     #     T = IR152(1000)
     #     path_T = './checkpoint/target_model/IR152_91.16.tar'
     # elif model == "FaceNet64":
     #     T = FaceNet64(1000)
     #     path_T = './checkpoint/target_model/FaceNet64_88.50.tar'
-    # T = torch.nn.DataParallel(T).cuda()
-    # ckp_T = torch.load(path_T)
-    # T.load_state_dict(ckp_T['state_dict'], strict=False)
+    T = torch.nn.DataParallel(T).cuda()
+    ckp_T = torch.load(path_T)
+    T.load_state_dict(ckp_T['state_dict'], strict=False)
 
     # Load Evaluation Model
     E = FaceNet(1000)
@@ -296,7 +299,7 @@ def PIG_attack(target_labels, model, G, h, w, channel,task_id=None, batch_num=No
         batch_num = 1
         for idx in range(batch_num):
             print(f"--------------------- Attack batch [{idx}]------------------------------")
-            base64_img = inversion(G, model, E,iden, itr=i, task_id=task_id, lr=lr, iter_times=iter_times,
+            base64_img,pre_iden,confidence = inversion(G, T, E, iden, itr=i, task_id=task_id, lr=lr, iter_times=iter_times,
                                             num_seeds=1, save_dir=save_dir, gen_dim_z=gen_dim_z, gen_distribution=gen_distribution, inv_loss_type=inv_loss_type)
             
           
@@ -308,4 +311,4 @@ def PIG_attack(target_labels, model, G, h, w, channel,task_id=None, batch_num=No
             # aver_var5 += var5 / batch_num
     
     # print(f"Average Acc:{aver_acc:.2f}\tAverage Acc5:{aver_acc5:.2f}\tAverage Acc_var:{aver_var:.4f}\tAverage Acc_var5:{aver_var5:.4f}")
-    return base64_img
+    return base64_img,pre_iden,confidence

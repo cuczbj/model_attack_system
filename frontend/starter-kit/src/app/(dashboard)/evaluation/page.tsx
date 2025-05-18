@@ -57,12 +57,14 @@ const ATTACK_METHODS = [
 
 // 目标模型选项
 const TARGET_MODELS = [
-  { id: "mynet_50", name: "基础MLP分类器" }
+  { id: "mynet_50", name: "基础MLP分类器" },
+  { id: "VGG16", name: "target_vgg16_1000类" }
 ];
 
 // 数据集选项
 const DATASETS = [
-  { id: "att_faces", name: "AT&T人脸数据库", classes: 40 }
+  { id: "att_faces", name: "AT&T人脸数据库", classes: 40 },
+  { id: "celeba", name: "CelebA人脸数据库", classes: 1000 }
 ];
 
 interface TabPanelProps {

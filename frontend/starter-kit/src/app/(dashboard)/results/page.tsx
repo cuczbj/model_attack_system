@@ -209,7 +209,11 @@ const loadAvailableModels = async () => {
     };
   };
 
-  // 执行攻击
+
+// 我加的
+let ThisIsMyPredictedLabel = 0;
+let ThisIsMyConfidence = 0;
+
 // 执行攻击
 const handleAttack = async () => {
   try {
@@ -289,7 +293,18 @@ const handleAttack = async () => {
       imageUrl = `${API_URL}${data.result_image.replace("./data", "/static")}`;
       setAttackResult(imageUrl);
     }
-    
+
+    // 我加的
+    else if (data.predicted_label) {
+      // 兼容旧格式
+      setPrediction(data.prediction);
+    }
+    else if (data.confidences) {
+      setConfidence(data.confidences);
+    }
+    ThisIsMyPredictedLabel = data.predicted_label;
+    ThisIsMyConfidence = data.confidence;
+    // 我加的结束
     // 尝试获取预测结果
     try {
       await fetchPrediction();
@@ -305,8 +320,8 @@ const handleAttack = async () => {
   }
 };
 
-  // 获取预测结果
   const fetchPrediction = async () => {
+  // const fetchPrediction = async () => {
     try {
       // 创建FormData对象
       const formData = new FormData();
@@ -374,8 +389,8 @@ const handleAttack = async () => {
         }
       }
       
-      setPrediction(predictionData.prediction);
-      setConfidence(confidence);
+      setPrediction(ThisIsMyPredictedLabel);
+      setConfidence(ThisIsMyConfidence);
       
       // 如果存在任务ID，更新任务状态
       if (currentTaskId) {
@@ -401,8 +416,8 @@ const handleAttack = async () => {
       }
       
       return {
-        prediction: predictionData.prediction,
-        confidence: confidence
+        prediction: ThisIsMyPredictedLabel,
+        confidence: ThisIsMyConfidence
       };
     } catch (error) {
       console.error("预测错误详情:", error);
@@ -657,11 +672,11 @@ const handleAttack = async () => {
                       <Typography variant="body1">
                         预测标签: <strong>{prediction}</strong>
                       </Typography>
-                      {confidence !== null && (
+                      {/* {confidence !== null && (
                         <Typography variant="body1">
                           置信度: <strong>{(confidence * 100).toFixed(2)}%</strong>
                         </Typography>
-                      )}
+                      )} */}
                       <Typography 
                         variant="body1" 
                         color={prediction === targetLabel ? "success.main" : "error.main"}

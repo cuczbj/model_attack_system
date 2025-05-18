@@ -673,7 +673,7 @@ def attack():
         os.makedirs(result_dir, exist_ok=True)
         
         # 执行攻击，传入任务ID
-        result_image = reconstruct(attack_method_name, model, G, target_label,  h, w, channels, device, task_id)
+        result_image,pre_iden,confidences = reconstruct(attack_method_name, model, G, target_label,  h, w, channels, device, task_id)
         logging.debug(f"攻击完成，结果类型: {type(result_image)}")
         
         # 更新任务进度
@@ -787,6 +787,10 @@ def attack():
                 response_data["image"] = image_base64
             if image_path:
                 response_data["image_path"] = image_path
+            if pre_iden != None:
+                response_data["predicted_label"] = pre_iden
+            if confidences:
+                response_data["confidences"] = confidences
                 
             conn.commit()
             conn.close()
