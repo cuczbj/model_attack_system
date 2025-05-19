@@ -5,3 +5,6 @@
 */pth
 *.tar
 *.pyc
+/backend/datasets/target_vgg16-dataset-2c137fc8/0
+/backend/datasets/target_vgg16-dataset-2c137fc8/1
+/backend/datasets/target_vgg16-dataset-2c137fc8

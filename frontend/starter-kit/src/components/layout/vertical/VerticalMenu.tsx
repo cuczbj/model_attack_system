@@ -130,7 +130,7 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
             <MenuItem href='/methods' icon={<i className='tabler-tool' />}>
               攻击模型管理
             </MenuItem>
-            <MenuItem href='/evaluation' icon={<i className='tabler-shield-check' />}>
+            <MenuItem href='/eva' icon={<i className='tabler-shield-check' />}>
               攻击效果评估
             </MenuItem>
                     {/* 攻击结果 */}

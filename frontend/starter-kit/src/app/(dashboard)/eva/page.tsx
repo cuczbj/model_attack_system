@@ -536,7 +536,7 @@ export default function EvaluationPage() {
       <TabPanel value={tabValue} index={0}>
         <Box sx={{ mb: 3 }}>
           <Typography variant="body1">
-            选择已完成的攻击任务和原始数据集，评估攻击效果。评估指标包括PSNR、SSIM、FID等图像质量评价指标。
+            选择已完成的攻击任务和原始数据集,评估攻击效果。评估指标包括PSNR、SSIM、FID等图像质量评价指标。
           </Typography>
         </Box>
         

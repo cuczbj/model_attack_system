@@ -58,7 +58,7 @@ const ATTACK_METHODS = [
 // 目标模型选项
 const TARGET_MODELS = [
   { id: "mynet_50", name: "基础MLP分类器" },
-  { id: "VGG16", name: "target_vgg16_1000类" }
+  { id: "target_vgg16", name: "target_vgg16_1000类" }
 ];
 
 // 数据集选项
@@ -1075,6 +1075,8 @@ export default function AttackEvaluationPage() {
   const handleStartEvaluation = async (config) => {
     try {
       const response = await fetch(`${API_URL}/api/evaluations`, {
+      // const response = await fetch(`${API_URL}/evaluations`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

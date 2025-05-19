@@ -613,9 +613,9 @@ def attack():
     
     target_label = data["target_label"]
     attack_method_name = data.get("attack_method", "standard_attack")  # 默认使用标准攻击
-    target_model = data.get("target_model", "MLP")  # 默认针对MLP目标模型
+    target_model = data.get("target_model", "target_vgg16")  # 默认针对MLP目标模型
     dataset = data.get("dataset", "ATT40")  # 默认使用CIFAR-10数据集
-    class_num = data.get("class_num", 40)  # 默认分类数为40
+    class_num = data.get("class_num", 1000)  # 默认分类数为40
     image_size = data.get("image_size", "64*64")  # 默认图像大小为224
     channels = data.get("channels", 3)  # 默认彩色图像，通道数为3
     # 解析图像大小
@@ -1334,7 +1334,6 @@ with app.app_context():
 
 
 
-
 # 下载评估报告API
 @app.route("/api/evaluations/<evaluation_id>/report", methods=["GET"])
 def download_evaluation_report(evaluation_id):
@@ -1789,5 +1788,134 @@ def get_models_and_checkpoints():
         "matched_models": matched_models  # 返回匹配结果
     })
 
+
+
+# 评估
+@app.route('/evaluations', methods=['POST'])
+def evaluate():
+    """ 接收评估任务并启动评估 """
+    try:
+        # 解析请求参数
+        data = request.get_json()
+        # config = data.get('config', {})
+        target_model = data.get('targetModel', 'MLP')
+        dataset = data.get('dataset', 'att_faces')
+        attack_methods = data.get('attackMethods', [])
+        label_start = data.get('labelRange', {}).get('start', 0)
+        label_end = data.get('labelRange', {}).get('end', 9)
+        samples_per_label = data.get('samplesPerLabel', 10)
+        advanced_settings = data.get('advancedSettings', {})
+        
+        # 验证参数
+        if not target_model:
+            return jsonify({"error": "缺少目标模型参数"}), 400
+        
+        if not dataset:
+            return jsonify({"error": "缺少数据集参数"}), 400
+        
+        if not attack_methods:
+            return jsonify({"error": "缺少攻击方法参数"}), 400
+        
+        if not label_start!= None or not label_end != None: 
+            return jsonify({"error": "缺少标签范围参数"}), 400
+        
+        if not samples_per_label:
+            return jsonify({"error": "缺少样本数量参数"}), 400
+        
+        # 模拟任务 ID 和评估 ID
+        task_id = str(uuid.uuid4())
+        evaluation_id = str(uuid.uuid4())
+        now = time.strftime('%Y-%m-%d %H:%M:%S')
+        print("task_id:", task_id)
+        # 示例生成评估结果
+        evaluation_results = {
+            "psnr": 10.6979,
+            "ssim": 0.2315,
+            "fid": 29.6149,
+            "mse": 0.0781,
+            "target_accuracy": 1.00,
+            "perceptual_similarity": 0.12
+        }
+
+        # 写入 SQLite
+        conn = get_db_connection()
+        conn.execute('''
+            INSERT INTO evaluation_results (
+                id, task_id, dataset_id, psnr, ssim, fid, mse, target_accuracy, 
+                original_dataset, create_time, metrics
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            evaluation_id,
+            task_id,
+            dataset,
+            evaluation_results.get('psnr', 0),
+            evaluation_results.get('ssim', 0),
+            evaluation_results.get('fid'),
+            evaluation_results.get('mse', 0),
+            evaluation_results.get('target_accuracy', 0),
+            dataset,
+            now,
+            json.dumps(evaluation_results)
+        ))
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "message": "评估任务已提交",
+            "task_id": task_id,
+            "evaluation_id": evaluation_id,
+            "results": evaluation_results
+        }), 201
+
+    except Exception as e:
+        logging.error(f"启动评估任务时出错: {e}")
+        return jsonify({"error": f"启动评估任务失败: {str(e)}"}), 500
+
+# 查询评估结果
+@app.route('/evaluations/res/<task_id>', methods=['GET'])
+def get_evaluation_result(task_id):
+    """ 查询某个评估任务的结果 """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            SELECT id, task_id, dataset_id, psnr, ssim, fid, mse, 
+                   target_accuracy, perceptual_similarity, 
+                   original_dataset, create_time, metrics
+            FROM evaluation_results
+            WHERE task_id = ?
+        ''', (task_id,))
+        
+        row = cursor.fetchone()
+        conn.close()
+
+        if row is None:
+            return jsonify({"status": "not_found", "message": "该任务暂未有评估结果"}), 404
+
+        # 将查询结果转为字典
+        result = {
+            "id": row[0],
+            "task_id": row[1],
+            "dataset_id": row[2],
+            "psnr": row[3],
+            "ssim": row[4],
+            "fid": row[5],
+            "mse": row[6],
+            "target_accuracy": row[7],
+            "perceptual_similarity": row[8],
+            "original_dataset": row[9],
+            "create_time": row[10],
+            "metrics": json.loads(row[11]) if row[11] else {}
+        }
+        print("评估已完成！！！")
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": f"查询评估结果失败: {str(e)}"}), 500
+
+
+# 主函数
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True,use_reloader=False)

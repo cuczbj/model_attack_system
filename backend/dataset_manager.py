@@ -120,7 +120,7 @@ def ensure_dirs():
     os.makedirs(RESULT_DIR, exist_ok=True)
 
 # 数据集上传与处理函数
-def process_uploaded_dataset(dataset_file, dataset_name: str, description: str) -> Dict:
+def process_uploaded_dataset(dataset_file, dataset_name: str, description: str, target_model_name: str) -> Dict:
     """处理上传的数据集文件"""
     ensure_dirs()
     
@@ -189,6 +189,7 @@ def process_uploaded_dataset(dataset_file, dataset_name: str, description: str) 
             shutil.rmtree(dataset_path)
         raise RuntimeError(f"处理数据集失败: {str(e)}")
 
+# 分析数据集结构，返回类别数、图像数和格式信息
 def analyze_dataset_structure(dataset_path: str) -> Tuple[int, int, str]:
     """分析数据集结构，返回类别数、图像数和格式信息"""
     class_count = 0
@@ -226,10 +227,11 @@ def analyze_dataset_structure(dataset_path: str) -> Tuple[int, int, str]:
     logger.info(f"数据集分析结果: {class_count}个类别, {image_count}张图像, 格式: {format_info}")
     return class_count, image_count, format_info
 
+# 获取数据集信息,名称等等
 def get_dataset_info(dataset_id: str) -> Dict:
     """获取数据集信息"""
     conn = get_db_connection()
-    dataset = conn.execute('SELECT * FROM datasets WHERE id = ?', (dataset_id,)).fetchone()
+    dataset = conn.execute('SELECT * FROM datasets WHERE name = ?', (dataset_id,)).fetchone()
     conn.close()
     
     if dataset is None:
@@ -237,6 +239,7 @@ def get_dataset_info(dataset_id: str) -> Dict:
     
     return dict(dataset)
 
+# 获取所有数据集列表
 def get_all_datasets() -> List[Dict]:
     """获取所有数据集列表"""
     conn = get_db_connection()
@@ -245,6 +248,7 @@ def get_all_datasets() -> List[Dict]:
     
     return [dict(dataset) for dataset in datasets]
 
+# 获取原始数据集的对应图像
 def get_dataset_class_image(dataset_id: str, class_label: int) -> str:
     """获取指定数据集和类别的代表图像，使用目录名称作为类别标签"""
     try:
@@ -306,7 +310,8 @@ def get_dataset_class_image(dataset_id: str, class_label: int) -> str:
     except Exception as e:
         logger.error(f"获取数据集类别图像时出错: {str(e)}")
         raise RuntimeError(f"获取类别图像失败: {str(e)}")
-# 添加到dataset_manager.py
+    
+# 处理上传的与模型关联的数据集文件
 def process_uploaded_dataset_for_model(dataset_file, dataset_name: str, model_name: str, description: str) -> Dict:
     """处理上传的与模型关联的数据集文件"""
     ensure_dirs()
@@ -379,6 +384,7 @@ def process_uploaded_dataset_for_model(dataset_file, dataset_name: str, model_na
             shutil.rmtree(dataset_path)
         raise RuntimeError(f"处理模型数据集失败: {str(e)}")
 
+# 获取指定模型对应的数据集
 def get_dataset_for_model(model_name: str) -> Dict:
     """获取指定模型对应的数据集"""
     conn = get_db_connection()
@@ -526,7 +532,8 @@ def evaluate_attack_result(task_id: str, dataset_id: str, metrics: List[str]) ->
     except Exception as e:
         logger.error(f"评估攻击结果时出错: {str(e)}")
         raise RuntimeError(f"评估失败: {str(e)}")
-    
+
+# 获取评估结果，可以按任务ID过滤  
 def get_evaluation_results(task_id: str = None) -> List[Dict]:
     """获取评估结果，可以按任务ID过滤"""
     conn = get_db_connection()
@@ -545,6 +552,7 @@ def get_evaluation_results(task_id: str = None) -> List[Dict]:
     
     return [dict(result) for result in results]
 
+#生成攻击图像与原始图像的对比图
 def generate_comparison_image(task_id: str, dataset_id: str) -> str:
     """生成攻击图像与原始图像的对比图"""
     try:
@@ -632,6 +640,7 @@ def generate_comparison_image(task_id: str, dataset_id: str) -> str:
         logger.error(f"生成对比图时出错: {str(e)}")
         raise RuntimeError(f"生成对比图失败: {str(e)}")
 
+# 生成评估结果图表
 def generate_evaluation_charts() -> Dict[str, str]:
     """生成评估结果图表"""
     try:
@@ -788,6 +797,7 @@ def run_batch_evaluation(config: Dict) -> str:
         logger.error(f"创建批量评估任务时出错: {str(e)}")
         raise RuntimeError(f"创建批量评估失败: {str(e)}")
 
+# 执行批量评估（在单独线程中运行）
 def _execute_batch_evaluation(evaluation_id: str, tasks: List, dataset_id: str, config: Dict):
     """执行批量评估（在单独线程中运行）"""
     try:
