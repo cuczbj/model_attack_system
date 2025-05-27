@@ -960,7 +960,7 @@ const TaskStatus = () => {
 export default function Page() {
   return (
     <div>
-      <h1>机器学习模型攻击系统</h1>
+      <h1>模型逆向攻击系统</h1>
       <div style={{ marginTop: "30px", marginBottom: "30px" }}></div>
       <TaskStatus />
     </div>

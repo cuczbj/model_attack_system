@@ -231,7 +231,7 @@ def analyze_dataset_structure(dataset_path: str) -> Tuple[int, int, str]:
 def get_dataset_info(dataset_id: str) -> Dict:
     """获取数据集信息"""
     conn = get_db_connection()
-    dataset = conn.execute('SELECT * FROM datasets WHERE name = ?', (dataset_id,)).fetchone()
+    dataset = conn.execute('SELECT * FROM datasets WHERE id = ?', (dataset_id,)).fetchone()
     conn.close()
     
     if dataset is None:

@@ -50,8 +50,8 @@ def load_model(model_name, param_filename, device, class_num):
 
         # 实例化模型
         model = model_class(class_num).to(device) 
-
-        # 使用os.path.join构建路径
+        model = torch.nn.DataParallel(model).cuda()  # 多 GPU 并行计算
+        # 不使用os.path.join构建路径
         param_file = CHECKPOINT_DIR +"/"+ param_filename
         
         # 检查文件是否存在并可访问
@@ -98,31 +98,34 @@ def load_G(attack_method, target_model, dataset, device, class_num):
 
 
 
-# 图像加载和预处理
-def image_to_tensor(image_path): #得想办法图像大小，CNN是每次除以5次
+# 图像加载和预处理,只有predict用了且是输入模型前，输入后是list不是它的原因
+def image_to_tensor(image_path):
     image = Image.open(image_path)
-
-    # 获取图像的宽度和高度
     width, height = image.size
-
     print(f"图像尺寸: 宽度 {width} 像素, 高度 {height} 像素")
 
-    # 图像预处理
     if image.mode == "L":
         print("图像是灰度图（Grayscale）")
-        image = image.convert("L")  # 确保转换为灰度
+        image = image.convert("L")
+        mean = [0.5]
+        std = [0.5]
     elif image.mode in ["RGB", "RGBA"]:
         print("图像是彩色图（Color）")
-        image = image.convert("RGB")  # 转换为标准RGB格式
+        image = image.convert("RGB")
+        mean = [0.5, 0.5, 0.5]
+        std = [0.5, 0.5, 0.5]
     else:
-        print(f"未知的图像模式: {image.mode}")
+        raise ValueError(f"未知的图像模式: {image.mode}")
 
     transform = transforms.Compose([
-        transforms.Resize(image.size),  # 调整图像大小
-        transforms.ToTensor(),  # 转为 Tensor
-        transforms.Normalize(mean=[0.5], std=[0.5])  # 归一化
+        transforms.Resize((height, width)),  # 明确给出 (H, W)
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=std)
     ])
-    return transform(image).unsqueeze(0)  # 扩展维度为 (1, (原来的))
+    
+    tensor = transform(image).unsqueeze(0)  # (1, C, H, W)
+    print(f"Tensor shape: {tensor.shape}")
+    return tensor
 
 # 示例：获取所有可用模型
 # available_models = get_available_models()

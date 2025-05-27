@@ -3,6 +3,7 @@ import logging
 import os
 from flask import Flask, request, jsonify, send_file, Response, stream_with_context
 from flask_cors import CORS
+# from predict import train_target_model, predict_target_model
 from predict import train_target_model, predict_target_model
 from reconstruct import reconstruct
 from PIL import Image
@@ -625,13 +626,13 @@ def attack():
     # 找到相应的可用目标模型
     param_file = ""
     for key, value in matched_models.items():
-        print("key is",key)
-        print("value is",value)
         if key == target_model:
+            print("key is",key)
+            print("value is",value)
             param_file = value
+            print("param_file is",param_file)
             break
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # 确定设备
-    print("param_file is",param_file)
     model = load_model(target_model, param_file , device , class_num)
     
     # 加载生成模型
@@ -672,7 +673,7 @@ def attack():
         result_dir = "./result/attack"
         os.makedirs(result_dir, exist_ok=True)
         
-        # 执行攻击，传入任务ID
+        # 执行攻击，传入任务ID   这里是重点!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         result_image,pre_iden,confidences = reconstruct(attack_method_name, model, G, target_label,  h, w, channels, device, task_id)
         logging.debug(f"攻击完成，结果类型: {type(result_image)}")
         
@@ -1260,7 +1261,13 @@ def predict():
         
         # 执行预测
         with torch.no_grad():
-            output = model.predict(image_tensor)
+            output = model(image_tensor)
+            output = output[1]
+            if isinstance(output, list):
+                output = torch.tensor(output)
+            elif not isinstance(output, torch.Tensor):
+                raise TypeError(f"模型输出类型错误: 期望 Tensor, 实际是 {type(output)}")
+
             confidences = torch.softmax(output, dim=-1).squeeze(0)
             prediction = torch.argmax(confidences).item()
         

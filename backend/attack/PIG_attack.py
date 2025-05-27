@@ -264,26 +264,26 @@ def PIG_attack(target_labels, model, G, h, w, channel,task_id=None, batch_num=No
         base64编码的图像数据
     """
     # Load Generator
-    G = ResNetGenerator(gen_num_features, gen_dim_z, gen_bottom_width, num_classes=1000, distribution=gen_distribution)
-    G = ResNetGenerator(num_classes=1000)
+    # G = ResNetGenerator(gen_num_features, gen_dim_z, gen_bottom_width, num_classes=1000, distribution=gen_distribution)
+    # G = ResNetGenerator(num_classes=1000)
     
-    gen_ckpt = torch.load(path_G)['model']
-    G.load_state_dict(gen_ckpt)
-    G = G.cuda()
+    # gen_ckpt = torch.load(path_G)['model']
+    # G.load_state_dict(gen_ckpt)
+    # G = G.cuda()
 
     # Load Target Model
     # if model.startswith("VGG16"):
-    T = VGG16(1000)
-    path_T = './checkpoint/target_model/VGG16_88.26.tar'
+    # T = VGG16(1000)
+    # path_T = './checkpoint/target_model/VGG16_88.26.tar'
     # elif model.startswith('IR152'):
     #     T = IR152(1000)
     #     path_T = './checkpoint/target_model/IR152_91.16.tar'
     # elif model == "FaceNet64":
     #     T = FaceNet64(1000)
     #     path_T = './checkpoint/target_model/FaceNet64_88.50.tar'
-    T = torch.nn.DataParallel(T).cuda()
-    ckp_T = torch.load(path_T)
-    T.load_state_dict(ckp_T['state_dict'], strict=False)
+    # T = torch.nn.DataParallel(T).cuda()
+    # ckp_T = torch.load(path_T)
+    # T.load_state_dict(ckp_T['state_dict'], strict=False)
 
     # Load Evaluation Model
     E = FaceNet(1000)
@@ -299,7 +299,7 @@ def PIG_attack(target_labels, model, G, h, w, channel,task_id=None, batch_num=No
         batch_num = 1
         for idx in range(batch_num):
             print(f"--------------------- Attack batch [{idx}]------------------------------")
-            base64_img,pre_iden,confidence = inversion(G, T, E, iden, itr=i, task_id=task_id, lr=lr, iter_times=iter_times,
+            base64_img,pre_iden,confidence = inversion(G, model, E, iden, itr=i, task_id=task_id, lr=lr, iter_times=iter_times,
                                             num_seeds=1, save_dir=save_dir, gen_dim_z=gen_dim_z, gen_distribution=gen_distribution, inv_loss_type=inv_loss_type)
             
           

@@ -1,190 +1,206 @@
 "use client";
 
-// React 和外部库导入
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Divider from "@mui/material/Divider";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
 
-// 第三方库导入
-import { useDropzone } from "react-dropzone";
-
-// MUI 组件导入
-import { Box, Button, Typography, List, ListItem, Divider, LinearProgress } from "@mui/material";
-
-// 样式和主题导入
-import { styled, useTheme } from "@mui/material/styles";
-
-// 自定义样式的上传区域
-const AppReactDropzone = styled(Box)(({ theme }) => ({
-  border: `2px dashed ${theme.palette.primary.main}`,
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.background.paper,
-  padding: theme.spacing(4),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-  transition: "border 0.3s ease-in-out",
-  height: "200px", // 设置高度
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  "&:hover": {
-    borderColor: theme.palette.primary.dark,
-  },
-}));
-
-const FileUpload = () => {
-  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
-  const [recentFiles, setRecentFiles] = useState<string[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<number>(0); // 上传进度
-
-  // 初始化时从 localStorage 获取最近上传记录
-  useEffect(() => {
-    const storedFiles = localStorage.getItem("recentFiles");
-
-    if (storedFiles) {
-      setRecentFiles(JSON.parse(storedFiles));
-    }
-  }, []);
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return;
-
-    const file = acceptedFiles[0]; // 仅处理单个文件
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:5000/upload", true);
-
-    // 监听上传进度
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const progress = Math.round((event.loaded / event.total) * 100);
-        setUploadProgress(progress);
-      }
-    };
-
-    // 上传成功的回调
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        const data = JSON.parse(xhr.responseText);
-        if (data.error) {
-          setUploadMessage(`上传失败: ${data.error}`);
-        } else {
-          // 成功上传，更新最近上传文件记录
-          const updatedRecentFiles = [...recentFiles, file.name].slice(-5);
-          setRecentFiles(updatedRecentFiles);
-          localStorage.setItem("recentFiles", JSON.stringify(updatedRecentFiles));
-          setUploadMessage(`上传成功: ${file.name}`);
-        }
-      } else {
-        setUploadMessage("上传失败，请检查服务器连接");
-      }
-    };
-
-    // 上传错误的回调
-    xhr.onerror = () => {
-      setUploadMessage("上传失败，请检查服务器连接");
-    };
-
-    // 发送请求
-    xhr.send(formData);
-  }, [recentFiles]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple: false, // 确保只上传一个文件
-  });
-
-  // 清空最近文件记录
-  const clearRecentFiles = () => {
-    setRecentFiles([]);
-    localStorage.removeItem("recentFiles");
-  };
-
+const HelpSection = ({ title, children }) => {
   return (
-    <div>
-      <AppReactDropzone {...getRootProps()}>
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <p style={{ fontWeight: "bold", color: "#1976d2" }}>
-            释放文件到这里...
-          </p>
-        ) : (
-          <p style={{ fontWeight: "bold" }}>
-            拖放文件到这里，或点击选择上传模型文件
-          </p>
-        )}
-      </AppReactDropzone>
-
-      {/* 上传进度条 */}
-      {uploadProgress > 0 && uploadProgress < 100 && (
-        <Box style={{ marginTop: "20px" }}>
-          <Typography variant="body2" gutterBottom>
-            上传进度: {uploadProgress}%
-          </Typography>
-          <LinearProgress variant="determinate" value={uploadProgress} />
-        </Box>
-      )}
-
-      {/* 上传状态显示 */}
-      {uploadMessage && (
-        <Typography
-          style={{ marginTop: "20px", color: "#1976d2", fontWeight: "bold" }}
-        >
-          {uploadMessage}
-        </Typography>
-      )}
-
-      {/* 最近上传文件记录 */}
-      {recentFiles.length > 0 && (
-        <Box style={{ marginTop: "30px" }}>
-          <Typography variant="h6" gutterBottom>
-            最近上传的文件：
-          </Typography>
-          <List>
-            {recentFiles.map((file, index) => (
-              <React.Fragment key={index}>
-                <ListItem>{file}</ListItem>
-                {index < recentFiles.length - 1 && <Divider />}
-              </React.Fragment>
-            ))}
-          </List>
-          <Button
-            variant="contained"
-            color="secondary"
-            style={{ marginTop: "10px" }}
-            onClick={clearRecentFiles}
-          >
-            清空记录
-          </Button>
-        </Box>
-      )}
-    </div>
+    <Accordion defaultExpanded>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls={`panel-${title}-content`}
+        id={`panel-${title}-header`}
+      >
+        <Typography variant="h6">{title}</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Box>{children}</Box>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 
-const HelpSection = () => {
-  const theme = useTheme(); // 获取当前主题
-  const isDarkMode = theme.palette.mode === "dark";
-
+const HelpDocumentation = () => {
   return (
     <Box
       style={{
-        marginTop: "30px",
         padding: "20px",
         borderRadius: "8px",
-        backgroundColor: isDarkMode ? "#424242" : "#f5f5f5",
-        color: isDarkMode ? "#ffffff" : "#000000",
+        backgroundColor: "#f5f5f5",
+        maxWidth: "800px",
+        margin: "0 auto",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       }}
     >
-      <Typography variant="h6" gutterBottom>
-        使用指南：
+      <Typography variant="h5" gutterBottom>
+        帮助文档
       </Typography>
-      <Typography variant="body1" gutterBottom>
-        - 将您的模型文件拖放到上方的区域，或点击选择文件进行上传。
+      <Typography variant="body1" paragraph>
+      本系统专为机器学习安全研究人员、数据隐私分析师和模型开发者设计，提供了一套完整的工具来评估机器学习分类模型对隐私攻击的抵抗能力。系统核心功能是通过多种逆向工程技术，尝试从目标模型中重建原始训练数据，从而揭示潜在的隐私泄露风险。
       </Typography>
-      <Typography variant="body1" gutterBottom>
-        - 上传完成后，您可以在下方查看最近上传的文件记录。
-      </Typography>
+
+      <Divider style={{ margin: "20px 0" }} />
+
+      <HelpSection title="系统概述">
+        <Typography variant="body1" paragraph>
+          本系统通过多种攻击方法，对机器学习分类模型进行逆向工程，尝试重建原始训练数据。主要功能包括：
+        </Typography>
+        <ul style={{ paddingLeft: "20px" }}>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>模型上传与管理</strong>：支持本地模型上传
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>参数配置</strong>：调整攻击参数，包括分类数、迭代次数、学习率等
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>攻击方法</strong>：提供多种攻击策略，包括模型反演、成员推理等
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>结果可视化</strong>：直观展示攻击结果，包括重建图像和评估指标
+            </Typography>
+          </li>
+        </ul>
+      </HelpSection>
+
+      <HelpSection title="使用流程">
+        <Box component="ol" sx={{ paddingLeft: "20px" }}>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>输入数据与模型</strong>：上传目标模型或提供API接口
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>参数设置</strong>：配置攻击参数，包括分类数、迭代次数、学习率等
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>选择攻击方法</strong>：从多种攻击策略中选择合适的方法
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>执行攻击</strong>：系统自动执行攻击过程，并实时反馈攻击进度
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body1" paragraph>
+              <strong>查看结果</strong>：分析攻击效果，查看重建的图像和评估指标
+            </Typography>
+          </li>
+        </Box>
+      </HelpSection>
+
+      <HelpSection title="攻击方法说明">
+        <Typography variant="subtitle1" gutterBottom>
+          本系统支持以下几种攻击方法：
+        </Typography>
+
+        <Paper elevation={1} sx={{ p: 2, mb: 2 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            1.
+          </Typography>
+          <Typography variant="body2" paragraph>
+            
+          </Typography>
+        </Paper>
+
+        <Paper elevation={1} sx={{ p: 2, mb: 2 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            2.
+          </Typography>
+          <Typography variant="body2" paragraph>
+           
+          </Typography>
+        </Paper>
+
+        <Paper elevation={1} sx={{ p: 2, mb: 2 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            GAN辅助重建 (GAN-based Reconstruction)
+          </Typography>
+          <Typography variant="body2" paragraph>
+            结合生成对抗网络技术，通过优化GAN的隐空间，生成与目标类别相符的高质量图像。相比基础模型反演攻击，生成的图像质量更高。
+          </Typography>
+        </Paper>
+
+
+      </HelpSection>
+
+      <HelpSection title="参数配置指南">
+        <Typography variant="body1" paragraph>
+          配置合适的参数对攻击效果有显著影响，以下是主要参数的说明：
+        </Typography>
+
+        <Box sx={{ ml: 2 }}>
+          <Typography variant="subtitle1" gutterBottom>
+            分类数
+          </Typography>
+          <Typography variant="body2" paragraph>
+            目标模型的分类数量。对于多分类模型，需要准确设置分类数以保证攻击有效性。
+          </Typography>
+
+          <Typography variant="subtitle1" gutterBottom>
+            迭代次数
+          </Typography>
+          <Typography variant="body2" paragraph>
+            攻击算法的迭代次数。较高的迭代次数通常能提高重建质量，但会增加计算时间。建议值范围：100-1000。
+          </Typography>
+
+          <Typography variant="subtitle1" gutterBottom>
+            学习率 (攻击强度)
+          </Typography>
+          <Typography variant="body2" paragraph>
+            控制每次迭代的步长。较高的学习率可能导致更快的收敛，但也可能导致结果不稳定。建议初始值：0.1-0.5。
+          </Typography>
+        </Box>
+      </HelpSection>
+
+
+
+      <Divider style={{ margin: "20px 0" }} />
+
+      <Box style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+        <Button variant="contained" color="primary" href="/">
+          返回首页
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          href="mailto:support@example.com"
+        >
+          联系技术支持
+        </Button>
+      </Box>
+
+      <Box sx={{ mt: 4, textAlign: "center" }}>
+        <Typography variant="caption" color="textSecondary">
+          如需更多帮助，请参考
+          <Link href="#" color="primary" sx={{ ml: 1 }}>
+            技术文档
+          </Link>
+          或
+          <Link href="#" color="primary" sx={{ ml: 1, mr: 1 }}>
+            常见问题解答
+          </Link>
+        </Typography>
+      </Box>
     </Box>
   );
 };
@@ -192,179 +208,9 @@ const HelpSection = () => {
 export default function Page() {
   return (
     <div>
-      <h1>机器学习模型攻击系统</h1>
+      <h1>模型逆向攻击系统</h1>
       <div style={{ marginTop: "30px", marginBottom: "30px" }}></div>
-      <FileUpload />
-      <HelpSection />
+      <HelpDocumentation />
     </div>
   );
 }
-
-
-
-
-// "use client";
-
-// // import React, { useCallback, useState, useEffect } from "react";
-// // import { useDropzone } from "react-dropzone";
-// // import Box from "@mui/material/Box";
-// // import { styled } from "@mui/material/styles";
-// // import Button from "@mui/material/Button";
-// // import Typography from "@mui/material/Typography";
-// // import List from "@mui/material/List";
-// // import ListItem from "@mui/material/ListItem";
-// // import Divider from "@mui/material/Divider";
-// // import { useTheme } from "@mui/material/styles";
-// // 1. React 和外部库导入
-// import React, { useCallback, useState, useEffect } from "react";
-
-// // 2. 第三方库导入
-// import { useDropzone } from "react-dropzone";
-
-// // 3. MUI 组件导入
-// import { Box, Button, Typography, List, ListItem, Divider } from "@mui/material";
-
-// // 4. 样式和主题导入
-// import { styled, useTheme } from "@mui/material/styles";
-
-// // 自定义样式的上传区域
-// const AppReactDropzone = styled(Box)(({ theme }) => ({
-//   border: `2px dashed ${theme.palette.primary.main}`,
-//   borderRadius: theme.shape.borderRadius,
-//   backgroundColor: theme.palette.background.paper,
-//   padding: theme.spacing(4),
-//   textAlign: "center",
-//   color: theme.palette.text.secondary,
-//   transition: "border 0.3s ease-in-out",
-//   height: "200px", // 设置高度
-//   display: "flex",
-//   alignItems: "center",
-//   justifyContent: "center",
-//   "&:hover": {
-//     borderColor: theme.palette.primary.dark,
-//   },
-// }));
-
-// const FileUpload = () => {
-//   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
-//   const [recentFiles, setRecentFiles] = useState<string[]>([]);
-
-//   // 初始化时从 localStorage 获取最近上传记录
-//   useEffect(() => {
-//     const storedFiles = localStorage.getItem("recentFiles");
-
-//     if (storedFiles) {
-//       setRecentFiles(JSON.parse(storedFiles));
-//     }
-//   }, []);
-
-//   const onDrop = useCallback((acceptedFiles: File[]) => {
-//     // 获取文件名并更新状态
-//     const fileNames = acceptedFiles.map((file) => file.name);
-
-//     // 更新最近上传文件记录
-//     const updatedRecentFiles = [...recentFiles, ...fileNames].slice(-5); // 只保留最近 5 个
-    
-//     setRecentFiles(updatedRecentFiles);
-
-//     // 保存到 localStorage
-//     localStorage.setItem("recentFiles", JSON.stringify(updatedRecentFiles));
-
-//     setUploadMessage("文件已成功处理！");
-//   }, [recentFiles]);
-
-//   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-
-//   // 清空最近文件记录
-//   const clearRecentFiles = () => {
-//     setRecentFiles([]);
-//     localStorage.removeItem("recentFiles");
-//   };
-
-//   return (
-//     <div>
-//       <AppReactDropzone {...getRootProps()}>
-//         <input {...getInputProps()} />
-//         {isDragActive ? (
-//           <p style={{ fontWeight: "bold", color: "#1976d2" }}>
-//             释放文件到这里...
-//           </p>
-//         ) : (
-//           <p style={{ fontWeight: "bold" }}>
-//             拖放文件到这里，或点击选择上传模型文件
-//           </p>
-//         )}
-//       </AppReactDropzone>
-//       {/* 上传状态显示 */}
-//       {uploadMessage && (
-//         <Typography
-//           style={{ marginTop: "20px", color: "#1976d2", fontWeight: "bold" }}
-//         >
-//           {uploadMessage}
-//         </Typography>
-//       )}
-//       {/* 最近上传文件记录 */}
-//       {recentFiles.length > 0 && (
-//         <Box style={{ marginTop: "30px" }}>
-//           <Typography variant="h6" gutterBottom>
-//             最近上传的文件：
-//           </Typography>
-//           <List>
-//             {recentFiles.map((file, index) => (
-//               <React.Fragment key={index}>
-//                 <ListItem>{file}</ListItem>
-//                 {index < recentFiles.length - 1 && <Divider />}
-//               </React.Fragment>
-//             ))}
-//           </List>
-//           <Button
-//             variant="contained"
-//             color="secondary"
-//             style={{ marginTop: "10px" }}
-//             onClick={clearRecentFiles}
-//           >
-//             清空记录
-//           </Button>
-//         </Box>
-//       )}
-//     </div>
-//   );
-// };
-
-// const HelpSection = () => {
-//   const theme = useTheme(); // 获取当前主题
-//   const isDarkMode = theme.palette.mode === "dark";
-
-//   return (
-//     <Box
-//       style={{
-//         marginTop: "30px",
-//         padding: "20px",
-//         borderRadius: "8px",
-//         backgroundColor: isDarkMode ? "#424242" : "#f5f5f5",
-//         color: isDarkMode ? "#ffffff" : "#000000",
-//       }}
-//     >
-//       <Typography variant="h6" gutterBottom>
-//         使用指南：
-//       </Typography>
-//       <Typography variant="body1" gutterBottom>
-//         - 将您的模型文件拖放到上方的区域，或点击选择文件进行上传。
-//       </Typography>
-//       <Typography variant="body1" gutterBottom>
-//         - 上传完成后，您可以在下方查看最近上传的文件记录。
-//       </Typography>
-//     </Box>
-//   );
-// };
-
-// export default function Page() {
-//   return (
-//     <div>
-//       <h1>机器学习模型攻击系统</h1>
-//       <div style={{ marginTop: "30px", marginBottom: "30px" }}></div>
-//       <FileUpload />
-//       <HelpSection />
-//     </div>
-//   );
-// }

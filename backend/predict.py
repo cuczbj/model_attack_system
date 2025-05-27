@@ -16,112 +16,49 @@ from typing import Any, Tuple
 
 
 
-# def load_model(model_name,  h, w, class_num, device):
-    
-#     if model_name == "VGG16":
-#         model = VGG16(class_num)
-#         model_path = './checkpoint/target_model/VGG16_88.26.tar'
-#     elif model_name == "IR152":
-#         model = IR152(class_num)
-#         model_path = './checkpoint/target_model/IR152_91.16.tar'
-#     elif model_name == "FaceNet64":
-#         model = FaceNet64(class_num)
-#         model_path = './checkpoint/target_model/FaceNet64_88.50.tar'
-#     elif model_name == "MLP":
-#         model = MLP(h * w, class_num).to(device)
-#         model_path = './checkpoint/target_model/MLP.pkl'  # MLP 使用指定路径
-#     else:
-#         raise ValueError(f"Unsupported model: {model_name}")
-    
-    
-        
-#     # 加载模型状态字典
-#     if model_name in ["VGG16", "IR152", "FaceNet64"]:
-#         model = torch.nn.DataParallel(model).to(device)  # VGG16, IR152, FaceNet64 使用 DataParallel
-
-#         # 加载模型的权重
-#         checkpoint = torch.load(model_path, map_location=device)
-#         model.load_state_dict(checkpoint['state_dict'], strict=False)
-#     else:
-#         model.load_state_dict(torch.load(model_path))
-    
-#     model.eval()  # 设置为评估模式
-    
-#     return model
-
-# def predict_target_model(image, model_name, h, w, class_num):
-    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # model = load_model(model_name, h, w, class_num, device)
-    
-    
-    # transform = Compose([Resize((h, w)), ToTensor()])
-
-    # if model_name in ["VGG16", "FaceNet64", "IR152"]:
-    #     image_tensor = transform(image).unsqueeze(0).to(device)  # 增加 batch 维度
-
-    #     with torch.no_grad():
-    #         feature, output = model(image_tensor)  # 兼容返回 feature 和 logits
-    #         confidences = torch.softmax(output, dim=-1).squeeze(0)
-    #         prediction = torch.argmax(confidences).item()
-
-    #     return prediction, confidences
-
-    # elif model_name == "MLP":
-    #     image_tensor = transform(image).view(1, -1).to(device)
-
-    #     with torch.no_grad():
-    #         output = model(image_tensor)
-    #         confidences = torch.softmax(output, dim=-1).squeeze(0)
-    #         prediction = torch.argmax(confidences).item()
-
-    #     return prediction, confidences
-
-    # else:
-    #     raise ValueError(f"Unsupported model: {model_name}")
-
-
 # 预测函数
 def predict_target_model(image, model_name, h, w, class_num):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # 加载模型（使用model_scanner或upload_importlib中的函数）
-    from upload_importlib import load_model, get_available_params
+    # # 加载模型（使用model_scanner或upload_importlib中的函数）
+    # from upload_importlib import load_model, get_available_params
     
-    # 获取模型参数文件
-    params = get_available_params()
-    param_file = None
-    for p in params:
-        if model_name in p:
-            param_file = p
-            break
+    # # 获取模型参数文件
+    # params = get_available_params()
+    # param_file = None
+    # for p in params:
+    #     if model_name in p:
+    #         param_file = p
+    #         break
     
-    if not param_file:
-        raise ValueError(f"找不到模型{model_name}的参数文件")
+    # if not param_file:
+    #     raise ValueError(f"找不到模型{model_name}的参数文件")
     
-    model = load_model(model_name, param_file, device, class_num)
+    # model = load_model(model_name, param_file, device, class_num)
     
-    # 预处理图像
-    transform = transforms.Compose([
-        transforms.Resize((h, w)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5], std=[0.5])
-    ])
+    # # 预处理图像
+    # transform = transforms.Compose([
+    #     transforms.Resize((h, w)),
+    #     transforms.ToTensor(),
+    #     transforms.Normalize(mean=[0.5], std=[0.5])
+    # ])
     
-    image_tensor = transform(image).unsqueeze(0).to(device)
+    # image_tensor = transform(image).unsqueeze(0).to(device)
     
-    with torch.no_grad():
-        if hasattr(model, 'predict'):
-            output = model.predict(image_tensor)
-        else:
-            # 如果模型没有predict方法，尝试直接调用
-            output = model(image_tensor)
-            if isinstance(output, tuple):
-                # 某些模型可能返回(特征, 输出)
-                output = output[1]
+    # with torch.no_grad():
+    #     if hasattr(model, 'predict'):
+    #         output = model.predict(image_tensor)
+    #     else:
+    #         # 如果模型没有predict方法，尝试直接调用
+    #         output = model(image_tensor)
+    #         if isinstance(output, tuple):
+    #             # 某些模型可能返回(特征, 输出)
+    #             output = output[1]
         
-        predicted_class = torch.argmax(output, dim=1).item()
+    #     predicted_class = torch.argmax(output, dim=1).item()
     
-    return predicted_class, output.squeeze(0).cpu().numpy()
+    # return predicted_class, output.squeeze(0).cpu().numpy()
+    return 1, [0.1, 0.2, 0.3, 0.4]  # 这里返回一个假的预测结果，你可以替换为你自己的模型预测结果
 
 # 训练目标模型,无调用，备用,这里只保留前面第一种MLP目标模型
 def train_target_model():
@@ -192,3 +129,68 @@ if __name__ == "__main__":
     
 #     # 这里输出的是一个单一类别的预测，你也可以打印所有类别的置信度
 #     # 如果需要查看预测类别的名字，你可以加载一个 ImageNet 的标签映射列表
+
+
+
+# def load_model(model_name,  h, w, class_num, device):
+    
+#     if model_name == "VGG16":
+#         model = VGG16(class_num)
+#         model_path = './checkpoint/target_model/VGG16_88.26.tar'
+#     elif model_name == "IR152":
+#         model = IR152(class_num)
+#         model_path = './checkpoint/target_model/IR152_91.16.tar'
+#     elif model_name == "FaceNet64":
+#         model = FaceNet64(class_num)
+#         model_path = './checkpoint/target_model/FaceNet64_88.50.tar'
+#     elif model_name == "MLP":
+#         model = MLP(h * w, class_num).to(device)
+#         model_path = './checkpoint/target_model/MLP.pkl'  # MLP 使用指定路径
+#     else:
+#         raise ValueError(f"Unsupported model: {model_name}")
+    
+    
+        
+#     # 加载模型状态字典
+#     if model_name in ["VGG16", "IR152", "FaceNet64"]:
+#         model = torch.nn.DataParallel(model).to(device)  # VGG16, IR152, FaceNet64 使用 DataParallel
+
+#         # 加载模型的权重
+#         checkpoint = torch.load(model_path, map_location=device)
+#         model.load_state_dict(checkpoint['state_dict'], strict=False)
+#     else:
+#         model.load_state_dict(torch.load(model_path))
+    
+#     model.eval()  # 设置为评估模式
+    
+#     return model
+
+# def predict_target_model(image, model_name, h, w, class_num):
+    # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # model = load_model(model_name, h, w, class_num, device)
+    
+    
+    # transform = Compose([Resize((h, w)), ToTensor()])
+
+    # if model_name in ["VGG16", "FaceNet64", "IR152"]:
+    #     image_tensor = transform(image).unsqueeze(0).to(device)  # 增加 batch 维度
+
+    #     with torch.no_grad():
+    #         feature, output = model(image_tensor)  # 兼容返回 feature 和 logits
+    #         confidences = torch.softmax(output, dim=-1).squeeze(0)
+    #         prediction = torch.argmax(confidences).item()
+
+    #     return prediction, confidences
+
+    # elif model_name == "MLP":
+    #     image_tensor = transform(image).view(1, -1).to(device)
+
+    #     with torch.no_grad():
+    #         output = model(image_tensor)
+    #         confidences = torch.softmax(output, dim=-1).squeeze(0)
+    #         prediction = torch.argmax(confidences).item()
+
+    #     return prediction, confidences
+
+    # else:
+    #     raise ValueError(f"Unsupported model: {model_name}")
